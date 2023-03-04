@@ -5,37 +5,50 @@ pygame.init()
 # Colours
 BACKGROUND = (255, 255, 255)
 
+# change cursor on hover
+hand = pygame.SYSTEM_CURSOR_HAND
+
 # Game Setup
 FPS = 60
 fpsClock = pygame.time.Clock()
-WINDOW_WIDTH = 600
+WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 
 # rgb values of colours used
-red = (100, 0, 0)
-light_red = (255, 0, 0)
-green = (0, 100, 0)
-light_green = (0, 255, 0)
-yellow = (100, 100, 0)
-light_yellow = (255, 255, 0)
-blue = (0, 0, 100)
-light_blue = (0, 0, 255)
 white = (255, 255, 255)
 black = (0, 0, 0)
 grey = (47, 47, 47)
 
 # load all the images
-logo = pygame.image.load('simon_logo.png')
-main_page_image = pygame.image.load('simon_logo.png')
-main_page_image_scaled = pygame.transform.scale(main_page_image, (450, 450))
-start_button = pygame.image.load('start_game_image.png')
-settings = pygame.image.load('gear_cog.png') # 547, 600
+logo = pygame.image.load('Assets\simon_logo.png')
+main_page_image_scaled = pygame.transform.scale(logo, (450, 450))
+start_button_normal = pygame.image.load('Assets\main_menu_page_images\start_game_image.png')
+start_button_pressed = pygame.image.load('Assets\main_menu_page_images\start_game_image_2.png')
+settings = pygame.image.load('Assets\main_menu_page_images\gear_cog.png') # 547, 600
 settings_scaled = pygame.transform.scale(settings, (64,70))
-information = pygame.image.load('information.png') # 50 130
+information = pygame.image.load('Assets\main_menu_page_images\information.png') # 50 130
 information_scaled = pygame.transform.scale(information, (30, 78))
 
+blue_light = pygame.image.load('Assets\game_images/blue_light.png')
+blue_light_scaled = pygame.transform.scale(blue_light, (126.54, 126.54))
+blue = pygame.image.load('Assets\game_images/blue.png')
+blue_scaled = pygame.transform.scale(blue, (126.54, 126.54))
+green_light = pygame.image.load('Assets\game_images\green_light.png')
+green_light_scaled = pygame.transform.scale(green_light, (126.54, 126.54))
+green = pygame.image.load('Assets\game_images\green.png')
+green_scaled = pygame.transform.scale(green, (126.54, 126.54))
+red_light = pygame.image.load('Assets\game_images/red_light.png')
+red_light_scaled = pygame.transform.scale(red_light, (126.54, 126.54))
+red = pygame.image.load('Assets\game_images/red.png')
+red_scaled = pygame.transform.scale(red, (126.54, 126.54))
+yellow_light = pygame.image.load('Assets\game_images\yellow_light.png')
+yellow_light_scaled = pygame.transform.scale(yellow_light, (126.54, 126.54))
+yellow = pygame.image.load('Assets\game_images\yellow.png')
+yellow_scaled = pygame.transform.scale(yellow, (126.54, 126.54))
+
+
 # load all the fonts
-game_font = pygame.font.Font("Press_Start_2P\PressStart2P-Regular.ttf", 50)
+game_font = pygame.font.Font("Assets/fonts\Press_Start_2P\PressStart2P-Regular.ttf", 50)
 
 # load all the sounds
 
@@ -54,13 +67,33 @@ time_delay = 500 # milliseconds
 # Game Functions #
 ##################
 
+class Start_Button: # the button class
+    def __init__(button, button_image, pos, callback):  # intialise the class
+        '''
+            Create a animated button from images
+            self.callback is for a funtion for the button to do - set to None
+        '''
+        button.image = button_image
+        button.rect = button.image.get_rect(topright=(495, 480))
+        button.callback = callback
+
+    def normal(button): # the normal state of the button
+        button.image = start_button_normal
+        pygame.mouse.set_cursor()
+
+    def hover(button): # the hovered state of the button
+        pygame.mouse.set_cursor(hand)
+
+    def pressed(button): # the pressed state of the button
+        button.image = start_button_pressed
+
 def game_start_page(): # main screen page
     waiting = True
     # menu_music.play(-1)
     logo_bob = 50 # where the logo starts at (y-axis)
     title_text = game_font.render('Simon', True, white) # write the words
-
     bob_direction = True # true = down, false = up
+
     while waiting:
         for event in pygame.event.get() : # if the user closes the window, close the game
             if event.type == QUIT :
@@ -74,8 +107,8 @@ def game_start_page(): # main screen page
                 if 200 <= x <= 407 and 480 <= y <= 568: # for the start button
                     # if the click is within a certain range
                     print('go to start page')
-                #     menu_music.stop()
-                #     waiting = False
+                    # menu_music.stop()
+                    # waiting = False
                 
                 if 510 <= x <= 574 and 30 <= y <= 100: # for the settings button
                     # if the click is within a certain range
@@ -84,12 +117,26 @@ def game_start_page(): # main screen page
         # set background colour
         WINDOW.fill(grey)
 
+        button = Start_Button(start_button_normal, (100, 100), None) # get the button from the Start_Button class
+        left, middle, right = pygame.mouse.get_pressed()
+
+        # if cursor is over button change state to 'hover'
+        if button.rect.collidepoint(pygame.mouse.get_pos()):
+            button.hover()
+            # if button pressed, change the state to 'pressed' otherwise 'hover'
+            if left and button.rect.collidepoint(pygame.mouse.get_pos()):
+                button.pressed()
+            else:
+                button.hover()
+        else:
+            button.normal()
+
         # display text and images
-        WINDOW.blit(title_text, (190, 50))
-        WINDOW.blit(main_page_image_scaled, (75, logo_bob))
-        WINDOW.blit(start_button, (195, 480)) # is 207 x 88 pixel
-        WINDOW.blit(settings_scaled, (600-90, 30))
-        WINDOW.blit(information_scaled, (550, 500))
+        WINDOW.blit(title_text, (290, 50))
+        WINDOW.blit(main_page_image_scaled, (175, logo_bob))
+        WINDOW.blit(button.image, button.rect)
+        WINDOW.blit(settings_scaled, (WINDOW_WIDTH-90, 30))
+        WINDOW.blit(information_scaled, (WINDOW_WIDTH-70, 500))
         pygame.display.update()
 
         if logo_bob == 25:  # limit for how high the logo goes
