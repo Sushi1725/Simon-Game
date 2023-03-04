@@ -2,9 +2,6 @@ import pygame, sys, random
 from pygame.locals import *
 pygame.init()
 
-# Colours
-BACKGROUND = (255, 255, 255)
-
 # change cursor on hover
 hand = pygame.SYSTEM_CURSOR_HAND
 
@@ -20,35 +17,32 @@ black = (0, 0, 0)
 grey = (47, 47, 47)
 
 # load all the images
-logo = pygame.image.load('Assets\simon_logo.png')
+logo = pygame.image.load('Assets/simon_logo.png')
 main_page_image_scaled = pygame.transform.scale(logo, (450, 450))
-start_button_normal = pygame.image.load('Assets\main_menu_page_images\start_game_image.png')
-start_button_pressed = pygame.image.load('Assets\main_menu_page_images\start_game_image_2.png')
-settings = pygame.image.load('Assets\main_menu_page_images\gear_cog.png') # 547, 600
+start_button_normal = pygame.image.load('Assets/main_menu_page_images/start_game_image.png')
+start_button_pressed = pygame.image.load('Assets/main_menu_page_images/start_game_image_2.png')
+settings = pygame.image.load('Assets/main_menu_page_images/gear_cog.png') # 547, 600
 settings_scaled = pygame.transform.scale(settings, (64,70))
-information = pygame.image.load('Assets\main_menu_page_images\information.png') # 50 130
+information = pygame.image.load('Assets/main_menu_page_images/information.png') # 50 130
 information_scaled = pygame.transform.scale(information, (30, 78))
 
-blue_light = pygame.image.load('Assets\game_images/blue_light.png')
+blue_light = pygame.image.load('Assets/game_images/blue_light.png')
 blue_light_scaled = pygame.transform.scale(blue_light, (225, 225))
-blue = pygame.image.load('Assets\game_images/blue.png')
-blue_scaled = pygame.transform.scale(blue, (225, 225))
-green_light = pygame.image.load('Assets\game_images\green_light.png')
+blue = pygame.image.load('Assets/game_images/blue.png')
+green_light = pygame.image.load('Assets/game_images/green_light.png')
 green_light_scaled = pygame.transform.scale(green_light, (225, 225))
-green = pygame.image.load('Assets\game_images\green.png')
-green_scaled = pygame.transform.scale(green, (225, 225))
-red_light = pygame.image.load('Assets\game_images/red_light.png')
+green = pygame.image.load('Assets/game_images/green.png')
+red_light = pygame.image.load('Assets/game_images/red_light.png')
 red_light_scaled = pygame.transform.scale(red_light, (225, 225))
-red = pygame.image.load('Assets\game_images/red.png')
-red_scaled = pygame.transform.scale(red, (225, 225))
-yellow_light = pygame.image.load('Assets\game_images\yellow_light.png')
+red = pygame.image.load('Assets/game_images/red.png')
+yellow_light = pygame.image.load('Assets/game_images/yellow_light.png')
 yellow_light_scaled = pygame.transform.scale(yellow_light, (225, 225))
-yellow = pygame.image.load('Assets\game_images\yellow.png')
-yellow_scaled = pygame.transform.scale(yellow, (225, 225))
+yellow = pygame.image.load('Assets/game_images/yellow.png')
 
 
 # load all the fonts
-game_font = pygame.font.Font("Assets/fonts\Press_Start_2P\PressStart2P-Regular.ttf", 50)
+game_font_start = pygame.font.Font("Assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", 50)
+game_font = pygame.font.Font("Assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", 20)
 
 # load all the sounds
 
@@ -92,7 +86,7 @@ def game_start_page(): # main screen page
     waiting = True
     # menu_music.play(-1)
     logo_bob = 50 # where the logo starts at (y-axis)
-    title_text = game_font.render('Simon', True, white) # write the words
+    title_text = game_font_start.render('Simon', True, white) # write the words
     bob_direction = True # true = down, false = up
 
     while waiting:
@@ -161,7 +155,7 @@ def game_start_page(): # main screen page
     #     show_pattern()
     #     click_listen()
 
-def game_simon_play_page():
+def game_simon_play_page(score = 0):
     looping = True
 
     # The main game loop
@@ -175,13 +169,70 @@ def game_simon_play_page():
         WINDOW.fill(grey)
 
         # draw elements
-        # score_text = game_font.render('Score: ' + str(score), True, white)
-        # WINDOW.blit(score_text, (50, 50))
+        # score = 0
+        score_text_temp = game_font.render('Score: 0', True, white)
+        WINDOW.blit(score_text_temp, (50, 50))
+        
+        blue_scaled = pygame.transform.scale(blue, (225, 225)).convert_alpha() # optimises the checking the button
+        green_scaled = pygame.transform.scale(green, (225, 225)).convert_alpha()
+        red_scaled = pygame.transform.scale(red, (225, 225)).convert_alpha()
+        yellow_scaled = pygame.transform.scale(yellow, (225, 225)).convert_alpha()
+        blue_scaled_pos = (400, 300)
+        green_scaled_pos = (400, 75)
+        red_scaled_pos = (175, 75)
+        yellow_scaled_pos = (175, 300)
 
-        WINDOW.blit(blue_scaled, (400, 300))
-        WINDOW.blit(green_scaled, (400, 75))
-        WINDOW.blit(red_scaled, (175, 75))
-        WINDOW.blit(yellow_scaled, (175, 300))
-        pygame.display.update()
+        while True:
+            for event in pygame.event.get():
+                if event.type == QUIT :
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    try:
+                        mask = pygame.mask.from_surface(blue_scaled)
+                        if mask.get_at((event.pos[0]-blue_scaled_pos[0], event.pos[1]-blue_scaled_pos[1])):
+                            WINDOW.fill(grey)
+                            score = score + 1
+                            print(score)
+                            score_text = game_font.render('Score: ' + str(score), True, white)
+                            WINDOW.blit(score_text, (50, 50))
+                    except IndexError:
+                        pass
+                    try:
+                        mask = pygame.mask.from_surface(red_scaled)
+                        if mask.get_at((event.pos[0]-red_scaled_pos[0], event.pos[1]-red_scaled_pos[1])):
+                            WINDOW.fill(grey)
+                            score = score + 1
+                            print(score)
+                            score_text = game_font.render('Score: ' + str(score), True, white)
+                            WINDOW.blit(score_text, (50, 50))
+                    except IndexError:
+                        pass
+                    try:
+                        mask = pygame.mask.from_surface(green_scaled)
+                        if mask.get_at((event.pos[0]-green_scaled_pos[0], event.pos[1]-green_scaled_pos[1])):
+                            WINDOW.fill(grey)
+                            score = score + 1
+                            print(score)
+                            score_text = game_font.render('Score: ' + str(score), True, white)
+                            WINDOW.blit(score_text, (50, 50))
+                    except IndexError:
+                        pass
+                    try:
+                        mask = pygame.mask.from_surface(yellow_scaled)
+                        if mask.get_at((event.pos[0]-yellow_scaled_pos[0], event.pos[1]-yellow_scaled_pos[1])):
+                            WINDOW.fill(grey)
+                            score = score + 1
+                            print(score)
+                            score_text = game_font.render('Score: ' + str(score), True, white)
+                            WINDOW.blit(score_text, (50, 50))
+                    except IndexError:
+                        pass
+
+            WINDOW.blit(blue_scaled, blue_scaled_pos)
+            WINDOW.blit(green_scaled, green_scaled_pos)
+            WINDOW.blit(red_scaled, red_scaled_pos)
+            WINDOW.blit(yellow_scaled, yellow_scaled_pos)
+            pygame.display.update()
 
 game_start_page()
