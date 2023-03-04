@@ -29,6 +29,10 @@ logo = pygame.image.load('simon_logo.png')
 main_page_image = pygame.image.load('simon_logo.png')
 main_page_image_scaled = pygame.transform.scale(main_page_image, (450, 450))
 start_button = pygame.image.load('start_game_image.png')
+settings = pygame.image.load('gear_cog.png') # 547, 600
+settings_scaled = pygame.transform.scale(settings, (64,70))
+information = pygame.image.load('information.png') # 50 130
+information_scaled = pygame.transform.scale(information, (30, 78))
 
 # load all the fonts
 game_font = pygame.font.Font("Press_Start_2P\PressStart2P-Regular.ttf", 50)
@@ -67,11 +71,15 @@ def game_start_page(): # main screen page
                 x = pos[0]  # gets the location of where the mouse clicks
                 y = pos[1]
 
-                if 200 <= x <= 407 and 480 <= y <= 568:
+                if 200 <= x <= 407 and 480 <= y <= 568: # for the start button
                     # if the click is within a certain range
-                    print('works')
+                    print('go to start page')
                 #     menu_music.stop()
                 #     waiting = False
+                
+                if 510 <= x <= 574 and 30 <= y <= 100: # for the settings button
+                    # if the click is within a certain range
+                    print('go to settings page')
 
         # set background colour
         WINDOW.fill(grey)
@@ -79,7 +87,9 @@ def game_start_page(): # main screen page
         # display text and images
         WINDOW.blit(title_text, (190, 50))
         WINDOW.blit(main_page_image_scaled, (75, logo_bob))
-        WINDOW.blit(start_button, (200, 480)) # is 207 x 88 pixel
+        WINDOW.blit(start_button, (195, 480)) # is 207 x 88 pixel
+        WINDOW.blit(settings_scaled, (600-90, 30))
+        WINDOW.blit(information_scaled, (550, 500))
         pygame.display.update()
 
         if logo_bob == 25:  # limit for how high the logo goes
