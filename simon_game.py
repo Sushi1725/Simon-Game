@@ -30,21 +30,21 @@ information = pygame.image.load('Assets\main_menu_page_images\information.png') 
 information_scaled = pygame.transform.scale(information, (30, 78))
 
 blue_light = pygame.image.load('Assets\game_images/blue_light.png')
-blue_light_scaled = pygame.transform.scale(blue_light, (126.54, 126.54))
+blue_light_scaled = pygame.transform.scale(blue_light, (225, 225))
 blue = pygame.image.load('Assets\game_images/blue.png')
-blue_scaled = pygame.transform.scale(blue, (126.54, 126.54))
+blue_scaled = pygame.transform.scale(blue, (225, 225))
 green_light = pygame.image.load('Assets\game_images\green_light.png')
-green_light_scaled = pygame.transform.scale(green_light, (126.54, 126.54))
+green_light_scaled = pygame.transform.scale(green_light, (225, 225))
 green = pygame.image.load('Assets\game_images\green.png')
-green_scaled = pygame.transform.scale(green, (126.54, 126.54))
+green_scaled = pygame.transform.scale(green, (225, 225))
 red_light = pygame.image.load('Assets\game_images/red_light.png')
-red_light_scaled = pygame.transform.scale(red_light, (126.54, 126.54))
+red_light_scaled = pygame.transform.scale(red_light, (225, 225))
 red = pygame.image.load('Assets\game_images/red.png')
-red_scaled = pygame.transform.scale(red, (126.54, 126.54))
+red_scaled = pygame.transform.scale(red, (225, 225))
 yellow_light = pygame.image.load('Assets\game_images\yellow_light.png')
-yellow_light_scaled = pygame.transform.scale(yellow_light, (126.54, 126.54))
+yellow_light_scaled = pygame.transform.scale(yellow_light, (225, 225))
 yellow = pygame.image.load('Assets\game_images\yellow.png')
-yellow_scaled = pygame.transform.scale(yellow, (126.54, 126.54))
+yellow_scaled = pygame.transform.scale(yellow, (225, 225))
 
 
 # load all the fonts
@@ -86,6 +86,7 @@ class Start_Button: # the button class
 
     def pressed(button): # the pressed state of the button
         button.image = start_button_pressed
+        pygame.mouse.set_cursor()
 
 def game_start_page(): # main screen page
     waiting = True
@@ -104,11 +105,11 @@ def game_start_page(): # main screen page
                 x = pos[0]  # gets the location of where the mouse clicks
                 y = pos[1]
 
-                if 200 <= x <= 407 and 480 <= y <= 568: # for the start button
-                    # if the click is within a certain range
-                    print('go to start page')
-                    # menu_music.stop()
-                    # waiting = False
+                # if 200 <= x <= 407 and 480 <= y <= 568: # for the start button
+                #     # if the click is within a certain range
+                #     print('go to start page')
+                #     # menu_music.stop()
+                #     # waiting = False
                 
                 if 510 <= x <= 574 and 30 <= y <= 100: # for the settings button
                     # if the click is within a certain range
@@ -126,6 +127,8 @@ def game_start_page(): # main screen page
             # if button pressed, change the state to 'pressed' otherwise 'hover'
             if left and button.rect.collidepoint(pygame.mouse.get_pos()):
                 button.pressed()
+                waiting = False
+                game_simon_play_page()
             else:
                 button.hover()
         else:
@@ -151,15 +154,14 @@ def game_start_page(): # main screen page
         else:
             logo_bob -= 0.5 # move it up
 
-    #     clock.tick(60)
+        fpsClock.tick(FPS)
 
     # while running:
     #     new_pattern()
     #     show_pattern()
     #     click_listen()
 
-# The main function that controls the game
-def main () :
+def game_simon_play_page():
     looping = True
 
     # The main game loop
@@ -169,12 +171,17 @@ def main () :
                 pygame.quit()
                 sys.exit()
 
+        # refresh display
+        WINDOW.fill(grey)
 
-        game_start_page()
+        # draw elements
+        # score_text = game_font.render('Score: ' + str(score), True, white)
+        # WINDOW.blit(score_text, (50, 50))
 
-        # Render elements of the game
-        WINDOW.fill(BACKGROUND)
+        WINDOW.blit(blue_scaled, (400, 300))
+        WINDOW.blit(green_scaled, (400, 75))
+        WINDOW.blit(red_scaled, (175, 75))
+        WINDOW.blit(yellow_scaled, (175, 300))
         pygame.display.update()
-        fpsClock.tick(FPS)
 
-main()
+game_start_page()
