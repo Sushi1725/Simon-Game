@@ -9,6 +9,7 @@ pygame.init()
 fpsClock = pygame.time.Clock()
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
+
 # change cursor on hover
 hand = pygame.SYSTEM_CURSOR_HAND
 
@@ -35,26 +36,24 @@ bg_blue = pygame.image.load('Assets/main_menu_page_images/bg_blue.png')
 blue_light = pygame.image.load('Assets/game_images/blue_light.png')
 blue_light_scaled = pygame.transform.scale(blue_light, (225, 225))
 blue = pygame.image.load('Assets/game_images/blue.png')
+blue_scaled = pygame.transform.scale(blue, (225, 225))
 green_light = pygame.image.load('Assets/game_images/green_light.png')
 green_light_scaled = pygame.transform.scale(green_light, (225, 225))
 green = pygame.image.load('Assets/game_images/green.png')
+green_scaled = pygame.transform.scale(green, (225, 225))
 red_light = pygame.image.load('Assets/game_images/red_light.png')
 red_light_scaled = pygame.transform.scale(red_light, (225, 225))
 red = pygame.image.load('Assets/game_images/red.png')
+red_scaled = pygame.transform.scale(red, (225, 225))
 yellow_light = pygame.image.load('Assets/game_images/yellow_light.png')
 yellow_light_scaled = pygame.transform.scale(yellow_light, (225, 225))
 yellow = pygame.image.load('Assets/game_images/yellow.png')
-
-blue_scaled = pygame.transform.scale(blue, (225, 225))
-green_scaled = pygame.transform.scale(green, (225, 225))
-red_scaled = pygame.transform.scale(red, (225, 225))
 yellow_scaled = pygame.transform.scale(yellow, (225, 225))
-
 
 # load all the fonts
 gameplay_font = 'Assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf'
-game_font_start = pygame.font.Font(gameplay_font, 50)
-game_font = pygame.font.Font(gameplay_font, 20)
+game_font_start = pygame.font.Font(gameplay_font, 50) # size 50 font
+game_font = pygame.font.Font(gameplay_font, 20) # size 20 font
 
 # load all the sounds
 
@@ -65,8 +64,8 @@ pygame.display.set_icon(logo) # sets the window's logo to the image
 
 # variables
 score = 0 # score number
-running = True # is the game running?
-pattern = [] # random pattern, so different each time
+running = True
+pattern = [] # store array of previous colours
 time_delay = 750 # milliseconds
 
 ##################
@@ -103,8 +102,7 @@ def game_start_page(): # main screen page
     while waiting:
         for event in pygame.event.get() : # if the user closes the window, close the game
             if event.type == QUIT :
-                pygame.quit()
-                sys.exit()
+                quit()
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 pos = pygame.mouse.get_pos()
                 x = pos[0]  # gets the location of where the mouse clicks
@@ -166,21 +164,20 @@ def game_start_page(): # main screen page
         fpsClock.tick(FPS)
 
     while running:
-        new_pattern()
+        random_pattern()
         show_pattern()
     #     click_listen()
 
 def game_simon_play_page(yellow_colour = yellow_scaled, blue_colour = blue_scaled, green_colour = green_scaled, red_colour = red_scaled):
     for event in pygame.event.get() :
         if event.type == QUIT :
-            pygame.quit()
-            sys.exit()
+            quit()
 
     # refresh display
     WINDOW.fill(grey)
 
     # draw elements
-    # score = 0
+    global score
     score_text_temp = game_font.render('Score: 0', True, white)
     WINDOW.blit(score_text_temp, (50, 50))
 
@@ -202,8 +199,7 @@ def game_simon_play_page(yellow_colour = yellow_scaled, blue_colour = blue_scale
         # while True:
         #     for event in pygame.event.get():
         #         if event.type == QUIT :
-        #             pygame.quit()
-        #             sys.exit()
+        #             quit()
         #         if event.type == pygame.MOUSEBUTTONDOWN: # one for each colour
         #             try:
         #                 mask = pygame.mask.from_surface(blue_scaled) # mask makes it so that the translucent part of the image cannot be clicked
@@ -252,81 +248,57 @@ def game_simon_play_page(yellow_colour = yellow_scaled, blue_colour = blue_scale
         #     WINDOW.blit(yellow_scaled, yellow_scaled_pos)
         #     pygame.display.update()
 
-def new_pattern():
+def random_pattern():
     global score
     score = len(pattern)
     pattern.append(random.randint(1, 4))
 
+def quit():
+    running = False
+    pygame.display.quit()
+    pygame.quit()
+    sys.exit()
+
 def show_pattern():
-    # 1 = green
-    # 2 = red
+    # 1 = red
+    # 2 = green
     # 3 = yellow
     # 4 = blue
-    # print('should be in showing pattern now')
 
-    time_delay = 750 - 100 * int(len(pattern) / 5)
+    time_delay = 500 - 100 * int(len(pattern) / 5)
     print('more than 100')
     if time_delay <= 100:
         print('now 100')
         time_delay = 100
 
     game_simon_play_page()
-    # print('here')
     pygame.time.delay(1000)
 
     for x in pattern:
-        # print('now doing x in pattern')
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.display.quit()
-                pygame.quit()
-                sys.exit()
+            if event.type == QUIT:
+                quit()
 
-        # blue_scaled_pos = (400, 300)
-        # green_scaled_pos = (400, 75)
-        # red_scaled_pos = (175, 75)
-        # yellow_scaled_pos = (175, 300)
-
-        if x == 1:
-            # RED
-            # print('red')
+        if x == 1: # 1 = red
             print(pattern)
-            # WINDOW.blit(red_light_scaled, red_scaled_pos)
-            game_simon_play_page(red_colour = red_light_scaled)
-            # red_sound.play()
-            pygame.time.delay(time_delay)
-            game_simon_play_page()
-            # red_sound.stop()
-        elif x == 2:
-            # GREEN
-            # print('green')
+            game_simon_play_page(red_colour = red_light_scaled) # change it into light mode
+            pygame.time.delay(time_delay) # current set time delay (faster as the game progresses)
+            game_simon_play_page() # move it back into the "all dark" state
+        elif x == 2: # 2 = green
             print(pattern)
-            # WINDOW.blit(green_light_scaled, green_scaled_pos)
-            game_simon_play_page(green_colour = green_light_scaled)
-            # green_sound.play()
-            pygame.time.delay(time_delay)
-            game_simon_play_page()
-            # green_sound.stop()
-        elif x == 3:
-            # YELLOW
-            # print('yellow')
+            game_simon_play_page(green_colour = green_light_scaled) # change it into light mode
+            pygame.time.delay(time_delay) # current set time delay (faster as the game progresses)
+            game_simon_play_page() # move it back into the "all dark" state
+        elif x == 3: # 3 = yellow
             print(pattern)
-            # WINDOW.blit(yellow_light_scaled, yellow_scaled_pos)
-            game_simon_play_page(yellow_colour = yellow_light_scaled)
-            # yellow_sound.play()
-            pygame.time.delay(time_delay)
-            game_simon_play_page()
-            # yellow_sound.stop()
-        elif x == 4:
-            # BLUE
-            # print('blue')
+            game_simon_play_page(yellow_colour = yellow_light_scaled) # change it into light mode
+            pygame.time.delay(time_delay) # current set time delay (faster as the game progresses)
+            game_simon_play_page() # move it back into the "all dark" state
+        elif x == 4: # 4 = blue
             print(pattern)
-            # WINDOW.blit(blue_light_scaled, blue_scaled_pos)
-            game_simon_play_page(blue_colour = blue_light_scaled)
-            # blue_sound.play()
-            pygame.time.delay(time_delay)
-            game_simon_play_page()
-            # blue_sound.stop()
+            game_simon_play_page(blue_colour = blue_light_scaled) # change it into light mode
+            pygame.time.delay(time_delay) # current set time delay (faster as the game progresses)
+            game_simon_play_page() # move it back into the "all dark" state
 
         pygame.time.delay(time_delay)
 
