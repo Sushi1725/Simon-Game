@@ -96,7 +96,7 @@ class Start_Button: # the button class
     def pressed(button): # the pressed state of the button
         button.image = startButtonPressed
         pygame.mouse.set_cursor()
-def game_start_page(): # main screen page
+def render_game_start_page(): # main screen page
     waiting = True
     # menu_music.play(-1)
     logoBob = 50 # where the logo starts at (y-axis)
@@ -135,7 +135,7 @@ def game_start_page(): # main screen page
             if left and button.rect.collidepoint(pygame.mouse.get_pos()):
                 button.pressed()
                 waiting = False
-                # game_simon_play_page()
+                # render_game_simon_play_page()
             else:
                 button.hover()
         else:
@@ -172,7 +172,7 @@ def game_start_page(): # main screen page
         show_pattern()
         store_player_guess()
 
-def game_simon_play_page(yellowColour = yellowScaled, blueColour = blueScaled, greenColour = greenScaled, redColour = redScaled):
+def render_game_simon_play_page(yellowColour = yellowScaled, blueColour = blueScaled, greenColour = greenScaled, redColour = redScaled):
     for event in pygame.event.get() :
         if event.type == QUIT :
             quit()
@@ -214,7 +214,7 @@ def show_pattern():
         print('now 100')
         timeDelay = 100
 
-    game_simon_play_page()
+    render_game_simon_play_page()
     pygame.time.delay(1000)
 
     for x in pattern:
@@ -224,24 +224,24 @@ def show_pattern():
 
         if x == 1: # 1 = red
             print(pattern)
-            game_simon_play_page(redColour = redLightScaled) # change it into light mode
+            render_game_simon_play_page(redColour = redLightScaled) # change it into light mode
             pygame.time.delay(timeDelay) # current set time delay (faster as the game progresses)
-            game_simon_play_page() # move it back into the "all dark" state
+            render_game_simon_play_page() # move it back into the "all dark" state
         elif x == 2: # 2 = green
             print(pattern)
-            game_simon_play_page(greenColour = greenLightScaled) # change it into light mode
+            render_game_simon_play_page(greenColour = greenLightScaled) # change it into light mode
             pygame.time.delay(timeDelay) # current set time delay (faster as the game progresses)
-            game_simon_play_page() # move it back into the "all dark" state
+            render_game_simon_play_page() # move it back into the "all dark" state
         elif x == 3: # 3 = yellow
             print(pattern)
-            game_simon_play_page(yellowColour = yellowLightScaled) # change it into light mode
+            render_game_simon_play_page(yellowColour = yellowLightScaled) # change it into light mode
             pygame.time.delay(timeDelay) # current set time delay (faster as the game progresses)
-            game_simon_play_page() # move it back into the "all dark" state
+            render_game_simon_play_page() # move it back into the "all dark" state
         elif x == 4: # 4 = blue
             print(pattern)
-            game_simon_play_page(blueColour = blueLightScaled) # change it into light mode
+            render_game_simon_play_page(blueColour = blueLightScaled) # change it into light mode
             pygame.time.delay(timeDelay) # current set time delay (faster as the game progresses)
-            game_simon_play_page() # move it back into the "all dark" state
+            render_game_simon_play_page() # move it back into the "all dark" state
 
         pygame.time.delay(timeDelay)
 
@@ -272,11 +272,11 @@ def store_player_guess():
                         print(score)
                         score_text = gameFont.render('Score: ' + str(score), True, white)
                         WINDOW.blit(score_text, (50, 50))
-                        game_simon_play_page(blueColour = blueLightScaled) # change it into light mode
+                        render_game_simon_play_page(blueColour = blueLightScaled) # change it into light mode
                         # blue_sound.play()
                         pygame.time.delay(timeDelay)
                         # blue_sound.stop()
-                        game_simon_play_page()
+                        render_game_simon_play_page()
                         playerPattern.append(1)
                         check_pattern(playerPattern)
                         turn_time = time.time()
@@ -290,11 +290,11 @@ def store_player_guess():
                         print(score)
                         score_text = gameFont.render('Score: ' + str(score), True, white)
                         WINDOW.blit(score_text, (50, 50))
-                        game_simon_play_page(redColour = redLightScaled) # change it into light mode
+                        render_game_simon_play_page(redColour = redLightScaled) # change it into light mode
                         # red_sound.play()
                         pygame.time.delay(timeDelay)
                         # red_sound.stop()
-                        game_simon_play_page()
+                        render_game_simon_play_page()
                         playerPattern.append(1)
                         check_pattern(playerPattern)
                         turn_time = time.time()
@@ -308,11 +308,11 @@ def store_player_guess():
                         print(score)
                         score_text = gameFont.render('Score: ' + str(score), True, white)
                         WINDOW.blit(score_text, (50, 50))
-                        game_simon_play_page(greenColour = greenLightScaled) # change it into light mode
+                        render_game_simon_play_page(greenColour = greenLightScaled) # change it into light mode
                         # green_sound.play()
                         pygame.time.delay(timeDelay)
                         # green_sound.stop()
-                        game_simon_play_page()
+                        render_game_simon_play_page()
                         playerPattern.append(1)
                         check_pattern(playerPattern)
                         turn_time = time.time()
@@ -326,11 +326,11 @@ def store_player_guess():
                         print(score)
                         score_text = gameFont.render('Score: ' + str(score), True, white)
                         WINDOW.blit(score_text, (50, 50))
-                        game_simon_play_page(yellowColour = yellowLightScaled) # change it into light mode
+                        render_game_simon_play_page(yellowColour = yellowLightScaled) # change it into light mode
                         # yellow_sound.play()
                         pygame.time.delay(timeDelay)
                         # yellow_sound.stop()
-                        game_simon_play_page()
+                        render_game_simon_play_page()
                         playerPattern.append(1)
                         check_pattern(playerPattern)
                         turn_time = time.time()
@@ -344,13 +344,13 @@ def store_player_guess():
         # pygame.display.update()
 
     if not time.time() <= turn_time + 3:
-        game_over_screen()
+        render_game_over_screen()
 
 def check_pattern(playerPattern):
     if playerPattern != pattern[:len(playerPattern)]:
-        game_over_screen()
+        render_game_over_screen()
 
-def game_over_screen():
+def render_game_over_screen():
     WINDOW.blit(blackGradientScreen, (0,0))
 
-game_start_page()
+render_game_start_page()
