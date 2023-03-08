@@ -69,8 +69,8 @@ pygame.display.set_icon(logo) # sets the window's logo to the image
 score = 0 # score number
 running = True
 pattern = [] # store array of previous colours
-timeDelay = 750 # milliseconds
-playerPattern = []
+timeDelay = 500 # milliseconds
+playerPattern = [] # store array of player guesses (used to compare)
 
 ##################
 # Game Functions #
@@ -89,20 +89,21 @@ class Start_Button: # the button class
     def normal(button): # the normal state of the button
         button.image = startButtonNormal
         pygame.mouse.set_cursor()
-
+    
     def hover(button): # the hovered state of the button
         pygame.mouse.set_cursor(hand)
-
+    
     def pressed(button): # the pressed state of the button
         button.image = startButtonPressed
         pygame.mouse.set_cursor()
+
 def render_game_start_page(): # main screen page
     waiting = True
     # menu_music.play(-1)
     logoBob = 50 # where the logo starts at (y-axis)
     titleText = gameFontStart.render('SIMON', True, white) # write the words
     bobDirection = True # true = down, false = up
-
+    
     while waiting:
         for event in pygame.event.get() : # if the user closes the window, close the game
             if event.type == QUIT :
@@ -111,7 +112,7 @@ def render_game_start_page(): # main screen page
                 pos = pygame.mouse.get_pos()
                 x = pos[0]  # gets the location of where the mouse clicks
                 y = pos[1]
-
+    
                 # if 200 <= x <= 407 and 480 <= y <= 568: # for the start button
                 #     # if the click is within a certain range
                 #     print('go to start page')
@@ -121,13 +122,13 @@ def render_game_start_page(): # main screen page
                 if 510 <= x <= 574 and 30 <= y <= 100: # for the settings button
                     # if the click is within a certain range
                     print('go to settings page')
-
+    
         # set background colour
         WINDOW.fill(grey)
-
+    
         button = Start_Button(startButtonNormal, (100, 100), None) # get the button from the Start_Button class
         left, middle, right = pygame.mouse.get_pressed()
-
+    
         # if cursor is over button change state to 'hover'
         if button.rect.collidepoint(pygame.mouse.get_pos()):
             button.hover()
@@ -140,7 +141,7 @@ def render_game_start_page(): # main screen page
                 button.hover()
         else:
             button.normal()
-
+    
         # display text and images
         WINDOW.blit(bgBlue, (0,302))
         WINDOW.blit(bgGreen, (402,302))
@@ -152,21 +153,21 @@ def render_game_start_page(): # main screen page
         WINDOW.blit(settingsScaled, (WINDOW_WIDTH-90, 30))
         WINDOW.blit(informationScaled, (WINDOW_WIDTH-70, 500))
         pygame.display.update()
-
+    
         if logoBob == 25:  # limit for how high the logo goes
             pygame.time.delay(300)
             bobDirection = True
         elif logoBob == 75: # limit for how low the logo goes
             pygame.time.delay(300)
             bobDirection = False
-
+    
         if bobDirection == True:
             logoBob += 0.5 # move it down
         else:
             logoBob -= 0.5 # move it up
-
+    
         fpsClock.tick(FPS)
-
+    
     while running:
         random_pattern()
         show_pattern()
@@ -176,15 +177,15 @@ def render_game_simon_play_page(yellowColour = yellowScaled, blueColour = blueSc
     for event in pygame.event.get() :
         if event.type == QUIT :
             quit()
-
+    
     # refresh display
     WINDOW.fill(grey)
-
+    
     # draw elements
     global score
     # score_text_temp = gameFont.render('Score: 0', True, white)
     WINDOW.blit((gameFont.render('Score: 0', True, white)), (50, 50))
-
+    
     WINDOW.blit(yellowColour, (175, 300))
     WINDOW.blit(blueColour, (400, 300))
     WINDOW.blit(greenColour, (400, 75))
@@ -207,21 +208,21 @@ def show_pattern():
     # 2 = green
     # 3 = yellow
     # 4 = blue
-
+    
     timeDelay = 500 - 100 * int(len(pattern) / 5)
-    print('more than 100')
+    print('back to show pattern')
     if timeDelay <= 100:
         print('now 100')
         timeDelay = 100
-
+    
     render_game_simon_play_page()
-    pygame.time.delay(1000)
-
+    pygame.time.delay(300)
+    
     for x in pattern:
         for event in pygame.event.get():
             if event.type == QUIT:
                 quit()
-
+    
         if x == 1: # 1 = red
             print(pattern)
             render_game_simon_play_page(redColour = redLightScaled) # change it into light mode
@@ -242,14 +243,22 @@ def show_pattern():
             render_game_simon_play_page(blueColour = blueLightScaled) # change it into light mode
             pygame.time.delay(timeDelay) # current set time delay (faster as the game progresses)
             render_game_simon_play_page() # move it back into the "all dark" state
-
+    
         pygame.time.delay(timeDelay)
 
 def store_player_guess():
+    print("now in store player guess")
+    # 1 = red
+    # 2 = green
+    # 3 = yellow
+    # 4 = blue
+    
     turn_time = time.time()
     global playerPattern
+    playerPattern = []
+    global pattern
     global score
-
+    
     clickBlueScaled = pygame.transform.scale(blue, (225, 225)).convert_alpha() # optimises the checking the button
     clickGreenScaled = pygame.transform.scale(green, (225, 225)).convert_alpha()
     clickRedScaled = pygame.transform.scale(red, (225, 225)).convert_alpha()
@@ -259,98 +268,80 @@ def store_player_guess():
     redScaledPos = (175, 75)
     yellowScaledPos = (175, 300)
         
-    while time.time() <= turn_time + 3 and len(playerPattern) < len(pattern):
+    # while time.time() <= turn_time + 3 and len(playerPattern) < len(pattern):
+    moment_turn_time = time.time()
+    while moment_turn_time <= turn_time + 3 and len(playerPattern) < len(pattern):
+        # print(str(len(playerPattern)) + ", " + str(len(pattern)))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit()
-            if event.type == pygame.MOUSEBUTTONDOWN: # one for each colour
-                try:
-                    mask = pygame.mask.from_surface(clickBlueScaled) # mask makes it so that the translucent part of the image cannot be clicked
-                    if mask.get_at((event.pos[0]-blueScaledPos[0], event.pos[1]-blueScaledPos[1])):
-                        WINDOW.fill(grey)
-                        score = score + 1
-                        print(score)
-                        score_text = gameFont.render('Score: ' + str(score), True, white)
-                        WINDOW.blit(score_text, (50, 50))
-                        render_game_simon_play_page(blueColour = blueLightScaled) # change it into light mode
-                        # blue_sound.play()
-                        pygame.time.delay(timeDelay)
-                        # blue_sound.stop()
-                        render_game_simon_play_page()
-                        playerPattern.append(1)
-                        check_pattern(playerPattern)
-                        turn_time = time.time()
-                except IndexError:
-                    pass
-                try:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                try: # only work if the click isnt in a transparent area
                     mask = pygame.mask.from_surface(clickRedScaled)
                     if mask.get_at((event.pos[0]-redScaledPos[0], event.pos[1]-redScaledPos[1])):
-                        WINDOW.fill(grey)
-                        score = score + 1
-                        print(score)
-                        score_text = gameFont.render('Score: ' + str(score), True, white)
-                        WINDOW.blit(score_text, (50, 50))
                         render_game_simon_play_page(redColour = redLightScaled) # change it into light mode
-                        # red_sound.play()
                         pygame.time.delay(timeDelay)
-                        # red_sound.stop()
                         render_game_simon_play_page()
-                        playerPattern.append(1)
+                        playerPattern.append(1) # add it to the end of the array
                         check_pattern(playerPattern)
-                        turn_time = time.time()
-                except IndexError:
+                        turn_time = time.time() # get the current time
+                except IndexError:  # if the click is in a transparent area, dont worry about it
                     pass
-                try:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                try: # only work if the click isnt in a transparent area
                     mask = pygame.mask.from_surface(clickGreenScaled)
                     if mask.get_at((event.pos[0]-greenScaledPos[0], event.pos[1]-greenScaledPos[1])):
-                        WINDOW.fill(grey)
-                        score = score + 1
-                        print(score)
-                        score_text = gameFont.render('Score: ' + str(score), True, white)
-                        WINDOW.blit(score_text, (50, 50))
                         render_game_simon_play_page(greenColour = greenLightScaled) # change it into light mode
-                        # green_sound.play()
                         pygame.time.delay(timeDelay)
-                        # green_sound.stop()
                         render_game_simon_play_page()
-                        playerPattern.append(1)
+                        playerPattern.append(2) # add it to the end of the array
                         check_pattern(playerPattern)
-                        turn_time = time.time()
-                except IndexError:
+                        turn_time = time.time() # get the current time
+                except IndexError:  # if the click is in a transparent area, dont worry about it
                     pass
-                try:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                try: # only work if the click isnt in a transparent area
                     mask = pygame.mask.from_surface(clickYellowScaled)
                     if mask.get_at((event.pos[0]-yellowScaledPos[0], event.pos[1]-yellowScaledPos[1])):
-                        WINDOW.fill(grey)
-                        score = score + 1
-                        print(score)
-                        score_text = gameFont.render('Score: ' + str(score), True, white)
-                        WINDOW.blit(score_text, (50, 50))
                         render_game_simon_play_page(yellowColour = yellowLightScaled) # change it into light mode
-                        # yellow_sound.play()
                         pygame.time.delay(timeDelay)
-                        # yellow_sound.stop()
                         render_game_simon_play_page()
-                        playerPattern.append(1)
+                        playerPattern.append(3) # add it to the end of the array
                         check_pattern(playerPattern)
-                        turn_time = time.time()
-                except IndexError:
+                        turn_time = time.time() # get the current time
+                except IndexError:  # if the click is in a transparent area, dont worry about it
                     pass
-
-        # WINDOW.blit(blueScaled, blueScaledPos)
-        # WINDOW.blit(greenScaled, greenScaledPos)
-        # WINDOW.blit(redScaled, redScaledPos)
-        # WINDOW.blit(yellowScaled, yellowScaledPos)
-        # pygame.display.update()
-
-    if not time.time() <= turn_time + 3:
-        render_game_over_screen()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                try: # only work if the click isnt in a transparent area
+                    mask = pygame.mask.from_surface(clickBlueScaled) # mask makes it so that the translucent part of the image cannot be clicked
+                    if mask.get_at((event.pos[0]-blueScaledPos[0], event.pos[1]-blueScaledPos[1])):
+                        # WINDOW.fill(grey)
+                        # score = score + 1
+                        # print(score)
+                        # score_text = gameFont.render('Score: ' + str(score), True, white)
+                        # WINDOW.blit(score_text, (50, 50))
+                        render_game_simon_play_page(blueColour = blueLightScaled) # change it into light mode
+                        pygame.time.delay(timeDelay)
+                        render_game_simon_play_page()
+                        playerPattern.append(4) # add it to the end of the array
+                        check_pattern(playerPattern)
+                        turn_time = time.time() # get the current time
+                except IndexError:  # if the click is in a transparent area, dont worry about it
+                    pass
+    
+    # if time.time() > turn_time + 3:
+    #     print('game over?')
+    #     render_game_over_screen()
 
 def check_pattern(playerPattern):
     if playerPattern != pattern[:len(playerPattern)]:
+        print(str(playerPattern) + ', ' + str(pattern[:len(playerPattern)]))
         render_game_over_screen()
 
 def render_game_over_screen():
+    print('meant to game over')
+    WINDOW.fill(grey)
     WINDOW.blit(blackGradientScreen, (0,0))
+    pygame.display.update()
 
 render_game_start_page()
