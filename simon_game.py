@@ -34,6 +34,9 @@ bgRed = pygame.image.load('Assets/main_menu_page_images/bg_red.png')
 bgYellow = pygame.image.load('Assets/main_menu_page_images/bg_yellow.png')
 bgBlue = pygame.image.load('Assets/main_menu_page_images/bg_blue.png')
 
+# heartImageFull = pygame.image.load()
+# heartImageTransitioning = pygame.image.load()
+
 blueLight = pygame.image.load('Assets/game_images/blue_light.png')
 blueLightScaled = pygame.transform.scale(blueLight, (225, 225))
 blue = pygame.image.load('Assets/game_images/blue.png')
@@ -96,6 +99,20 @@ class Start_Button: # the button class
     def pressed(button): # the pressed state of the button
         button.image = startButtonPressed
         pygame.mouse.set_cursor()
+
+class Heart_Animation: # the heart animation class
+    def __init__(heartAnimation, heartImages, pos, callback):
+        '''
+        '''
+        heartAnimation.image = heartImages
+        heartAnimation.rect = heartAnimation.image.get_rect(topright=(0, 0))
+        heartAnimation.callback = callback
+        
+    def paused(heartAnimation):
+        heartAnimation.image = heartImageFull
+    
+    def playing(heartAnimation):
+        heartAnimation.image = heartImageTransitioning
 
 def render_game_start_page(): # main screen page
     waiting = True
@@ -334,12 +351,14 @@ def store_player_guess():
     #     render_game_over_screen()
 
 def check_pattern(playerPattern):
-    if playerPattern != pattern[:len(playerPattern)]:
-        print(str(playerPattern) + ', ' + str(pattern[:len(playerPattern)]))
+    if playerPattern != pattern[:len(playerPattern)]: # if the last one of the player guess is not the same as the last one of the pattern
+        # print(str(playerPattern) + ', ' + str(pattern[:len(playerPattern)]))
         render_game_over_screen()
 
 def render_game_over_screen():
     print('meant to game over')
+    global running
+    running = False
     WINDOW.fill(grey)
     WINDOW.blit(blackGradientScreen, (0,0))
     pygame.display.update()
