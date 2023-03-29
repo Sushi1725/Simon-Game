@@ -7,17 +7,11 @@ from pygame.locals import *
 # Game Setup
 FPS = 60
 pygame.init()
-fpsClock = pygame.time.Clock()
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 
-# change cursor on hover
-hand = pygame.SYSTEM_CURSOR_HAND
-
 # rgb values of colours used
 white = (255, 255, 255)
-black = (0, 0, 0)
-darker_grey = (47, 47, 47)
 grey = (19, 19, 19)
 
 # load all the images
@@ -34,8 +28,8 @@ bgRed = pygame.image.load('Assets/main_menu_page_images/bg_red.png')
 bgYellow = pygame.image.load('Assets/main_menu_page_images/bg_yellow.png')
 bgBlue = pygame.image.load('Assets/main_menu_page_images/bg_blue.png')
 
-# heartImageFull = pygame.image.load()
-# heartImageTransitioning = pygame.image.load()
+heartImageFull = pygame.image.load('Assets/game_images/heart_full.png')
+heartImageEmpty = pygame.image.load('Assets/game_images/heart_empty.png')
 
 blueLight = pygame.image.load('Assets/game_images/blue_light.png')
 blueLightScaled = pygame.transform.scale(blueLight, (225, 225))
@@ -69,7 +63,7 @@ pygame.display.set_caption('Simon: The Game') # sets the name of the window
 pygame.display.set_icon(logo) # sets the window's logo to the image
 
 # variables
-score = 0 # score number
+score = -1 # score number
 running = True
 pattern = [] # store array of previous colours
 timeDelay = 500 # milliseconds
@@ -94,7 +88,7 @@ class Start_Button: # the button class
         pygame.mouse.set_cursor()
     
     def hover(button): # the hovered state of the button
-        pygame.mouse.set_cursor(hand)
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     
     def pressed(button): # the pressed state of the button
         button.image = startButtonPressed
@@ -112,7 +106,19 @@ class Heart_Animation: # the heart animation class
         heartAnimation.image = heartImageFull
     
     def playing(heartAnimation):
-        heartAnimation.image = heartImageTransitioning
+        heartAnimation.image = heartImageEmpty
+        pygame.time.delay(80)
+        heartAnimation.image = heartImageFull
+        pygame.time.delay(80)
+        heartAnimation.image = heartImageEmpty
+        pygame.time.delay(80)
+        heartAnimation.image = heartImageFull
+        pygame.time.delay(80)
+        heartAnimation.image = heartImageEmpty
+        pygame.time.delay(80)
+        heartAnimation.image = heartImageFull
+        pygame.time.delay(80)
+        heartAnimation.image = heartImageEmpty
 
 def render_game_start_page(): # main screen page
     waiting = True
@@ -183,7 +189,7 @@ def render_game_start_page(): # main screen page
         else:
             logoBob -= 0.5 # move it up
     
-        fpsClock.tick(FPS)
+        pygame.time.Clock().tick(FPS)
     
     while running:
         random_pattern()
@@ -198,10 +204,27 @@ def render_game_simon_play_page(yellowColour = yellowScaled, blueColour = blueSc
     # refresh display
     WINDOW.fill(grey)
     
+    # heart = Heart_Animation(startButtonNormal, (100, 100), None) # get the button from the Start_Button class
+    # left, middle, right = pygame.mouse.get_pressed()
+    
+    # # if cursor is over button change state to 'hover'
+    # if heart.rect.collidepoint(pygame.mouse.get_pos()):
+    #     heart.hover()
+    #     # if button pressed, change the state to 'pressed' otherwise 'hover'
+    #     if left and heart.rect.collidepoint(pygame.mouse.get_pos()):
+    #         heart.pressed()
+    #         waiting = False
+    #         # render_game_simon_play_page()
+    #     else:
+    #         heart.hover()
+    # else:
+    #     heart.normal()
+    
     # draw elements
     global score
-    # score_text_temp = gameFont.render('Score: 0', True, white)
-    WINDOW.blit((gameFont.render('Score: 0', True, white)), (50, 50))
+    score_text = gameFont.render('Score: ' + str(score), True, white)
+    WINDOW.blit(score_text, (50, 50))
+    # WINDOW.blit((gameFont.render('Score: 0', True, white)), (50, 50))
     
     WINDOW.blit(yellowColour, (175, 300))
     WINDOW.blit(blueColour, (400, 300))
@@ -210,9 +233,18 @@ def render_game_simon_play_page(yellowColour = yellowScaled, blueColour = blueSc
     pygame.display.update()
 
 def random_pattern():
-    global score
-    score = len(pattern)
+    # global score
+    # score = len(pattern)
     pattern.append(random.randint(1, 4))
+    
+    global score
+    score = score + 1
+    # score = score - len(pattern)
+    print(f"Score = {score}")
+    score_text = gameFont.render('Score: ' + str(score), True, white)
+    WINDOW.blit(score_text, (50, 50))
+    pygame.display.update()
+    # pygame.time.delay(2000)
 
 def quit():
     running = False
@@ -350,15 +382,46 @@ def store_player_guess():
     #     print('game over?')
     #     render_game_over_screen()
 
-def check_pattern(playerPattern):
+def check_pattern(playerPattern):  # only works after first guess/ if first guess is wrong, doesnt check
     if playerPattern != pattern[:len(playerPattern)]: # if the last one of the player guess is not the same as the last one of the pattern
         # print(str(playerPattern) + ', ' + str(pattern[:len(playerPattern)]))
         render_game_over_screen()
+        pygame.time.delay(2000) # waits for 2 secs (For testing)
+    # else:
+    #     global score
+    #     score = score + 1
+    #     score = score - len(pattern)
+    #     print(score)
 
 def render_game_over_screen():
     print('meant to game over')
-    global running
-    running = False
+    # global running
+    # running = False
+    
+    # # The 'a' means append (as opposed to 'w' for write which will clear the file before writing.)
+    # highScores = open('high_scores.txt', 'a')
+    
+    # # This is called a priming read
+    # name = input('Player name : ')
+    # score = int(input('Player score : '))
+    
+    # while name != 'end' :
+    #     highScores.write(f'{name},{score}\n')
+    #     name = input('Player name : ')
+    #     score = int(input('Player score : '))
+
+    # print('High Scores saved to file.')
+    # highScores.close()
+    # #Reading from a file
+    # #Next we will access that file and print the results.
+    # scores = open('high_scores.txt')
+	# # line = scores.readline().strip()
+
+	# # while line != '':
+    #     # fields = line.split(',')
+    #     # print (f'Player {fields[0]} got a score of : {fields[1]}')
+    #     # line = scores.readline().strip()
+    
     WINDOW.fill(grey)
     WINDOW.blit(blackGradientScreen, (0,0))
     pygame.display.update()
