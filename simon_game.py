@@ -70,6 +70,7 @@ pygame.display.set_icon(logo) # sets the window's logo to the image
 # variables
 score = -1 # score number
 life = 3
+lifeStore = life
 running = True
 pattern = [] # store array of previous colours
 timeDelay = 500 # milliseconds
@@ -195,6 +196,8 @@ def render_game_start_page(): # main screen page
         random_pattern()
         show_pattern()
         store_player_guess()
+    while not running:
+        render_game_over_screen()
 
 def render_game_simon_play_page(yellowColour = yellowScaled, blueColour = blueScaled, greenColour = greenScaled, redColour = redScaled):
     for event in pygame.event.get() :
@@ -323,6 +326,8 @@ def store_player_guess():
     global playerPattern
     playerPattern = []
     global pattern
+    global lifeStore
+    global life
     
     clickBlueScaled = pygame.transform.scale(blue, (225, 225)).convert_alpha() # optimises the checking the button
     clickGreenScaled = pygame.transform.scale(green, (225, 225)).convert_alpha()
@@ -346,6 +351,8 @@ def store_player_guess():
                         render_game_simon_play_page() # turn off the light colour
                         playerPattern.append(1) # add the guess to the end of the array
                         check_pattern(playerPattern) # compare it
+                        if life != lifeStore:
+                            break
                 except IndexError:  # if the click is in a transparent area, dont worry about it
                     pass
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -357,6 +364,8 @@ def store_player_guess():
                         render_game_simon_play_page()
                         playerPattern.append(2) # add it to the end of the array
                         check_pattern(playerPattern)
+                        if life != lifeStore:
+                            break
                 except IndexError:  # if the click is in a transparent area, dont worry about it
                     pass
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -368,6 +377,8 @@ def store_player_guess():
                         render_game_simon_play_page()
                         playerPattern.append(3) # add it to the end of the array
                         check_pattern(playerPattern)
+                        if life != lifeStore:
+                            break
                 except IndexError:  # if the click is in a transparent area, dont worry about it
                     pass
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -379,8 +390,13 @@ def store_player_guess():
                         render_game_simon_play_page()
                         playerPattern.append(4) # add it to the end of the array
                         check_pattern(playerPattern)
+                        if life != lifeStore:
+                            break
                 except IndexError:  # if the click is in a transparent area, dont worry about it
                     pass
+        if life != lifeStore:
+            break
+    lifeStore = life
     
     global score
     score = score + 1 # add score if the player guess all the correct of the current turn
@@ -388,10 +404,16 @@ def store_player_guess():
 def check_pattern(playerPattern):  # only works after first guess/ if first guess is wrong, doesnt check
     if playerPattern != pattern[:len(playerPattern)]: # if the player's guess is not the same as the [corresponding index] of the pattern
         global life
+        # global lifeStore
         life = life - 1
-        if life == 0:
+        print(life)
+        
+        if life <= 0:
+            global running
+            running = False
             render_game_over_screen()
-        render_game_over_screen()
+            print('should be dead now')
+        # render_game_over_screen()
         # pygame.time.delay(2000) # waits for 2 secs (For testing)
     # else:
     #     global score
@@ -401,9 +423,10 @@ def check_pattern(playerPattern):  # only works after first guess/ if first gues
 
 def render_game_over_screen():
     print('meant to game over')
-    # global running
-    # running = False
-    
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            quit()
     # # The 'a' means append (as opposed to 'w' for write which will clear the file before writing.)
     # highScores = open('high_scores.txt', 'a')
     
