@@ -29,7 +29,12 @@ bgYellow = pygame.image.load('Assets/main_menu_page_images/bg_yellow.png')
 bgBlue = pygame.image.load('Assets/main_menu_page_images/bg_blue.png')
 
 heartImageFull = pygame.image.load('Assets/game_images/heart_full.png')
+heartImageFullScaled = pygame.transform.scale(heartImageFull, (36, 36))
 heartImageEmpty = pygame.image.load('Assets/game_images/heart_empty.png')
+heartImageEmptyScaled = pygame.transform.scale(heartImageEmpty, (36, 36))
+heart1 = heartImageFullScaled
+heart2 = heartImageFullScaled
+heart3 = heartImageFullScaled
 
 blueLight = pygame.image.load('Assets/game_images/blue_light.png')
 blueLightScaled = pygame.transform.scale(blueLight, (225, 225))
@@ -64,6 +69,7 @@ pygame.display.set_icon(logo) # sets the window's logo to the image
 
 # variables
 score = -1 # score number
+life = 3
 running = True
 pattern = [] # store array of previous colours
 timeDelay = 500 # milliseconds
@@ -226,6 +232,9 @@ def render_game_simon_play_page(yellowColour = yellowScaled, blueColour = blueSc
     WINDOW.blit(score_text, (50, 50))
     # WINDOW.blit((gameFont.render('Score: 0', True, white)), (50, 50))
     
+    WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
+    WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
+    WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
     WINDOW.blit(yellowColour, (175, 300))
     WINDOW.blit(blueColour, (400, 300))
     WINDOW.blit(greenColour, (400, 75))
@@ -237,13 +246,53 @@ def random_pattern():
     # score = len(pattern)
     pattern.append(random.randint(1, 4))
     
+    removingRectange = pygame.Rect(700, 0, 100, 70)
+    global life
+    if life == 3:
+        heart1 = heartImageFullScaled
+        heart2 = heartImageFullScaled
+        heart3 = heartImageFullScaled
+        pygame.draw.rect(WINDOW, grey, removingRectange)
+        WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
+        WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
+        WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
+        pygame.display.update()
+    if life == 2:
+        heart1 = heartImageEmptyScaled
+        heart2 = heartImageFullScaled
+        heart3 = heartImageFullScaled
+        pygame.draw.rect(WINDOW, grey, removingRectange)
+        WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
+        WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
+        WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
+        pygame.display.update()
+    if life == 1:
+        heart1 = heartImageEmptyScaled
+        heart2 = heartImageEmptyScaled
+        heart3 = heartImageFullScaled
+        pygame.draw.rect(WINDOW, grey, removingRectange)
+        WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
+        WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
+        WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
+        pygame.display.update()
+    if life == 0:
+        heart1 = heartImageEmptyScaled
+        heart2 = heartImageEmptyScaled
+        heart3 = heartImageEmptyScaled
+        pygame.draw.rect(WINDOW, grey, removingRectange)
+        WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
+        WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
+        WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
+        pygame.display.update()
+    
+    
     global score
     score = score + 1
     # score = score - len(pattern)
     print(f"Score = {score}")
-    score_text = gameFont.render('Score: ' + str(score), True, white)
-    WINDOW.blit(score_text, (50, 50))
-    pygame.display.update()
+    # score_text = gameFont.render('Score: ' + str(score), True, white)
+    # WINDOW.blit(score_text, (50, 50))
+    # pygame.display.update()
     # pygame.time.delay(2000)
 
 def quit():
@@ -385,8 +434,11 @@ def store_player_guess():
 def check_pattern(playerPattern):  # only works after first guess/ if first guess is wrong, doesnt check
     if playerPattern != pattern[:len(playerPattern)]: # if the last one of the player guess is not the same as the last one of the pattern
         # print(str(playerPattern) + ', ' + str(pattern[:len(playerPattern)]))
-        render_game_over_screen()
-        pygame.time.delay(2000) # waits for 2 secs (For testing)
+        global life
+        life = life - 1
+        # if life == 0:
+        # render_game_over_screen()
+        # pygame.time.delay(2000) # waits for 2 secs (For testing)
     # else:
     #     global score
     #     score = score + 1
