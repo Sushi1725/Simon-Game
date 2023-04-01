@@ -356,10 +356,13 @@ def store_player_guess():
                     pass
         if life != lifeStore:
             break
+    if len(playerPattern) == len(pattern) and life == lifeStore:
+        global score
+        score = score + 1
     lifeStore = life
     
-    global score
-    score = score + 1 # add score if the player guess all the correct of the current turn
+    # global score
+    # score = score + 1 # add score if the player guess all the correct of the current turn
 
 def check_pattern(playerPattern):  # only works after first guess/ if first guess is wrong, doesnt check
     if playerPattern != pattern[:len(playerPattern)]: # if the player's guess is not the same as the [corresponding index] of the pattern
