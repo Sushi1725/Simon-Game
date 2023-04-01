@@ -68,7 +68,7 @@ pygame.display.set_caption('Simon: The Game') # sets the name of the window
 pygame.display.set_icon(logo) # sets the window's logo to the image
 
 # variables
-score = -1 # score number
+score = 0 # score number
 life = 3
 lifeStore = life
 running = True
@@ -206,46 +206,6 @@ def render_game_simon_play_page(yellowColour = yellowScaled, blueColour = blueSc
     
     # refresh display
     WINDOW.fill(grey)
-    
-    # removingRectange = pygame.Rect(700, 0, 100, 70)
-    # global life
-    # if life == 3:
-    #     heart1 = heartImageFullScaled
-    #     heart2 = heartImageFullScaled
-    #     heart3 = heartImageFullScaled
-    #     # pygame.draw.rect(WINDOW, grey, removingRectange)
-    #     WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
-    #     WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
-    #     WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
-    #     pygame.display.update()
-    # if life == 2:
-    #     heart1 = heartImageEmptyScaled
-    #     heart2 = heartImageFullScaled
-    #     heart3 = heartImageFullScaled
-    #     # pygame.draw.rect(WINDOW, white, removingRectange)
-    #     WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
-    #     WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
-    #     WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
-    #     pygame.display.update()
-    # if life == 1:
-    #     heart1 = heartImageEmptyScaled
-    #     heart2 = heartImageEmptyScaled
-    #     heart3 = heartImageFullScaled
-    #     # pygame.draw.rect(WINDOW, grey, removingRectange)
-    #     WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
-    #     WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
-    #     WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
-    #     pygame.display.update()
-    # if life == 0:
-    #     heart1 = heartImageEmptyScaled
-    #     heart2 = heartImageEmptyScaled
-    #     heart3 = heartImageEmptyScaled
-    #     # pygame.draw.rect(WINDOW, grey, removingRectange)
-    #     WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
-    #     WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
-    #     WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
-    #     pygame.display.update()
-    #     render_game_over_screen()
     
     # draw elements
     global score
@@ -404,29 +364,81 @@ def store_player_guess():
 def check_pattern(playerPattern):  # only works after first guess/ if first guess is wrong, doesnt check
     if playerPattern != pattern[:len(playerPattern)]: # if the player's guess is not the same as the [corresponding index] of the pattern
         global life
-        # global lifeStore
         life = life - 1
-        print(life)
         
-        if life <= 0:
-            global running
-            running = False
+        global heart1
+        global heart2
+        global heart3
+        if life == 3:
+            heart1 = heartImageFullScaled
+            heart2 = heartImageFullScaled
+            heart3 = heartImageFullScaled
+            WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
+            WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
+            WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
+            pygame.display.update()
+        if life == 2:
+            heart1 = heartImageEmptyScaled
+            heart2 = heartImageFullScaled
+            heart3 = heartImageFullScaled
+            WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
+            WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
+            WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
+            pygame.display.update()
+        if life == 1:
+            heart1 = heartImageEmptyScaled
+            heart2 = heartImageEmptyScaled
+            heart3 = heartImageFullScaled
+            WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
+            WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
+            WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
+            pygame.display.update()
+        if life == 0:
+            heart1 = heartImageEmptyScaled
+            heart2 = heartImageEmptyScaled
+            heart3 = heartImageEmptyScaled
+            WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
+            WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
+            WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
+            pygame.display.update()
             render_game_over_screen()
-            print('should be dead now')
-        # render_game_over_screen()
-        # pygame.time.delay(2000) # waits for 2 secs (For testing)
-    # else:
-    #     global score
-    #     score = score + 1
-    #     score = score - len(pattern)
-    #     print(score)
 
 def render_game_over_screen():
-    print('meant to game over')
+    WINDOW.fill(grey)
+    WINDOW.blit(blackGradientScreen, (0,0))
+    pygame.display.update()
+    
+    # reset the game variables
+    global score
+    score = 0 # score number
+    global life
+    life = 3
+    global lifeStore
+    lifeStore = life
+    global running
+    running = True
+    global pattern
+    pattern = [] # store array of previous colours
+    global timeDelay
+    timeDelay = 500 # milliseconds
+    global playerPattern
+    playerPattern = [] # store array of player guesses (used to compare)
+    
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                pos = pygame.mouse.get_pos()
+                x = pos[0]
+                y = pos[1]
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            quit()
+                if 180 <= x <= 420 and 300 <= y <= 390:
+                    render_game_start_page()
+                elif 180 <= x <= 420 and 450 <= y <= 540:
+                    quit()
+
     # # The 'a' means append (as opposed to 'w' for write which will clear the file before writing.)
     # highScores = open('high_scores.txt', 'a')
     
@@ -451,8 +463,6 @@ def render_game_over_screen():
     #     # print (f'Player {fields[0]} got a score of : {fields[1]}')
     #     # line = scores.readline().strip()
     
-    WINDOW.fill(grey)
-    WINDOW.blit(blackGradientScreen, (0,0))
-    pygame.display.update()
+
 
 render_game_start_page()
