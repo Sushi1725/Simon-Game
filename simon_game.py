@@ -141,12 +141,6 @@ def render_game_start_page(): # main screen page
                 pos = pygame.mouse.get_pos()
                 x = pos[0]  # gets the location of where the mouse clicks
                 y = pos[1]
-    
-                # if 200 <= x <= 407 and 480 <= y <= 568: # for the start button
-                #     # if the click is within a certain range
-                #     print('go to start page')
-                #     # menu_music.stop()
-                #     # waiting = False
                 
                 if 510 <= x <= 574 and 30 <= y <= 100: # for the settings button
                     # if the click is within a certain range
@@ -210,21 +204,45 @@ def render_game_simon_play_page(yellowColour = yellowScaled, blueColour = blueSc
     # refresh display
     WINDOW.fill(grey)
     
-    # heart = Heart_Animation(startButtonNormal, (100, 100), None) # get the button from the Start_Button class
-    # left, middle, right = pygame.mouse.get_pressed()
-    
-    # # if cursor is over button change state to 'hover'
-    # if heart.rect.collidepoint(pygame.mouse.get_pos()):
-    #     heart.hover()
-    #     # if button pressed, change the state to 'pressed' otherwise 'hover'
-    #     if left and heart.rect.collidepoint(pygame.mouse.get_pos()):
-    #         heart.pressed()
-    #         waiting = False
-    #         # render_game_simon_play_page()
-    #     else:
-    #         heart.hover()
-    # else:
-    #     heart.normal()
+    # removingRectange = pygame.Rect(700, 0, 100, 70)
+    # global life
+    # if life == 3:
+    #     heart1 = heartImageFullScaled
+    #     heart2 = heartImageFullScaled
+    #     heart3 = heartImageFullScaled
+    #     # pygame.draw.rect(WINDOW, grey, removingRectange)
+    #     WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
+    #     WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
+    #     WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
+    #     pygame.display.update()
+    # if life == 2:
+    #     heart1 = heartImageEmptyScaled
+    #     heart2 = heartImageFullScaled
+    #     heart3 = heartImageFullScaled
+    #     # pygame.draw.rect(WINDOW, white, removingRectange)
+    #     WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
+    #     WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
+    #     WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
+    #     pygame.display.update()
+    # if life == 1:
+    #     heart1 = heartImageEmptyScaled
+    #     heart2 = heartImageEmptyScaled
+    #     heart3 = heartImageFullScaled
+    #     # pygame.draw.rect(WINDOW, grey, removingRectange)
+    #     WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
+    #     WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
+    #     WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
+    #     pygame.display.update()
+    # if life == 0:
+    #     heart1 = heartImageEmptyScaled
+    #     heart2 = heartImageEmptyScaled
+    #     heart3 = heartImageEmptyScaled
+    #     # pygame.draw.rect(WINDOW, grey, removingRectange)
+    #     WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
+    #     WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
+    #     WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
+    #     pygame.display.update()
+    #     render_game_over_screen()
     
     # draw elements
     global score
@@ -242,60 +260,11 @@ def render_game_simon_play_page(yellowColour = yellowScaled, blueColour = blueSc
     pygame.display.update()
 
 def random_pattern():
-    # global score
-    # score = len(pattern)
     pattern.append(random.randint(1, 4))
     
-    removingRectange = pygame.Rect(700, 0, 100, 70)
-    global life
-    if life == 3:
-        heart1 = heartImageFullScaled
-        heart2 = heartImageFullScaled
-        heart3 = heartImageFullScaled
-        pygame.draw.rect(WINDOW, grey, removingRectange)
-        WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
-        WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
-        WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
-        pygame.display.update()
-    if life == 2:
-        heart1 = heartImageEmptyScaled
-        heart2 = heartImageFullScaled
-        heart3 = heartImageFullScaled
-        pygame.draw.rect(WINDOW, grey, removingRectange)
-        WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
-        WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
-        WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
-        pygame.display.update()
-    if life == 1:
-        heart1 = heartImageEmptyScaled
-        heart2 = heartImageEmptyScaled
-        heart3 = heartImageFullScaled
-        pygame.draw.rect(WINDOW, grey, removingRectange)
-        WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
-        WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
-        WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
-        pygame.display.update()
-    if life == 0:
-        heart1 = heartImageEmptyScaled
-        heart2 = heartImageEmptyScaled
-        heart3 = heartImageEmptyScaled
-        pygame.draw.rect(WINDOW, grey, removingRectange)
-        WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
-        WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
-        WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
-        pygame.display.update()
-    
-    
-    global score
-    score = score + 1
-    # score = score - len(pattern)
-    print(f"Score = {score}")
-    # score_text = gameFont.render('Score: ' + str(score), True, white)
-    # WINDOW.blit(score_text, (50, 50))
-    # pygame.display.update()
-    # pygame.time.delay(2000)
 
 def quit():
+    global running
     running = False
     pygame.display.quit()
     pygame.quit()
@@ -350,12 +319,10 @@ def store_player_guess():
     # 2 = green
     # 3 = yellow
     # 4 = blue
-    
-    turn_time = time.time()
+
     global playerPattern
     playerPattern = []
     global pattern
-    global score
     
     clickBlueScaled = pygame.transform.scale(blue, (225, 225)).convert_alpha() # optimises the checking the button
     clickGreenScaled = pygame.transform.scale(green, (225, 225)).convert_alpha()
@@ -365,11 +332,8 @@ def store_player_guess():
     greenScaledPos = (400, 75)
     redScaledPos = (175, 75)
     yellowScaledPos = (175, 300)
-        
-    # while time.time() <= turn_time + 3 and len(playerPattern) < len(pattern):
-    moment_turn_time = time.time()
-    while moment_turn_time <= turn_time + 3 and len(playerPattern) < len(pattern):
-        # print(str(len(playerPattern)) + ", " + str(len(pattern)))
+    
+    while len(playerPattern) < len(pattern): # so that we check each item of the pattern
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit()
@@ -378,11 +342,10 @@ def store_player_guess():
                     mask = pygame.mask.from_surface(clickRedScaled)
                     if mask.get_at((event.pos[0]-redScaledPos[0], event.pos[1]-redScaledPos[1])):
                         render_game_simon_play_page(redColour = redLightScaled) # change it into light mode
-                        pygame.time.delay(timeDelay)
-                        render_game_simon_play_page()
-                        playerPattern.append(1) # add it to the end of the array
-                        check_pattern(playerPattern)
-                        turn_time = time.time() # get the current time
+                        pygame.time.delay(timeDelay) # wait
+                        render_game_simon_play_page() # turn off the light colour
+                        playerPattern.append(1) # add the guess to the end of the array
+                        check_pattern(playerPattern) # compare it
                 except IndexError:  # if the click is in a transparent area, dont worry about it
                     pass
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -394,7 +357,6 @@ def store_player_guess():
                         render_game_simon_play_page()
                         playerPattern.append(2) # add it to the end of the array
                         check_pattern(playerPattern)
-                        turn_time = time.time() # get the current time
                 except IndexError:  # if the click is in a transparent area, dont worry about it
                     pass
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -406,38 +368,30 @@ def store_player_guess():
                         render_game_simon_play_page()
                         playerPattern.append(3) # add it to the end of the array
                         check_pattern(playerPattern)
-                        turn_time = time.time() # get the current time
                 except IndexError:  # if the click is in a transparent area, dont worry about it
                     pass
             if event.type == pygame.MOUSEBUTTONDOWN:
                 try: # only work if the click isnt in a transparent area
                     mask = pygame.mask.from_surface(clickBlueScaled) # mask makes it so that the translucent part of the image cannot be clicked
                     if mask.get_at((event.pos[0]-blueScaledPos[0], event.pos[1]-blueScaledPos[1])):
-                        # WINDOW.fill(grey)
-                        # score = score + 1
-                        # print(score)
-                        # score_text = gameFont.render('Score: ' + str(score), True, white)
-                        # WINDOW.blit(score_text, (50, 50))
                         render_game_simon_play_page(blueColour = blueLightScaled) # change it into light mode
                         pygame.time.delay(timeDelay)
                         render_game_simon_play_page()
                         playerPattern.append(4) # add it to the end of the array
                         check_pattern(playerPattern)
-                        turn_time = time.time() # get the current time
                 except IndexError:  # if the click is in a transparent area, dont worry about it
                     pass
     
-    # if time.time() > turn_time + 3:
-    #     print('game over?')
-    #     render_game_over_screen()
+    global score
+    score = score + 1 # add score if the player guess all the correct of the current turn
 
 def check_pattern(playerPattern):  # only works after first guess/ if first guess is wrong, doesnt check
-    if playerPattern != pattern[:len(playerPattern)]: # if the last one of the player guess is not the same as the last one of the pattern
-        # print(str(playerPattern) + ', ' + str(pattern[:len(playerPattern)]))
+    if playerPattern != pattern[:len(playerPattern)]: # if the player's guess is not the same as the [corresponding index] of the pattern
         global life
         life = life - 1
-        # if life == 0:
-        # render_game_over_screen()
+        if life == 0:
+            render_game_over_screen()
+        render_game_over_screen()
         # pygame.time.delay(2000) # waits for 2 secs (For testing)
     # else:
     #     global score
