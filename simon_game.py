@@ -13,6 +13,7 @@ WINDOW_HEIGHT = 600
 # rgb values of colours used
 white = (255, 255, 255)
 grey = (19, 19, 19)
+black = (0, 0, 0)
 
 # load all the images
 logo = pygame.image.load('Assets/simon_logo.png')
@@ -21,6 +22,7 @@ startButtonNormal = pygame.image.load('Assets/main_menu_page_images/start_game_i
 startButtonPressed = pygame.image.load('Assets/main_menu_page_images/start_game_image_2.png')
 settings = pygame.image.load('Assets/main_menu_page_images/gear_cog.png') # 547, 600
 settingsScaled = pygame.transform.scale(settings, (64,70))
+settingsScaled2 = pygame.transform.scale(settings, (109.4, 120))
 information = pygame.image.load('Assets/main_menu_page_images/information.png') # 50 130
 informationScaled = pygame.transform.scale(information, (30, 78))
 bgGreen = pygame.image.load('Assets/main_menu_page_images/bg_green.png')
@@ -55,10 +57,16 @@ yellowScaled = pygame.transform.scale(yellow, (225, 225))
 
 blackGradientScreen = pygame.image.load('Assets/main_menu_page_images/black_bg.png')
 
+soundOn = pygame.image.load('Assets\setting_images\sound_on.png')
+soundOnScaled = pygame.transform.scale(soundOn, (54, 54))
+soundOff = pygame.image.load('Assets\setting_images\sound_off.png')
+soundOffScaled = pygame.transform.scale(soundOff, (87, 87))
+
 # load all the fonts
 GAMEPLAY_FONT = 'Assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf'
 gameFontStart = pygame.font.Font(GAMEPLAY_FONT, 50) # size 50 font
 gameFont = pygame.font.Font(GAMEPLAY_FONT, 20) # size 20 font
+gameFontEnd = pygame.font.Font(GAMEPLAY_FONT, 40) # size 40 font
 
 # load all the sounds
 
@@ -143,9 +151,9 @@ def render_game_start_page(): # main screen page
                 x = pos[0]  # gets the location of where the mouse clicks
                 y = pos[1]
                 
-                if 510 <= x <= 574 and 30 <= y <= 100: # for the settings button
+                if 710 <= x <= 774 and 30 <= y <= 100: # for the settings button
                     # if the click is within a certain range
-                    print('go to settings page')
+                    render_settings_screen()
     
         # set background colour
         WINDOW.fill(grey)
@@ -224,7 +232,6 @@ def render_game_simon_play_page(yellowColour = yellowScaled, blueColour = blueSc
 
 def random_pattern():
     pattern.append(random.randint(1, 4))
-    
 
 def quit():
     global running
@@ -406,11 +413,54 @@ def check_pattern(playerPattern):  # only works after first guess/ if first gues
             pygame.display.update()
             render_game_over_screen()
 
+def render_settings_screen():
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                pos = pygame.mouse.get_pos()
+                x = pos[0]
+                y = pos[1]
+
+                if 180 <= x <= 420 and 300 <= y <= 390:
+                    render_game_start_page()
+                elif 180 <= x <= 420 and 450 <= y <= 540:
+                    quit()
+        WINDOW.fill(grey)
+        WINDOW.blit(blackGradientScreen, (0,0))
+        bg = pygame.Rect(50, 100, 700, 450)
+        pygame.draw.rect(WINDOW, black, bg)
+        pygame.draw.rect(WINDOW, white, bg, 2)
+        WINDOW.blit(settingsScaled2, (345.3, 50))
+        WINDOW.blit(soundOnScaled, (250, 50))
+        pygame.display.update()
+
+def render_game_info_screen():
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                pos = pygame.mouse.get_pos()
+                x = pos[0]
+                y = pos[1]
+
+                if 180 <= x <= 420 and 300 <= y <= 390:
+                    render_game_start_page()
+                elif 180 <= x <= 420 and 450 <= y <= 540:
+                    quit()
+        WINDOW.fill(grey)
+        WINDOW.blit(blackGradientScreen, (0,0))
+        bg = pygame.Rect(50, 100, 700, 450)
+        pygame.draw.rect(WINDOW, black, bg)
+        pygame.draw.rect(WINDOW, white, bg, 2)
+        WINDOW.blit(soundOnScaled, (250, 50))
+        pygame.display.update()
+
 def render_game_over_screen():
-    WINDOW.fill(grey)
-    WINDOW.blit(blackGradientScreen, (0,0))
-    pygame.display.update()
-    
     # reset the game variables
     global score
     score = 0 # score number
@@ -441,6 +491,12 @@ def render_game_over_screen():
                     render_game_start_page()
                 elif 180 <= x <= 420 and 450 <= y <= 540:
                     quit()
+        WINDOW.fill(grey)
+        WINDOW.blit(blackGradientScreen, (0,0))
+        gameOverText = gameFontEnd.render('Game Over', True, white) # write the words
+        WINDOW.blit(gameOverText, (223, 200))
+        pygame.display.update()
+
 
     # # The 'a' means append (as opposed to 'w' for write which will clear the file before writing.)
     # highScores = open('high_scores.txt', 'a')
@@ -465,7 +521,5 @@ def render_game_over_screen():
     #     # fields = line.split(',')
     #     # print (f'Player {fields[0]} got a score of : {fields[1]}')
     #     # line = scores.readline().strip()
-    
-
 
 render_game_start_page()
