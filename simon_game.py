@@ -517,7 +517,8 @@ def render_game_over_screen():
                 if 279 <= x <= 379 and 300 <= y <= 400:
                     render_game_start_page()
                 elif 421 <= x <= 616 and 300 <= y <= 395:
-                    waiting = False
+                    waiting = False   ###### line 375 ######
+                    lifeStore = 1 ####### NOT TESTED ########
         WINDOW.fill(grey)
         WINDOW.blit(blackGradientScreen, (0,0))
         gameOverText = gameFontEnd.render('Game Over', True, white) # write the words
