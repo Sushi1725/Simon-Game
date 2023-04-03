@@ -62,6 +62,11 @@ soundOnScaled = pygame.transform.scale(soundOn, (54, 54))
 soundOff = pygame.image.load('Assets\setting_images\sound_off.png')
 soundOffScaled = pygame.transform.scale(soundOff, (87, 87))
 
+homeButton = pygame.image.load('Assets/end_game_images/home_button.png')
+homeButtonScaled = pygame.transform.scale(homeButton, (100, 100))
+restartButton = pygame.image.load('Assets/end_game_images/restart_button.png')
+restartButtonScaled = pygame.transform.scale(restartButton, (95, 95))
+
 # load all the fonts
 GAMEPLAY_FONT = 'Assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf'
 gameFontStart = pygame.font.Font(GAMEPLAY_FONT, 50) # size 50 font
@@ -138,6 +143,8 @@ class Heart_Animation: # the heart animation class
 def render_game_start_page(): # main screen page
     waiting = True
     # menu_music.play(-1)
+    global score
+    score = 0
     logoBob = 50 # where the logo starts at (y-axis)
     titleText = gameFontStart.render('SIMON', True, white) # write the words
     bobDirection = True # true = down, false = up
@@ -371,6 +378,19 @@ def store_player_guess():
     # global score
     # score = score + 1 # add score if the player guess all the correct of the current turn
 
+def life_loss():
+    render_game_simon_play_page(blueColour = blueLightScaled, yellowColour = yellowLightScaled, greenColour = greenLightScaled, redColour = redLightScaled)
+    pygame.time.delay(500)
+    render_game_simon_play_page()
+    pygame.time.delay(250)
+    render_game_simon_play_page(blueColour = blueLightScaled, yellowColour = yellowLightScaled, greenColour = greenLightScaled, redColour = redLightScaled)
+    pygame.time.delay(500)
+    render_game_simon_play_page()
+    pygame.time.delay(250)
+    render_game_simon_play_page(blueColour = blueLightScaled, yellowColour = yellowLightScaled, greenColour = greenLightScaled, redColour = redLightScaled)
+    pygame.time.delay(500)
+    render_game_simon_play_page()
+
 def check_pattern(playerPattern):  # only works after first guess/ if first guess is wrong, doesnt check
     if playerPattern != pattern[:len(playerPattern)]: # if the player's guess is not the same as the [corresponding index] of the pattern
         global life
@@ -379,30 +399,19 @@ def check_pattern(playerPattern):  # only works after first guess/ if first gues
         global heart1
         global heart2
         global heart3
-        if life == 3:
-            heart1 = heartImageFullScaled
-            heart2 = heartImageFullScaled
-            heart3 = heartImageFullScaled
-            WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
-            WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
-            WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
-            pygame.display.update()
+        
         if life == 2:
             heart1 = heartImageEmptyScaled
-            heart2 = heartImageFullScaled
-            heart3 = heartImageFullScaled
             WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
-            WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
-            WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
             pygame.display.update()
+            life_loss()
         if life == 1:
             heart1 = heartImageEmptyScaled
             heart2 = heartImageEmptyScaled
-            heart3 = heartImageFullScaled
             WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
             WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
-            WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
             pygame.display.update()
+            life_loss()
         if life == 0:
             heart1 = heartImageEmptyScaled
             heart2 = heartImageEmptyScaled
@@ -415,6 +424,9 @@ def check_pattern(playerPattern):  # only works after first guess/ if first gues
 
 def render_settings_screen():
     waiting = True
+    sound = soundOnScaled
+    soundLocation = (100, 200)
+    switching = 1
     while waiting:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -424,8 +436,17 @@ def render_settings_screen():
                 x = pos[0]
                 y = pos[1]
 
-                if 180 <= x <= 420 and 300 <= y <= 390:
-                    render_game_start_page()
+                if 100 <= x <= 154 and 200 <= y <= 254:
+                    if switching == 1:
+                        sound = soundOffScaled
+                        soundLocation = (85, 185)
+                        switching = 2
+                        break
+                    if switching == 2:
+                        sound = soundOnScaled
+                        soundLocation = (100, 200)
+                        switching = 1
+                        break
                 elif 180 <= x <= 420 and 450 <= y <= 540:
                     quit()
         WINDOW.fill(grey)
@@ -434,7 +455,7 @@ def render_settings_screen():
         pygame.draw.rect(WINDOW, black, bg)
         pygame.draw.rect(WINDOW, white, bg, 2)
         WINDOW.blit(settingsScaled2, (345.3, 50))
-        WINDOW.blit(soundOnScaled, (250, 50))
+        WINDOW.blit(sound, soundLocation)
         pygame.display.update()
 
 def render_game_info_screen():
@@ -448,7 +469,7 @@ def render_game_info_screen():
                 x = pos[0]
                 y = pos[1]
 
-                if 180 <= x <= 420 and 300 <= y <= 390:
+                if 180 <= x <= 234 and 300 <= y <= 354:
                     render_game_start_page()
                 elif 180 <= x <= 420 and 450 <= y <= 540:
                     quit()
@@ -466,6 +487,12 @@ def render_game_over_screen():
     score = 0 # score number
     global life
     life = 3
+    global heart1
+    global heart2
+    global heart3
+    heart1 = heartImageFullScaled
+    heart2 = heartImageFullScaled
+    heart3 = heartImageFullScaled
     global lifeStore
     lifeStore = life
     global running
@@ -487,14 +514,17 @@ def render_game_over_screen():
                 x = pos[0]
                 y = pos[1]
 
-                if 180 <= x <= 420 and 300 <= y <= 390:
+                if 279 <= x <= 379 and 300 <= y <= 400:
                     render_game_start_page()
-                elif 180 <= x <= 420 and 450 <= y <= 540:
-                    quit()
+                elif 421 <= x <= 616 and 300 <= y <= 395:
+                    waiting = False
         WINDOW.fill(grey)
         WINDOW.blit(blackGradientScreen, (0,0))
         gameOverText = gameFontEnd.render('Game Over', True, white) # write the words
         WINDOW.blit(gameOverText, (223, 200))
+        WINDOW.blit(homeButtonScaled, (279, 300))
+        WINDOW.blit(restartButtonScaled, (421, 300))
+        # pygame.draw.line(WINDOW, white, (399, 0), (399, 600), 2)
         pygame.display.update()
 
 
