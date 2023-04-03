@@ -374,9 +374,6 @@ def store_player_guess():
         global score
         score = score + 1
     lifeStore = life
-    
-    # global score
-    # score = score + 1 # add score if the player guess all the correct of the current turn
 
 def life_loss():
     render_game_simon_play_page(blueColour = blueLightScaled, yellowColour = yellowLightScaled, greenColour = greenLightScaled, redColour = redLightScaled)
@@ -447,8 +444,8 @@ def render_settings_screen():
                         soundLocation = (100, 200)
                         switching = 1
                         break
-                elif 180 <= x <= 420 and 450 <= y <= 540:
-                    quit()
+                # elif 180 <= x <= 420 and 450 <= y <= 540:
+                #     quit()
         WINDOW.fill(grey)
         WINDOW.blit(blackGradientScreen, (0,0))
         bg = pygame.Rect(50, 100, 700, 450)
@@ -517,8 +514,8 @@ def render_game_over_screen():
                 if 279 <= x <= 379 and 300 <= y <= 400:
                     render_game_start_page()
                 elif 421 <= x <= 616 and 300 <= y <= 395:
-                    waiting = False   ###### line 375 ######
-                    lifeStore = 1 ####### NOT TESTED ########
+                    waiting = False
+                    lifeStore = 1
         WINDOW.fill(grey)
         WINDOW.blit(blackGradientScreen, (0,0))
         gameOverText = gameFontEnd.render('Game Over', True, white) # write the words
