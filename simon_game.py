@@ -9,6 +9,7 @@ FPS = 60
 pygame.init()
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
+pygame.mixer.init()
 
 # rgb values of colours used
 white = (255, 255, 255)
@@ -16,64 +17,66 @@ grey = (19, 19, 19)
 black = (0, 0, 0)
 
 # load all the images
-logo = pygame.image.load('Assets/simon_logo.png')
+logo = pygame.image.load('./Assets/simon_logo.png')
 mainPageImageScaled = pygame.transform.scale(logo, (450, 450))
-startButtonNormal = pygame.image.load('Assets/main_menu_page_images/start_game_image.png')
-startButtonPressed = pygame.image.load('Assets/main_menu_page_images/start_game_image_2.png')
-settings = pygame.image.load('Assets/main_menu_page_images/gear_cog.png') # 547, 600
+startButtonNormal = pygame.image.load('./Assets/main_menu_page_images/start_game_image.png')
+startButtonPressed = pygame.image.load('./Assets/main_menu_page_images/start_game_image_2.png')
+settings = pygame.image.load('./Assets/main_menu_page_images/gear_cog.png') # 547, 600
 settingsScaled = pygame.transform.scale(settings, (64,70))
 settingsScaled2 = pygame.transform.scale(settings, (109.4, 120))
-information = pygame.image.load('Assets/main_menu_page_images/information.png') # 50 130
+information = pygame.image.load('./Assets/main_menu_page_images/information.png') # 50 130
 informationScaled = pygame.transform.scale(information, (30, 78))
-bgGreen = pygame.image.load('Assets/main_menu_page_images/bg_green.png')
-bgRed = pygame.image.load('Assets/main_menu_page_images/bg_red.png')
-bgYellow = pygame.image.load('Assets/main_menu_page_images/bg_yellow.png')
-bgBlue = pygame.image.load('Assets/main_menu_page_images/bg_blue.png')
+bgGreen = pygame.image.load('./Assets/main_menu_page_images/bg_green.png')
+bgRed = pygame.image.load('./Assets/main_menu_page_images/bg_red.png')
+bgYellow = pygame.image.load('./Assets/main_menu_page_images/bg_yellow.png')
+bgBlue = pygame.image.load('./Assets/main_menu_page_images/bg_blue.png')
 
-heartImageFull = pygame.image.load('Assets/game_images/heart_full.png')
+heartImageFull = pygame.image.load('./Assets/game_images/heart_full.png')
 heartImageFullScaled = pygame.transform.scale(heartImageFull, (36, 36))
-heartImageEmpty = pygame.image.load('Assets/game_images/heart_empty.png')
+heartImageEmpty = pygame.image.load('./Assets/game_images/heart_empty.png')
 heartImageEmptyScaled = pygame.transform.scale(heartImageEmpty, (36, 36))
-heart1 = heartImageFullScaled
-heart2 = heartImageFullScaled
-heart3 = heartImageFullScaled
 
-blueLight = pygame.image.load('Assets/game_images/blue_light.png')
+blueLight = pygame.image.load('./Assets/game_images/blue_light.png')
 blueLightScaled = pygame.transform.scale(blueLight, (225, 225))
-blue = pygame.image.load('Assets/game_images/blue.png')
+blue = pygame.image.load('./Assets/game_images/blue.png')
 blueScaled = pygame.transform.scale(blue, (225, 225))
-greenLight = pygame.image.load('Assets/game_images/green_light.png')
+greenLight = pygame.image.load('./Assets/game_images/green_light.png')
 greenLightScaled = pygame.transform.scale(greenLight, (225, 225))
-green = pygame.image.load('Assets/game_images/green.png')
+green = pygame.image.load('./Assets/game_images/green.png')
 greenScaled = pygame.transform.scale(green, (225, 225))
-redLight = pygame.image.load('Assets/game_images/red_light.png')
+redLight = pygame.image.load('./Assets/game_images/red_light.png')
 redLightScaled = pygame.transform.scale(redLight, (225, 225))
-red = pygame.image.load('Assets/game_images/red.png')
+red = pygame.image.load('./Assets/game_images/red.png')
 redScaled = pygame.transform.scale(red, (225, 225))
-yellowLight = pygame.image.load('Assets/game_images/yellow_light.png')
+yellowLight = pygame.image.load('./Assets/game_images/yellow_light.png')
 yellowLightScaled = pygame.transform.scale(yellowLight, (225, 225))
-yellow = pygame.image.load('Assets/game_images/yellow.png')
+yellow = pygame.image.load('./Assets/game_images/yellow.png')
 yellowScaled = pygame.transform.scale(yellow, (225, 225))
 
-blackGradientScreen = pygame.image.load('Assets/main_menu_page_images/black_bg.png')
+blackGradientScreen = pygame.image.load('./Assets/main_menu_page_images/black_bg.png')
 
-soundOn = pygame.image.load('Assets\setting_images\sound_on.png')
+soundOn = pygame.image.load('./Assets/setting_images/sound_on.png')
 soundOnScaled = pygame.transform.scale(soundOn, (54, 54))
-soundOff = pygame.image.load('Assets\setting_images\sound_off.png')
+soundOff = pygame.image.load('./Assets/setting_images/sound_off.png')
 soundOffScaled = pygame.transform.scale(soundOff, (87, 87))
 
-homeButton = pygame.image.load('Assets/end_game_images/home_button.png')
+homeButton = pygame.image.load('./Assets/end_game_images/home_button.png')
 homeButtonScaled = pygame.transform.scale(homeButton, (100, 100))
-restartButton = pygame.image.load('Assets/end_game_images/restart_button.png')
+restartButton = pygame.image.load('./Assets/end_game_images/restart_button.png')
 restartButtonScaled = pygame.transform.scale(restartButton, (95, 95))
 
 # load all the fonts
-GAMEPLAY_FONT = 'Assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf'
+GAMEPLAY_FONT = './Assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf'
 gameFontStart = pygame.font.Font(GAMEPLAY_FONT, 50) # size 50 font
 gameFont = pygame.font.Font(GAMEPLAY_FONT, 20) # size 20 font
 gameFontEnd = pygame.font.Font(GAMEPLAY_FONT, 40) # size 40 font
 
 # load all the sounds
+greenSound = pygame.mixer.Sound('./Assets/sounds/green_e-lower.wav')
+redSound = pygame.mixer.Sound('./Assets/sounds/red_a.wav')
+blueSound = pygame.mixer.Sound('./Assets/sounds/blue_e-upper.wav')
+yellowSound = pygame.mixer.Sound('./Assets/sounds/yellow_c-sharp.wav')
+beepBeepBeepSound = pygame.mixer.Sound('./Assets/sounds/beeep_beeep_beeep.wav')
 
 # initialise the window of the game
 WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT)) # creates the window
@@ -88,10 +91,13 @@ running = True
 pattern = [] # store array of previous colours
 timeDelay = 500 # milliseconds
 playerPattern = [] # store array of player guesses (used to compare)
+heart1 = heartImageFullScaled
+heart2 = heartImageFullScaled
+heart3 = heartImageFullScaled
 
-##################
-# Game Functions #
-##################
+################
+# Game Classes #
+################
 
 class Start_Button: # the button class
     def __init__(button, buttonImage, pos, callback):  # intialise the class
@@ -139,6 +145,10 @@ class Heart_Animation: # the heart animation class
         heartAnimation.image = heartImageFull
         pygame.time.delay(80)
         heartAnimation.image = heartImageEmpty
+
+##################
+# Game Functions #
+##################
 
 def render_game_start_page(): # main screen page
     waiting = True
@@ -376,6 +386,7 @@ def store_player_guess():
     lifeStore = life
 
 def life_loss():
+    beepBeepBeepSound.play()
     render_game_simon_play_page(blueColour = blueLightScaled, yellowColour = yellowLightScaled, greenColour = greenLightScaled, redColour = redLightScaled)
     pygame.time.delay(500)
     render_game_simon_play_page()
