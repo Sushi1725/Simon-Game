@@ -331,8 +331,10 @@ def store_player_guess():
                     mask = pygame.mask.from_surface(clickRedScaled)
                     if mask.get_at((event.pos[0]-redScaledPos[0], event.pos[1]-redScaledPos[1])):
                         render_game_simon_play_page(redColour = redLightScaled) # change it into light mode
+                        redSound.play()
                         pygame.time.delay(timeDelay) # wait
                         render_game_simon_play_page() # turn off the light colour
+                        pygame.mixer.stop()
                         playerPattern.append(1) # add the guess to the end of the array
                         check_pattern(playerPattern) # compare it
                         if life != lifeStore:
@@ -344,8 +346,10 @@ def store_player_guess():
                     mask = pygame.mask.from_surface(clickGreenScaled)
                     if mask.get_at((event.pos[0]-greenScaledPos[0], event.pos[1]-greenScaledPos[1])):
                         render_game_simon_play_page(greenColour = greenLightScaled) # change it into light mode
+                        greenSound.play()
                         pygame.time.delay(timeDelay)
                         render_game_simon_play_page()
+                        pygame.mixer.stop()
                         playerPattern.append(2) # add it to the end of the array
                         check_pattern(playerPattern)
                         if life != lifeStore:
@@ -357,8 +361,10 @@ def store_player_guess():
                     mask = pygame.mask.from_surface(clickYellowScaled)
                     if mask.get_at((event.pos[0]-yellowScaledPos[0], event.pos[1]-yellowScaledPos[1])):
                         render_game_simon_play_page(yellowColour = yellowLightScaled) # change it into light mode
+                        yellowSound.play()
                         pygame.time.delay(timeDelay)
                         render_game_simon_play_page()
+                        pygame.mixer.stop()
                         playerPattern.append(3) # add it to the end of the array
                         check_pattern(playerPattern)
                         if life != lifeStore:
@@ -370,8 +376,10 @@ def store_player_guess():
                     mask = pygame.mask.from_surface(clickBlueScaled) # mask makes it so that the translucent part of the image cannot be clicked
                     if mask.get_at((event.pos[0]-blueScaledPos[0], event.pos[1]-blueScaledPos[1])):
                         render_game_simon_play_page(blueColour = blueLightScaled) # change it into light mode
+                        blueSound.play()
                         pygame.time.delay(timeDelay)
                         render_game_simon_play_page()
+                        pygame.mixer.stop()
                         playerPattern.append(4) # add it to the end of the array
                         check_pattern(playerPattern)
                         if life != lifeStore:
