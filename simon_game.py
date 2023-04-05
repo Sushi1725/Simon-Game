@@ -73,13 +73,6 @@ gameFontStart = pygame.font.Font(GAMEPLAY_FONT, 50) # size 50 font
 gameFont = pygame.font.Font(GAMEPLAY_FONT, 20) # size 20 font
 gameFontEnd = pygame.font.Font(GAMEPLAY_FONT, 40) # size 40 font
 
-# load all the sounds
-greenSound = pygame.mixer.Sound('./Assets/sounds/green_e-lower.wav')
-redSound = pygame.mixer.Sound('./Assets/sounds/red_a.wav')
-blueSound = pygame.mixer.Sound('./Assets/sounds/blue_e-upper.wav')
-yellowSound = pygame.mixer.Sound('./Assets/sounds/yellow_c-sharp.wav')
-beepBeepBeepSound = pygame.mixer.Sound('./Assets/sounds/beep_beep_beep.wav')
-
 # initialise the window of the game
 WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT)) # creates the window
 pygame.display.set_caption('Simon: The Game') # sets the name of the window
@@ -155,7 +148,6 @@ class Heart_Animation: # the heart animation class
 
 def render_game_start_page(): # main screen page
     waiting = True
-    # menu_music.play(-1)
     global score
     score = 0
     logoBob = 50 # where the logo starts at (y-axis)
@@ -334,10 +326,12 @@ def store_player_guess():
                     mask = pygame.mask.from_surface(clickRedScaled)
                     if mask.get_at((event.pos[0]-redScaledPos[0], event.pos[1]-redScaledPos[1])):
                         render_game_simon_play_page(redColour = redLightScaled) # change it into light mode
-                        redSound.play()
+                        pygame.mixer.music.load('./Assets/sounds/red_a.wav', "wav")
+                        pygame.mixer.music.play()
                         pygame.time.delay(timeDelay) # wait
                         render_game_simon_play_page() # turn off the light colour
-                        pygame.mixer.stop()
+                        pygame.mixer.music.stop()
+                        pygame.mixer.music.unload()
                         playerPattern.append(1) # add the guess to the end of the array
                         check_pattern(playerPattern) # compare it
                         if life != lifeStore:
@@ -349,10 +343,12 @@ def store_player_guess():
                     mask = pygame.mask.from_surface(clickGreenScaled)
                     if mask.get_at((event.pos[0]-greenScaledPos[0], event.pos[1]-greenScaledPos[1])):
                         render_game_simon_play_page(greenColour = greenLightScaled) # change it into light mode
-                        greenSound.play()
-                        pygame.time.delay(timeDelay)
-                        render_game_simon_play_page()
-                        pygame.mixer.stop()
+                        pygame.mixer.music.load('./Assets/sounds/green_e-lower.wav')
+                        pygame.mixer.music.play()
+                        pygame.time.delay(timeDelay) # wait
+                        render_game_simon_play_page() # turn off the light colour
+                        pygame.mixer.music.stop()
+                        pygame.mixer.music.unload()
                         playerPattern.append(2) # add it to the end of the array
                         check_pattern(playerPattern)
                         if life != lifeStore:
@@ -364,10 +360,12 @@ def store_player_guess():
                     mask = pygame.mask.from_surface(clickYellowScaled)
                     if mask.get_at((event.pos[0]-yellowScaledPos[0], event.pos[1]-yellowScaledPos[1])):
                         render_game_simon_play_page(yellowColour = yellowLightScaled) # change it into light mode
-                        yellowSound.play()
-                        pygame.time.delay(timeDelay)
-                        render_game_simon_play_page()
-                        pygame.mixer.stop()
+                        pygame.mixer.music.load('./Assets/sounds/yellow_c-sharp.wav')
+                        pygame.mixer.music.play()
+                        pygame.time.delay(timeDelay) # wait
+                        render_game_simon_play_page() # turn off the light colour
+                        pygame.mixer.music.stop()
+                        pygame.mixer.music.unload()
                         playerPattern.append(3) # add it to the end of the array
                         check_pattern(playerPattern)
                         if life != lifeStore:
@@ -379,10 +377,12 @@ def store_player_guess():
                     mask = pygame.mask.from_surface(clickBlueScaled) # mask makes it so that the translucent part of the image cannot be clicked
                     if mask.get_at((event.pos[0]-blueScaledPos[0], event.pos[1]-blueScaledPos[1])):
                         render_game_simon_play_page(blueColour = blueLightScaled) # change it into light mode
-                        blueSound.play()
-                        pygame.time.delay(timeDelay)
-                        render_game_simon_play_page()
-                        pygame.mixer.stop()
+                        blueSound = pygame.mixer.music.load('./Assets/sounds/blue_e-upper.wav')
+                        pygame.mixer.music.play()
+                        pygame.time.delay(timeDelay) # wait
+                        render_game_simon_play_page() # turn off the light colour
+                        pygame.mixer.music.stop()
+                        pygame.mixer.music.unload()
                         playerPattern.append(4) # add it to the end of the array
                         check_pattern(playerPattern)
                         if life != lifeStore:
@@ -397,7 +397,8 @@ def store_player_guess():
     lifeStore = life
 
 def life_loss():
-    beepBeepBeepSound.play()
+    pygame.mixer.music.load('./Assets/sounds/beep_beep_beep.wav')
+    pygame.mixer.music.play()
     render_game_simon_play_page(blueColour = blueLightScaled, yellowColour = yellowLightScaled, greenColour = greenLightScaled, redColour = redLightScaled)
     pygame.time.delay(500)
     render_game_simon_play_page()
@@ -408,6 +409,8 @@ def life_loss():
     pygame.time.delay(250)
     render_game_simon_play_page(blueColour = blueLightScaled, yellowColour = yellowLightScaled, greenColour = greenLightScaled, redColour = redLightScaled)
     pygame.time.delay(500)
+    pygame.mixer.music.stop()
+    pygame.mixer.music.unload()
     render_game_simon_play_page()
 
 def check_pattern(playerPattern):  # only works after first guess/ if first guess is wrong, doesnt check
