@@ -59,6 +59,8 @@ soundOn = pygame.image.load('./Assets/setting_images/sound_on.png')
 soundOnScaled = pygame.transform.scale(soundOn, (54, 54))
 soundOff = pygame.image.load('./Assets/setting_images/sound_off.png')
 soundOffScaled = pygame.transform.scale(soundOff, (87, 87))
+soundSlider = pygame.image.load('./Assets/setting_images/slider.png')
+soundSliderScaled = pygame.transform.scale(soundSlider, (26, 26))
 
 homeButton = pygame.image.load('./Assets/end_game_images/home_button.png')
 homeButtonScaled = pygame.transform.scale(homeButton, (100, 100))
@@ -76,7 +78,7 @@ greenSound = pygame.mixer.Sound('./Assets/sounds/green_e-lower.wav')
 redSound = pygame.mixer.Sound('./Assets/sounds/red_a.wav')
 blueSound = pygame.mixer.Sound('./Assets/sounds/blue_e-upper.wav')
 yellowSound = pygame.mixer.Sound('./Assets/sounds/yellow_c-sharp.wav')
-beepBeepBeepSound = pygame.mixer.Sound('./Assets/sounds/beeep_beeep_beeep.wav')
+beepBeepBeepSound = pygame.mixer.Sound('./Assets/sounds/beep_beep_beep.wav')
 
 # initialise the window of the game
 WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT)) # creates the window
@@ -85,6 +87,7 @@ pygame.display.set_icon(logo) # sets the window's logo to the image
 
 # variables
 score = 0 # score number
+volume = 1.0
 life = 3
 lifeStore = life
 running = True
@@ -440,6 +443,7 @@ def check_pattern(playerPattern):  # only works after first guess/ if first gues
 
 def render_settings_screen():
     waiting = True
+    global volume
     sound = soundOnScaled
     soundLocation = (100, 200)
     switching = 1
@@ -456,23 +460,31 @@ def render_settings_screen():
                     if switching == 1:
                         sound = soundOffScaled
                         soundLocation = (85, 185)
+                        pygame.mixer.music.set_volume(0)
+                        print("volume now 0?")
                         switching = 2
                         break
                     if switching == 2:
                         sound = soundOnScaled
                         soundLocation = (100, 200)
+                        pygame.mixer.music.set_volume(volume)
                         switching = 1
                         break
-                # elif 180 <= x <= 420 and 450 <= y <= 540:
-                #     quit()
+                elif 180 <= x <= 420 and 450 <= y <= 540:
+                    # quit()
+                    waiting = False
         WINDOW.fill(grey)
         WINDOW.blit(blackGradientScreen, (0,0))
         bg = pygame.Rect(50, 100, 700, 450)
+        thig = pygame.Rect(180, 450, 100, 100)
         pygame.draw.rect(WINDOW, black, bg)
         pygame.draw.rect(WINDOW, white, bg, 2)
+        pygame.draw.rect(WINDOW, white, thig)
         WINDOW.blit(settingsScaled2, (345.3, 50))
         WINDOW.blit(sound, soundLocation)
-        pygame.display.update()
+        pygame.draw.line(WINDOW, white, (180, 227), (705, 227), 2) # volume goes up to 525
+        WINDOW.blit(soundSliderScaled, (volume + 177, 215)) # make it so that the x location is proportional to the volume
+        pygame.display.update() #^^^ 177 cause 1 empty *2 + 1
 
 def render_game_info_screen():
     waiting = True
