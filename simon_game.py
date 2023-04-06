@@ -483,45 +483,61 @@ def render_settings_screen():
                         break
                 elif 180 <= x <= 420 and 450 <= y <= 540:
                     waiting = False
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            # if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            #     pos = pygame.mouse.get_pos()
+            #     x = pos[0]
+            #     y = pos[1]
+                
+            #     # sliderPos = pygame.mouse.get_pos()
+            #     # sliderPosX = sliderPos[0]
+            #     # sliderPosY = sliderPos[1]
+                
+            #     # if sliderX <= x <= sliderXMost and sliderY <= y <= sliderYMost:
+                    
+                    
+            #     #     if sliderPosX != 0:
+            #     #         pos = pygame.mouse.get_pos()
+            #     #         x = pos[0]
+            #     #         y = pos[1]
+            #     #         sliderX = x - 5
+            #     #         if sliderX < 0:
+            #     #             sliderX = 0
+                    
+            #     #     # sliderX = x - (sliderPosX - sliderX)
+            #     #     sliderChange = pygame.mouse.get_rel()
+            #     #     changeX = sliderChange[0]
+            #     #     changeY = sliderChange[1]
+            #     #     print(sliderChange)
+            #     #     if changeX > 0:
+            #     #         sliderX = sliderX + changeX
+            #     #     if changeX < 0:
+            #     #         sliderX = sliderX - changeX
+            #     #     if sliderX > (705-22): # constrict the location of the slider to the most right of the slider line
+            #     #         sliderX = (705-22)
+            #     #     if sliderX < (178): # constrict the location of the slider to the most left of the slider line
+            #     #         sliderX = (178)
+            #     #     sliderXMost = sliderX + 26
+            #     if 180 <= x <= 705 and 215 <= y <= 241:
+            #         pos = pygame.mouse.get_pos()
+            #         x = pos[0]
+            #         y = pos[1]
+            #         sliderX = x - 13
+            #         comparingPos = pygame.mouse.get_pos()
+                    
+            #         # for event in pygame.event.get():
+            if event.type == pygame.MOUSEMOTION:
                 pos = pygame.mouse.get_pos()
                 x = pos[0]
                 y = pos[1]
-                
-                # sliderPos = pygame.mouse.get_pos()
-                # sliderPosX = sliderPos[0]
-                # sliderPosY = sliderPos[1]
-                
-                # if sliderX <= x <= sliderXMost and sliderY <= y <= sliderYMost:
-                    
-                    
-                #     if sliderPosX != 0:
-                #         pos = pygame.mouse.get_pos()
-                #         x = pos[0]
-                #         y = pos[1]
-                #         sliderX = x - 5
-                #         if sliderX < 0:
-                #             sliderX = 0
-                    
-                #     # sliderX = x - (sliderPosX - sliderX)
-                #     sliderChange = pygame.mouse.get_rel()
-                #     changeX = sliderChange[0]
-                #     changeY = sliderChange[1]
-                #     print(sliderChange)
-                #     if changeX > 0:
-                #         sliderX = sliderX + changeX
-                #     if changeX < 0:
-                #         sliderX = sliderX - changeX
-                #     if sliderX > (705-22): # constrict the location of the slider to the most right of the slider line
-                #         sliderX = (705-22)
-                #     if sliderX < (178): # constrict the location of the slider to the most left of the slider line
-                #         sliderX = (178)
-                #     sliderXMost = sliderX + 26
-                if 180 <= x <= 705 and 215 <= y <= 241:
-                    pos = pygame.mouse.get_pos()
-                    x = pos[0]
-                    y = pos[1]
+                if event.rel[0] != 0:
                     sliderX = x - 13
+                    if sliderX > (705): # constrict the location of the slider to the most right of the slider line
+                        sliderX = (705-13)
+                    if sliderX < (178): # constrict the location of the slider to the most left of the slider line
+                        sliderX = (178-13)
+                # comparedPos = pygame.mouse.get_pos()
+                # while comparingPos != comparedPos:
+                #     sliderX = x - 13
                 
 
         WINDOW.fill(grey)
