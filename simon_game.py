@@ -54,6 +54,7 @@ yellow = pygame.image.load('./Assets/game_images/yellow.png')
 yellowScaled = pygame.transform.scale(yellow, (225, 225))
 
 blackGradientScreen = pygame.image.load('./Assets/main_menu_page_images/black_bg.png')
+bg = pygame.Rect(50, 100, 700, 450)
 
 soundOn = pygame.image.load('./Assets/setting_images/sound_on.png')
 soundOnScaled = pygame.transform.scale(soundOn, (54, 54))
@@ -90,6 +91,8 @@ playerPattern = [] # store array of player guesses (used to compare)
 heart1 = heartImageFullScaled
 heart2 = heartImageFullScaled
 heart3 = heartImageFullScaled
+sliderX = 178
+sliderY = 215
 
 ################
 # Game Classes #
@@ -326,12 +329,12 @@ def store_player_guess():
                     mask = pygame.mask.from_surface(clickRedScaled)
                     if mask.get_at((event.pos[0]-redScaledPos[0], event.pos[1]-redScaledPos[1])):
                         render_game_simon_play_page(redColour = redLightScaled) # change it into light mode
-                        pygame.mixer.music.load('./Assets/sounds/red_a.wav', "wav")
-                        pygame.mixer.music.play()
+                        pygame.mixer.music.load('./Assets/sounds/red_a.wav', "wav") # load the sound
+                        pygame.mixer.music.play() # play the sound
                         pygame.time.delay(timeDelay) # wait
                         render_game_simon_play_page() # turn off the light colour
-                        pygame.mixer.music.stop()
-                        pygame.mixer.music.unload()
+                        pygame.mixer.music.stop() # stop the sound
+                        pygame.mixer.music.unload() # unload the sound
                         playerPattern.append(1) # add the guess to the end of the array
                         check_pattern(playerPattern) # compare it
                         if life != lifeStore:
@@ -447,6 +450,10 @@ def check_pattern(playerPattern):  # only works after first guess/ if first gues
 def render_settings_screen():
     waiting = True
     global volume
+    global sliderX
+    global sliderY
+    sliderXMost = sliderX + 26
+    sliderYMost = sliderY + 26
     sound = soundOnScaled
     soundLocation = (100, 200)
     switching = 1
@@ -474,11 +481,22 @@ def render_settings_screen():
                         switching = 1
                         break
                 elif 180 <= x <= 420 and 450 <= y <= 540:
-                    # quit()
                     waiting = False
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                pos = pygame.mouse.get_pos()
+                x = pos[0]
+                y = pos[1]
+                
+                sliderPos = pygame.mouse.get_pos()
+                sliderPosX = sliderPos[0]
+                sliderPosY = sliderPos[1]
+                if sliderX <= x <= sliderXMost and sliderY <= y <= sliderYMost:
+                    sliderX = x - (sliderPosX - x)
+                    sliderXMost = sliderX + 26
+                    if sliderX > (705-26):
+                        sliderX = (705-22)
         WINDOW.fill(grey)
         WINDOW.blit(blackGradientScreen, (0,0))
-        bg = pygame.Rect(50, 100, 700, 450)
         thig = pygame.Rect(180, 450, 100, 100)
         pygame.draw.rect(WINDOW, black, bg)
         pygame.draw.rect(WINDOW, white, bg, 2)
@@ -486,7 +504,13 @@ def render_settings_screen():
         WINDOW.blit(settingsScaled2, (345.3, 50))
         WINDOW.blit(sound, soundLocation)
         pygame.draw.line(WINDOW, white, (180, 227), (705, 227), 2) # volume goes up to 525
-        WINDOW.blit(soundSliderScaled, (volume + 177, 215)) # make it so that the x location is proportional to the volume
+        WINDOW.blit(soundSliderScaled, (sliderX, 215)) # make it so that the x location is proportional to the volume
+        volume = 2*((sliderX-180) / (10**len(str(sliderX)))) # the location of the slider - 180 divede by 10 to the power of the length (to get between 0.0-1.0)
+        print(sliderX) # sliderScaled = (26, 26)
+        print(len(str(sliderX)))
+        print(10**int(len(str(sliderX))))
+        print(volume)
+        pygame.mixer.music.set_volume(volume)
         pygame.display.update() #^^^ 177 cause 1 empty *2 + 1
 
 def render_game_info_screen():
@@ -506,10 +530,8 @@ def render_game_info_screen():
                     quit()
         WINDOW.fill(grey)
         WINDOW.blit(blackGradientScreen, (0,0))
-        bg = pygame.Rect(50, 100, 700, 450)
         pygame.draw.rect(WINDOW, black, bg)
         pygame.draw.rect(WINDOW, white, bg, 2)
-        WINDOW.blit(soundOnScaled, (250, 50))
         pygame.display.update()
 
 def render_game_over_screen():
