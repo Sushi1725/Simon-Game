@@ -454,6 +454,7 @@ def render_settings_screen():
     global sliderY
     sliderXMost = sliderX + 26
     sliderYMost = sliderY + 26
+    # sliderChange = pygame.mouse.get_rel()
     sound = soundOnScaled
     soundLocation = (100, 200)
     switching = 1
@@ -487,14 +488,42 @@ def render_settings_screen():
                 x = pos[0]
                 y = pos[1]
                 
-                sliderPos = pygame.mouse.get_pos()
-                sliderPosX = sliderPos[0]
-                sliderPosY = sliderPos[1]
-                if sliderX <= x <= sliderXMost and sliderY <= y <= sliderYMost:
-                    sliderX = x - (sliderPosX - x)
-                    sliderXMost = sliderX + 26
-                    if sliderX > (705-26):
-                        sliderX = (705-22)
+                # sliderPos = pygame.mouse.get_pos()
+                # sliderPosX = sliderPos[0]
+                # sliderPosY = sliderPos[1]
+                
+                # if sliderX <= x <= sliderXMost and sliderY <= y <= sliderYMost:
+                    
+                    
+                #     if sliderPosX != 0:
+                #         pos = pygame.mouse.get_pos()
+                #         x = pos[0]
+                #         y = pos[1]
+                #         sliderX = x - 5
+                #         if sliderX < 0:
+                #             sliderX = 0
+                    
+                #     # sliderX = x - (sliderPosX - sliderX)
+                #     sliderChange = pygame.mouse.get_rel()
+                #     changeX = sliderChange[0]
+                #     changeY = sliderChange[1]
+                #     print(sliderChange)
+                #     if changeX > 0:
+                #         sliderX = sliderX + changeX
+                #     if changeX < 0:
+                #         sliderX = sliderX - changeX
+                #     if sliderX > (705-22): # constrict the location of the slider to the most right of the slider line
+                #         sliderX = (705-22)
+                #     if sliderX < (178): # constrict the location of the slider to the most left of the slider line
+                #         sliderX = (178)
+                #     sliderXMost = sliderX + 26
+                if 180 <= x <= 705 and 215 <= y <= 241:
+                    pos = pygame.mouse.get_pos()
+                    x = pos[0]
+                    y = pos[1]
+                    sliderX = x - 13
+                
+
         WINDOW.fill(grey)
         WINDOW.blit(blackGradientScreen, (0,0))
         thig = pygame.Rect(180, 450, 100, 100)
@@ -506,11 +535,7 @@ def render_settings_screen():
         pygame.draw.line(WINDOW, white, (180, 227), (705, 227), 2) # volume goes up to 525
         WINDOW.blit(soundSliderScaled, (sliderX, 215)) # make it so that the x location is proportional to the volume
         volume = 2*((sliderX-180) / (10**len(str(sliderX)))) # the location of the slider - 180 divede by 10 to the power of the length (to get between 0.0-1.0)
-        print(sliderX) # sliderScaled = (26, 26)
-        print(len(str(sliderX)))
-        print(10**int(len(str(sliderX))))
-        print(volume)
-        pygame.mixer.music.set_volume(volume)
+        pygame.mixer.music.set_volume(volume) # sliderScaled = (26, 26)
         pygame.display.update() #^^^ 177 cause 1 empty *2 + 1
 
 def render_game_info_screen():
