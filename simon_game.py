@@ -73,6 +73,7 @@ GAMEPLAY_FONT = './Assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf'
 gameFontStart = pygame.font.Font(GAMEPLAY_FONT, 50) # size 50 font
 gameFont = pygame.font.Font(GAMEPLAY_FONT, 20) # size 20 font
 gameFontEnd = pygame.font.Font(GAMEPLAY_FONT, 40) # size 40 font
+gameFontCred = pygame.font.Font(GAMEPLAY_FONT, 30) # size 30 font
 
 # initialise the window of the game
 WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT)) # creates the window
@@ -91,7 +92,7 @@ playerPattern = [] # store array of player guesses (used to compare)
 heart1 = heartImageFullScaled
 heart2 = heartImageFullScaled
 heart3 = heartImageFullScaled
-sliderX = 178
+sliderX = 692
 sliderY = 215
 
 ################
@@ -452,20 +453,23 @@ def render_settings_screen():
     global volume
     global sliderX
     global sliderY
-    sliderXMost = sliderX + 26
-    sliderYMost = sliderY + 26
-    # sliderChange = pygame.mouse.get_rel()
     sound = soundOnScaled
     soundLocation = (100, 200)
     switching = 1
+    yMin = 215
+    yMax = 241
     while waiting:
         for event in pygame.event.get():
+            # print(event)
             if event.type == pygame.QUIT:
                 quit()
-            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1: # mute button
                 pos = pygame.mouse.get_pos()
                 x = pos[0]
                 y = pos[1]
+                
+                yMin = 215
+                yMax = 241
 
                 if 100 <= x <= 154 and 200 <= y <= 254:
                     if switching == 1:
@@ -483,75 +487,47 @@ def render_settings_screen():
                         break
                 elif 180 <= x <= 420 and 450 <= y <= 540:
                     waiting = False
-            # if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            #     pos = pygame.mouse.get_pos()
-            #     x = pos[0]
-            #     y = pos[1]
+                elif 580 <= x <= 620 and 450 <= y <= 540:
+                    credits_screen()
+            if event.type == pygame.MOUSEMOTION and event.buttons == (1, 0, 0): # slider
+                pos = pygame.mouse.get_pos() # if the cursor is moving and left click is being pressed
+                x = pos[0]
+                y = pos[1]
                 
-            #     # sliderPos = pygame.mouse.get_pos()
-            #     # sliderPosX = sliderPos[0]
-            #     # sliderPosY = sliderPos[1]
-                
-            #     # if sliderX <= x <= sliderXMost and sliderY <= y <= sliderYMost:
-                    
-                    
-            #     #     if sliderPosX != 0:
-            #     #         pos = pygame.mouse.get_pos()
-            #     #         x = pos[0]
-            #     #         y = pos[1]
-            #     #         sliderX = x - 5
-            #     #         if sliderX < 0:
-            #     #             sliderX = 0
-                    
-            #     #     # sliderX = x - (sliderPosX - sliderX)
-            #     #     sliderChange = pygame.mouse.get_rel()
-            #     #     changeX = sliderChange[0]
-            #     #     changeY = sliderChange[1]
-            #     #     print(sliderChange)
-            #     #     if changeX > 0:
-            #     #         sliderX = sliderX + changeX
-            #     #     if changeX < 0:
-            #     #         sliderX = sliderX - changeX
-            #     #     if sliderX > (705-22): # constrict the location of the slider to the most right of the slider line
-            #     #         sliderX = (705-22)
-            #     #     if sliderX < (178): # constrict the location of the slider to the most left of the slider line
-            #     #         sliderX = (178)
-            #     #     sliderXMost = sliderX + 26
-            #     if 180 <= x <= 705 and 215 <= y <= 241:
-            #         pos = pygame.mouse.get_pos()
-            #         x = pos[0]
-            #         y = pos[1]
-            #         sliderX = x - 13
-            #         comparingPos = pygame.mouse.get_pos()
-                    
-            #         # for event in pygame.event.get():
-            if event.type == pygame.MOUSEMOTION:
+                if x < 180 or x > 705 or y < yMin and 180 <= x <= 705 or y > yMax and 180 <= x <= 705:
+                    print('ok')
+                else:
+                    if event.rel[0] != 0:
+                        yMin = 0
+                        yMax = 600
+                        sliderX = x - 13
+                        if sliderX > (705): # constrict the location of the slider to the most right of the slider line
+                            sliderX = (705-13)
+                        if sliderX < (178): # constrict the location of the slider to the most left of the slider line
+                            sliderX = (178-13)
+            
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 pos = pygame.mouse.get_pos()
                 x = pos[0]
                 y = pos[1]
-                if event.rel[0] != 0:
+                if 180 <= x <= 705 and 215 <= y <= 241:
                     sliderX = x - 13
-                    if sliderX > (705): # constrict the location of the slider to the most right of the slider line
-                        sliderX = (705-13)
-                    if sliderX < (178): # constrict the location of the slider to the most left of the slider line
-                        sliderX = (178-13)
-                # comparedPos = pygame.mouse.get_pos()
-                # while comparingPos != comparedPos:
-                #     sliderX = x - 13
-                
 
         WINDOW.fill(grey)
         WINDOW.blit(blackGradientScreen, (0,0))
         thig = pygame.Rect(180, 450, 100, 100)
+        temp = pygame.Rect(580, 450, 40, 90)
         pygame.draw.rect(WINDOW, black, bg)
         pygame.draw.rect(WINDOW, white, bg, 2)
         pygame.draw.rect(WINDOW, white, thig)
+        pygame.draw.rect(WINDOW, white, temp)
         WINDOW.blit(settingsScaled2, (345.3, 50))
         WINDOW.blit(sound, soundLocation)
         pygame.draw.line(WINDOW, white, (180, 227), (705, 227), 2) # volume goes up to 525
         WINDOW.blit(soundSliderScaled, (sliderX, 215)) # make it so that the x location is proportional to the volume
         volume = 2*((sliderX-180) / (10**len(str(sliderX)))) # the location of the slider - 180 divede by 10 to the power of the length (to get between 0.0-1.0)
         pygame.mixer.music.set_volume(volume) # sliderScaled = (26, 26)
+        print(volume)
         pygame.display.update() #^^^ 177 cause 1 empty *2 + 1
 
 def render_game_info_screen():
@@ -573,6 +549,39 @@ def render_game_info_screen():
         WINDOW.blit(blackGradientScreen, (0,0))
         pygame.draw.rect(WINDOW, black, bg)
         pygame.draw.rect(WINDOW, white, bg, 2)
+        pygame.display.update()
+
+def credits_screen():
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                pos = pygame.mouse.get_pos()
+                x = pos[0]
+                y = pos[1]
+
+                if 600 <= x <= 700 and 400 <= y <= 500:
+                    render_game_start_page()
+        WINDOW.fill(grey)
+        WINDOW.blit(blackGradientScreen, (0,0))
+        pygame.draw.rect(WINDOW, black, bg)
+        pygame.draw.rect(WINDOW, white, bg, 2)
+        credBg = pygame.Rect(200, 50, 400, 100)
+        pygame.draw.rect(WINDOW, black, credBg)
+        pygame.draw.rect(WINDOW, white, credBg, 2)
+        WINDOW.blit(homeButtonScaled, (600, 400))
+        cred_text = gameFontStart.render('Credits', True, white)
+        WINDOW.blit(cred_text, (225, 75))
+        ben = gameFontCred.render('Benjamin See', True, white)
+        WINDOW.blit(ben, (150, 200))
+        shou = gameFontCred.render('Shou-Yi Lai', True, white)
+        WINDOW.blit(shou, (150, 300))
+        tanya = gameFontCred.render('Tanya W.', True, white)
+        WINDOW.blit(tanya, (150, 400))
+        
+        # pygame.draw.line(WINDOW, white, (399, 0), (399, 600), 2)
         pygame.display.update()
 
 def render_game_over_screen():
