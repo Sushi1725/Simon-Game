@@ -504,7 +504,13 @@ def render_settings_screen():
                         if sliderX > (705): # constrict the location of the slider to the most right of the slider line
                             sliderX = (705-13)
                         if sliderX < (178): # constrict the location of the slider to the most left of the slider line
-                            sliderX = (178-13)
+                            sliderX = (178)
+            if volume <= 0:
+                sound = soundOffScaled
+                soundLocation = (85, 185)
+            else:
+                sound = soundOnScaled
+                soundLocation = (100, 200)
             
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 pos = pygame.mouse.get_pos()
