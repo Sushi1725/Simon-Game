@@ -68,6 +68,11 @@ homeButtonScaled = pygame.transform.scale(homeButton, (100, 100))
 restartButton = pygame.image.load('./Assets/end_game_images/restart_button.png')
 restartButtonScaled = pygame.transform.scale(restartButton, (95, 95))
 
+nextPage = pygame.image.load('./Assets/info_images/page_left.png')
+nextPageScaled = pygame.transform.scale(nextPage, (51, 51))
+backPage = pygame.image.load('./Assets/info_images/page_right.png')
+backPageScaled = pygame.transform.scale(backPage, (51, 51))
+
 # load all the fonts
 GAMEPLAY_FONT = './Assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf'
 gameFontStart = pygame.font.Font(GAMEPLAY_FONT, 50) # size 50 font
@@ -94,6 +99,7 @@ heart2 = heartImageFullScaled
 heart3 = heartImageFullScaled
 sliderX = 692
 sliderY = 215
+pageRules = 0
 
 ################
 # Game Classes #
@@ -277,26 +283,38 @@ def show_pattern():
                 quit()
     
         if x == 1: # 1 = red
-            print(pattern)
             render_game_simon_play_page(redColour = redLightScaled) # change it into light mode
+            pygame.mixer.music.load('./Assets/sounds/red_a.wav')
+            pygame.mixer.music.play()
             pygame.time.delay(timeDelay) # current set time delay (faster as the game progresses)
             render_game_simon_play_page() # move it back into the "all dark" state
+            pygame.mixer.music.stop()
+            pygame.mixer.music.unload()
         elif x == 2: # 2 = green
-            print(pattern)
             render_game_simon_play_page(greenColour = greenLightScaled) # change it into light mode
+            pygame.mixer.music.load('./Assets/sounds/green_e-lower.wav')
+            pygame.mixer.music.play()
             pygame.time.delay(timeDelay) # current set time delay (faster as the game progresses)
             render_game_simon_play_page() # move it back into the "all dark" state
+            pygame.mixer.music.stop()
+            pygame.mixer.music.unload()
         elif x == 3: # 3 = yellow
-            print(pattern)
             render_game_simon_play_page(yellowColour = yellowLightScaled) # change it into light mode
+            pygame.mixer.music.load('./Assets/sounds/yellow_c-sharp.wav')
+            pygame.mixer.music.play()
             pygame.time.delay(timeDelay) # current set time delay (faster as the game progresses)
             render_game_simon_play_page() # move it back into the "all dark" state
+            pygame.mixer.music.stop()
+            pygame.mixer.music.unload()
         elif x == 4: # 4 = blue
-            print(pattern)
             render_game_simon_play_page(blueColour = blueLightScaled) # change it into light mode
+            pygame.mixer.music.load('./Assets/sounds/blue_e-upper.wav')
+            pygame.mixer.music.play()
             pygame.time.delay(timeDelay) # current set time delay (faster as the game progresses)
             render_game_simon_play_page() # move it back into the "all dark" state
-    
+            pygame.mixer.music.stop()
+            pygame.mixer.music.unload()
+        print(pattern)
         pygame.time.delay(timeDelay)
 
 def store_player_guess():
@@ -488,7 +506,9 @@ def render_settings_screen():
                 elif 180 <= x <= 420 and 450 <= y <= 540:
                     waiting = False
                 elif 580 <= x <= 620 and 450 <= y <= 540:
-                    credits_screen()
+                    render_credits_screen()
+                elif 720 <= x <= 800 and 450 <= y <= 540:
+                    render_game_rules_screen()
             if event.type == pygame.MOUSEMOTION and event.buttons == (1, 0, 0): # slider
                 pos = pygame.mouse.get_pos() # if the cursor is moving and left click is being pressed
                 x = pos[0]
@@ -523,10 +543,12 @@ def render_settings_screen():
         WINDOW.blit(blackGradientScreen, (0,0))
         thig = pygame.Rect(180, 450, 100, 100)
         temp = pygame.Rect(580, 450, 40, 90)
+        temp1 = pygame.Rect(720, 450, 80, 90)
         pygame.draw.rect(WINDOW, black, bg)
         pygame.draw.rect(WINDOW, white, bg, 2)
         pygame.draw.rect(WINDOW, white, thig)
         pygame.draw.rect(WINDOW, white, temp)
+        pygame.draw.rect(WINDOW, white, temp1)
         WINDOW.blit(settingsScaled2, (345.3, 50))
         WINDOW.blit(sound, soundLocation)
         pygame.draw.line(WINDOW, white, (180, 227), (705, 227), 2) # volume goes up to 525
@@ -557,7 +579,7 @@ def render_game_info_screen():
         pygame.draw.rect(WINDOW, white, bg, 2)
         pygame.display.update()
 
-def credits_screen():
+def render_credits_screen():
     waiting = True
     while waiting:
         for event in pygame.event.get():
@@ -578,8 +600,8 @@ def credits_screen():
         pygame.draw.rect(WINDOW, black, credBg)
         pygame.draw.rect(WINDOW, white, credBg, 2)
         WINDOW.blit(homeButtonScaled, (600, 400))
-        cred_text = gameFontStart.render('Credits', True, white)
-        WINDOW.blit(cred_text, (225, 75))
+        credText = gameFontStart.render('Credits', True, white)
+        WINDOW.blit(credText, (225, 75))
         ben = gameFontCred.render('Benjamin See', True, white)
         WINDOW.blit(ben, (150, 200))
         shou = gameFontCred.render('Shou-Yi Lai', True, white)
@@ -588,6 +610,37 @@ def credits_screen():
         WINDOW.blit(tanya, (150, 400))
         
         # pygame.draw.line(WINDOW, white, (399, 0), (399, 600), 2)
+        pygame.display.update()
+
+def render_game_rules_screen():
+    global pageRules
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                pos = pygame.mouse.get_pos()
+                x = pos[0]
+                y = pos[1]
+
+                if 75 <= x <= 126 and 299.5 <= y <= 350.5:
+                    pageRules = pageRules + 1
+                if 675 <= x <= 726 and 299.5 <= y <= 350.5:
+                    pageRules = pageRules - 1
+                if 225 <= x <= 581 and 475 <= y <= 501:
+                    render_game_start_page()
+        WINDOW.fill(grey)
+        WINDOW.blit(blackGradientScreen, (0,0))
+        pygame.draw.rect(WINDOW, black, bg)
+        pygame.draw.rect(WINDOW, white, bg, 2)
+        titleText = gameFontEnd.render('Game Rules', True, white)
+        WINDOW.blit(titleText, (205, 35))
+        goHomeText = gameFontCred.render('Back to Game', True, white)
+        WINDOW.blit(goHomeText, (225, 475))
+        WINDOW.blit(nextPageScaled, (75, 299.5))
+        WINDOW.blit(backPageScaled, (675, 299.5))
+        pygame.draw.line(WINDOW, white, (399, 0), (399, 600), 2)
         pygame.display.update()
 
 def render_game_over_screen():
