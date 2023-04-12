@@ -12,9 +12,9 @@ WINDOW_HEIGHT = 600
 pygame.mixer.init()
 
 # rgb values of colours used
-white = (255, 255, 255)
-grey = (19, 19, 19)
-black = (0, 0, 0)
+white = ('#FFFFFF')
+grey = ('#131313')
+black = ('#000000')
 
 # load all the images
 logo = pygame.image.load('./Assets/simon_logo.png')
@@ -24,8 +24,8 @@ startButtonPressed = pygame.image.load('./Assets/main_menu_page_images/start_gam
 settings = pygame.image.load('./Assets/main_menu_page_images/gear_cog.png') # 547, 600
 settingsScaled = pygame.transform.scale(settings, (64,70))
 settingsScaled2 = pygame.transform.scale(settings, (109.4, 120))
-information = pygame.image.load('./Assets/main_menu_page_images/information.png') # 50 130
-informationScaled = pygame.transform.scale(information, (30, 78))
+leaderboard = pygame.image.load('./Assets/main_menu_page_images/victory_cup.png') # 50 130
+leaderboardScaled = pygame.transform.scale(leaderboard, (68, 68))
 bgGreen = pygame.image.load('./Assets/main_menu_page_images/bg_green.png')
 bgRed = pygame.image.load('./Assets/main_menu_page_images/bg_red.png')
 bgYellow = pygame.image.load('./Assets/main_menu_page_images/bg_yellow.png')
@@ -77,6 +77,7 @@ backPageScaled = pygame.transform.scale(backPage, (51, 51))
 GAMEPLAY_FONT = './Assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf'
 gameFontStart = pygame.font.Font(GAMEPLAY_FONT, 50) # size 50 font
 gameFont = pygame.font.Font(GAMEPLAY_FONT, 20) # size 20 font
+gameFontSubtitle = pygame.font.Font(GAMEPLAY_FONT, 24) # size 24 font
 gameFontEnd = pygame.font.Font(GAMEPLAY_FONT, 40) # size 40 font
 gameFontCred = pygame.font.Font(GAMEPLAY_FONT, 30) # size 30 font
 
@@ -176,6 +177,9 @@ def render_game_start_page(): # main screen page
                 if 710 <= x <= 774 and 30 <= y <= 100: # for the settings button
                     # if the click is within a certain range
                     render_settings_screen()
+                elif 712 <= x <= 780 and 510 <= y <= 578:
+                    render_leaderboard_screen()
+                    # render_save_score_screen()
     
         # set background colour
         WINDOW.fill(grey)
@@ -205,7 +209,7 @@ def render_game_start_page(): # main screen page
         WINDOW.blit(mainPageImageScaled, (175, logoBob))
         WINDOW.blit(button.image, button.rect)
         WINDOW.blit(settingsScaled, (WINDOW_WIDTH-90, 30))
-        WINDOW.blit(informationScaled, (WINDOW_WIDTH-70, 500))
+        WINDOW.blit(leaderboardScaled, (WINDOW_WIDTH-88, 510))
         pygame.display.update()
     
         if logoBob == 25:  # limit for how high the logo goes
@@ -329,6 +333,7 @@ def store_player_guess():
     global pattern
     global lifeStore
     global life
+    global score
     
     clickBlueScaled = pygame.transform.scale(blue, (225, 225)).convert_alpha() # optimises the checking the button
     clickGreenScaled = pygame.transform.scale(green, (225, 225)).convert_alpha()
@@ -348,7 +353,7 @@ def store_player_guess():
                     mask = pygame.mask.from_surface(clickRedScaled)
                     if mask.get_at((event.pos[0]-redScaledPos[0], event.pos[1]-redScaledPos[1])):
                         render_game_simon_play_page(redColour = redLightScaled) # change it into light mode
-                        pygame.mixer.music.load('./Assets/sounds/red_a.wav', "wav") # load the sound
+                        pygame.mixer.music.load('./Assets/sounds/red_a.wav') # load the sound
                         pygame.mixer.music.play() # play the sound
                         pygame.time.delay(timeDelay) # wait
                         render_game_simon_play_page() # turn off the light colour
@@ -399,7 +404,7 @@ def store_player_guess():
                     mask = pygame.mask.from_surface(clickBlueScaled) # mask makes it so that the translucent part of the image cannot be clicked
                     if mask.get_at((event.pos[0]-blueScaledPos[0], event.pos[1]-blueScaledPos[1])):
                         render_game_simon_play_page(blueColour = blueLightScaled) # change it into light mode
-                        blueSound = pygame.mixer.music.load('./Assets/sounds/blue_e-upper.wav')
+                        pygame.mixer.music.load('./Assets/sounds/blue_e-upper.wav')
                         pygame.mixer.music.play()
                         pygame.time.delay(timeDelay) # wait
                         render_game_simon_play_page() # turn off the light colour
@@ -414,7 +419,6 @@ def store_player_guess():
         if life != lifeStore:
             break
     if len(playerPattern) == len(pattern) and life == lifeStore:
-        global score
         score = score + 1
     lifeStore = life
 
@@ -608,8 +612,6 @@ def render_credits_screen():
         WINDOW.blit(shou, (150, 300))
         tanya = gameFontCred.render('Tanya W.', True, white)
         WINDOW.blit(tanya, (150, 400))
-        
-        # pygame.draw.line(WINDOW, white, (399, 0), (399, 600), 2)
         pygame.display.update()
 
 def render_game_rules_screen():
@@ -640,13 +642,13 @@ def render_game_rules_screen():
         WINDOW.blit(goHomeText, (225, 475))
         WINDOW.blit(nextPageScaled, (75, 299.5))
         WINDOW.blit(backPageScaled, (675, 299.5))
-        pygame.draw.line(WINDOW, white, (399, 0), (399, 600), 2)
         pygame.display.update()
 
 def render_game_over_screen():
     # reset the game variables
     global score
-    score = 0 # score number
+    storeScore = score
+    score = 0
     global life
     life = 3
     global heart1
@@ -685,9 +687,10 @@ def render_game_over_screen():
         WINDOW.blit(blackGradientScreen, (0,0))
         gameOverText = gameFontEnd.render('Game Over', True, white) # write the words
         WINDOW.blit(gameOverText, (223, 200))
+        gameOverText = gameFont.render('Score: ' + str(storeScore), True, white) # write the words
+        WINDOW.blit(gameOverText, (50, 50))
         WINDOW.blit(homeButtonScaled, (279, 300))
         WINDOW.blit(restartButtonScaled, (421, 300))
-        # pygame.draw.line(WINDOW, white, (399, 0), (399, 600), 2)
         pygame.display.update()
 
 
@@ -714,5 +717,82 @@ def render_game_over_screen():
     #     # fields = line.split(',')
     #     # print (f'Player {fields[0]} got a score of : {fields[1]}')
     #     # line = scores.readline().strip()
+
+def render_save_score_screen():
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                pos = pygame.mouse.get_pos()
+                x = pos[0]
+                y = pos[1]
+
+                if 650 <= x <= 750 and 450 <= y <= 550:
+                    render_game_over_screen()
+        WINDOW.fill(grey)
+        WINDOW.blit(blackGradientScreen, (0,0))
+        pygame.draw.rect(WINDOW, black, bg)
+        pygame.draw.rect(WINDOW, white, bg, 2)
+        saveBg = pygame.Rect(300, 25, 200, 100)
+        pygame.draw.rect(WINDOW, black, saveBg)
+        pygame.draw.rect(WINDOW, white, saveBg, 2)
+        titleText = gameFontEnd.render('Save', True, white)
+        WINDOW.blit(titleText, ((WINDOW_WIDTH-titleText.get_width())/2, 55))
+        subtitleText = gameFontSubtitle.render('Rank   Name   Score', True, white)
+        WINDOW.blit(subtitleText, ((WINDOW_WIDTH-subtitleText.get_width())/2, 150))
+        WINDOW.blit(homeButtonScaled, (650, 450))
+        
+        test1 = gameFont.render('1ST', True, white)
+        WINDOW.blit(test1, (96+((WINDOW_WIDTH-subtitleText.get_width())/2)-test1.get_width(), 190))
+        test2 = gameFont.render('SYL', True, white)
+        WINDOW.blit(test2, (264+((WINDOW_WIDTH-subtitleText.get_width())/2)-test2.get_width(), 190))
+        test3 = gameFont.render('17', True, white)
+        WINDOW.blit(test3, (456+((WINDOW_WIDTH-subtitleText.get_width())/2)-test3.get_width(), 190))
+        
+        pygame.display.update()
+
+
+def render_leaderboard_screen():
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                pos = pygame.mouse.get_pos()
+                x = pos[0]
+                y = pos[1]
+
+                if 75 <= x <= 126 and 299.5 <= y <= 350.5:
+                    pageRules = pageRules + 1
+                if 675 <= x <= 726 and 299.5 <= y <= 350.5:
+                    pageRules = pageRules - 1
+                if 650 <= x <= 750 and 450 <= y <= 550:
+                    render_game_start_page()
+        WINDOW.fill(grey)
+        WINDOW.blit(blackGradientScreen, (0,0))
+        pygame.draw.rect(WINDOW, black, bg)
+        pygame.draw.rect(WINDOW, white, bg, 2)
+        leaderboardBg = pygame.Rect(100, 25, 600, 100)
+        pygame.draw.rect(WINDOW, black, leaderboardBg)
+        pygame.draw.rect(WINDOW, white, leaderboardBg, 2)
+        titleText = gameFontEnd.render('High Scores', True, white)
+        WINDOW.blit(titleText, (185, 55))
+        subtitleText = gameFontSubtitle.render('Rank   Name   Score', True, white)
+        WINDOW.blit(subtitleText, ((WINDOW_WIDTH-subtitleText.get_width())/2, 150))
+        WINDOW.blit(homeButtonScaled, (650, 450))
+        WINDOW.blit(nextPageScaled, (75, 299.5))
+        WINDOW.blit(backPageScaled, (675, 299.5))
+        
+        test1 = gameFont.render('1ST', True, white)
+        WINDOW.blit(test1, (96+((WINDOW_WIDTH-subtitleText.get_width())/2)-test1.get_width(), 190))
+        test2 = gameFont.render('SYL', True, white)
+        WINDOW.blit(test2, (264+((WINDOW_WIDTH-subtitleText.get_width())/2)-test2.get_width(), 190))
+        test3 = gameFont.render('17', True, white)
+        WINDOW.blit(test3, (456+((WINDOW_WIDTH-subtitleText.get_width())/2)-test3.get_width(), 190))
+        
+        pygame.display.update()
 
 render_game_start_page()
