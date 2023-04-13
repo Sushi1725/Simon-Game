@@ -178,8 +178,8 @@ def render_game_start_page(): # main screen page
                     # if the click is within a certain range
                     render_settings_screen()
                 elif 712 <= x <= 780 and 510 <= y <= 578:
-                    render_leaderboard_screen()
-                    # render_save_score_screen()
+                    # render_leaderboard_screen()
+                    render_save_score_screen()
     
         # set background colour
         WINDOW.fill(grey)
@@ -189,6 +189,7 @@ def render_game_start_page(): # main screen page
     
         # if cursor is over button change state to 'hover'
         if button.rect.collidepoint(pygame.mouse.get_pos()):
+            print(button.rect)
             button.hover()
             # if button pressed, change the state to 'pressed' otherwise 'hover'
             if left and button.rect.collidepoint(pygame.mouse.get_pos()):
@@ -719,6 +720,17 @@ def render_game_over_screen():
     #     # line = scores.readline().strip()
 
 def render_save_score_screen():
+    red = ('#FF0000')
+    # alphabet1 = ['A']
+    # alphabet1 = ['A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A']
+    alphabet1 = ['A' ,'B' ,'C' ,'D' ,'E' ,'F' ,'G' ,'H' ,'I' ,'J']
+    alph1X = [172, 220, 268, 316, 364, 412, 460, 508, 556, 604]
+    alphabet2 = ['K' ,'L' ,'M' ,'N' ,'O' ,'P' ,'Q' ,'R' ,'S' ,'T']
+    alphabet3 = ['U' ,'V' ,'W' ,'X' ,'Y' ,'Z' ,'-' , 'DEL']
+    letterX = 172
+    letterY = 160
+    i = 0
+    
     waiting = True
     while waiting:
         for event in pygame.event.get():
@@ -729,7 +741,7 @@ def render_save_score_screen():
                 x = pos[0]
                 y = pos[1]
 
-                if 650 <= x <= 750 and 450 <= y <= 550:
+                if 625 <= x <= 705 and 475 <= y <= 515:
                     render_game_over_screen()
         WINDOW.fill(grey)
         WINDOW.blit(blackGradientScreen, (0,0))
@@ -740,19 +752,45 @@ def render_save_score_screen():
         pygame.draw.rect(WINDOW, white, saveBg, 2)
         titleText = gameFontEnd.render('Save', True, white)
         WINDOW.blit(titleText, ((WINDOW_WIDTH-titleText.get_width())/2, 55))
-        subtitleText = gameFontSubtitle.render('Rank   Name   Score', True, white)
-        WINDOW.blit(subtitleText, ((WINDOW_WIDTH-subtitleText.get_width())/2, 150))
-        WINDOW.blit(homeButtonScaled, (650, 450))
+        okText = gameFontEnd.render('OK', True, white)
+        WINDOW.blit(okText, (625, 475))
+        for i, j in zip(alphabet1, alph1X):
+            row = gameFontSubtitle.render(i, True, white)
+            WINDOW.blit(gameFontSubtitle.render(i, True, white), (j, letterY))
+            
+            letterX = letterX + 48
+            if letterX > 604:
+                letterX = 604
+            else:
+                print(i)
+                print(letterX)
+            if gameFontSubtitle.render(i, True, white).get_rect(topleft=(j, letterY)).collidepoint(pygame.mouse.get_pos()):
+                # print('test \n')
+                pygame.draw.line(WINDOW, red, (j-2, letterY+24), (j+24, letterY+24), 4)
+            # pygame.time.delay(80)
+        row1 = gameFontSubtitle.render('A B C D E F G H I J', True, white)
+        row2 = gameFontSubtitle.render('K L M N O P Q R S T', True, white)
+        row3 = gameFontSubtitle.render('U V W X Y Z  -  DEL', True, white)
+        # WINDOW.blit(row1, (172, 160))
+        WINDOW.blit(row2, (172, 200))
+        WINDOW.blit(row3, (172, 240))
+        # output = gameFontSubtitle.render('A', True, white)
+        pygame.draw.line(WINDOW, white, (285, 450), (355, 450), 4)
+        pygame.draw.line(WINDOW, white, (365, 450), (435, 450), 4)
+        pygame.draw.line(WINDOW, white, (445, 450), (515, 450), 4)
+        # WINDOW.blit(output, (((WINDOW_WIDTH-output.get_width())/2), 400))
+        # print(output.get_width())
+        # WINDOW.blit(homeButtonScaled, (650, 450))
         
-        test1 = gameFont.render('1ST', True, white)
-        WINDOW.blit(test1, (96+((WINDOW_WIDTH-subtitleText.get_width())/2)-test1.get_width(), 190))
-        test2 = gameFont.render('SYL', True, white)
-        WINDOW.blit(test2, (264+((WINDOW_WIDTH-subtitleText.get_width())/2)-test2.get_width(), 190))
-        test3 = gameFont.render('17', True, white)
-        WINDOW.blit(test3, (456+((WINDOW_WIDTH-subtitleText.get_width())/2)-test3.get_width(), 190))
+        
+        # test1 = gameFont.render('1ST', True, white)
+        # WINDOW.blit(test1, (96+((WINDOW_WIDTH-subtitleText.get_width())/2)-test1.get_width(), 190))
+        # test2 = gameFont.render('SYL', True, white)
+        # WINDOW.blit(test2, (264+((WINDOW_WIDTH-subtitleText.get_width())/2)-test2.get_width(), 190))
+        # test3 = gameFont.render('17', True, white)
+        # WINDOW.blit(test3, (456+((WINDOW_WIDTH-subtitleText.get_width())/2)-test3.get_width(), 190))
         
         pygame.display.update()
-
 
 def render_leaderboard_screen():
     waiting = True
