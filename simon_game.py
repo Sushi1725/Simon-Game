@@ -729,6 +729,11 @@ def render_save_score_screen():
                         if len(initial) < 3:
                             initial.append(row3[g])
                             print(initial)
+                if 556 <= x <= 556+24*3 and row3Y <= y <= row3Y+24:
+                    try:
+                        initial.pop(-1)
+                    except IndexError:
+                        pass
         WINDOW.fill(grey)
         WINDOW.blit(blackGradientScreen, (0,0))
         pygame.draw.rect(WINDOW, black, bg)
@@ -765,28 +770,24 @@ def render_save_score_screen():
             pygame.draw.line(WINDOW, red, (486, row3Y+24), (484+24, row3Y+24), 4)
         if delete.get_rect(topleft=(556, row3Y)).collidepoint(pygame.mouse.get_pos()):
             pygame.draw.line(WINDOW, red, (554, row3Y+24), (556+delete.get_width(), row3Y+24), 4)
-        pygame.mouse.set_cursor()
-        
-        # row3 = gameFontSubtitle.render('U V W X Y Z  -  DEL', True, white)
-        # WINDOW.blit(row1, (172, 160))
-        # WINDOW.blit(row2, (172, 200))
-        # WINDOW.blit(row3, (172, 240))
-        # output = gameFontSubtitle.render('A', True, white)
         pygame.draw.line(WINDOW, white, (285, 450), (355, 450), 4)
         pygame.draw.line(WINDOW, white, (365, 450), (435, 450), 4)
         pygame.draw.line(WINDOW, white, (445, 450), (515, 450), 4)
-        # WINDOW.blit(output, (((WINDOW_WIDTH-output.get_width())/2), 400))
-        # print(output.get_width())
-        # WINDOW.blit(homeButtonScaled, (650, 450))
-        
-        
-        # test1 = gameFont.render('1ST', True, white)
-        # WINDOW.blit(test1, (96+((WINDOW_WIDTH-subtitleText.get_width())/2)-test1.get_width(), 190))
-        # test2 = gameFont.render('SYL', True, white)
-        # WINDOW.blit(test2, (264+((WINDOW_WIDTH-subtitleText.get_width())/2)-test2.get_width(), 190))
-        # test3 = gameFont.render('17', True, white)
-        # WINDOW.blit(test3, (456+((WINDOW_WIDTH-subtitleText.get_width())/2)-test3.get_width(), 190))
-        
+        try:
+            letter1 = gameFontStart.render(initial[0], True, white)
+            WINDOW.blit(letter1, ((((70-letter1.get_width())/2)+288), 400))
+        except IndexError:
+            pass
+        try:
+            letter2 = gameFontStart.render(initial[1], True, white)
+            WINDOW.blit(letter2, ((((70-letter2.get_width())/2)+368), 400))
+        except IndexError:
+            pass
+        try:
+            letter3 = gameFontStart.render(initial[2], True, white)
+            WINDOW.blit(letter3, ((((70-letter3.get_width())/2)+448), 400))
+        except IndexError:
+            pass
         pygame.display.update()
 
         # # The 'a' means append (as opposed to 'w' for write which will clear the file before writing.)
