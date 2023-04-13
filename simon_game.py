@@ -88,7 +88,6 @@ pygame.display.set_icon(logo) # sets the window's logo to the image
 
 # variables
 score = 0 # score number
-volume = 1.0
 life = 3
 lifeStore = life
 running = True
@@ -98,9 +97,6 @@ playerPattern = [] # store array of player guesses (used to compare)
 heart1 = heartImageFullScaled
 heart2 = heartImageFullScaled
 heart3 = heartImageFullScaled
-sliderX = 692
-sliderY = 215
-pageRules = 0
 
 ################
 # Game Classes #
@@ -189,7 +185,6 @@ def render_game_start_page(): # main screen page
     
         # if cursor is over button change state to 'hover'
         if button.rect.collidepoint(pygame.mouse.get_pos()):
-            print(button.rect)
             button.hover()
             # if button pressed, change the state to 'pressed' otherwise 'hover'
             if left and button.rect.collidepoint(pygame.mouse.get_pos()):
@@ -273,8 +268,7 @@ def show_pattern():
     # 3 = yellow
     # 4 = blue
     
-    timeDelay = 500 - 100 * int(len(pattern) / 5)
-    print('back to show pattern')
+    timeDelay = 500 - 100 * int(len(pattern) / 5) # changing it to an integer makes it round down if is float
     if timeDelay <= 100:
         print('now 100')
         timeDelay = 100
@@ -473,9 +467,8 @@ def check_pattern(playerPattern):  # only works after first guess/ if first gues
 
 def render_settings_screen():
     waiting = True
-    global volume
-    global sliderX
-    global sliderY
+    volume = 1.0
+    sliderX = 692
     sound = soundOnScaled
     soundLocation = (100, 200)
     switching = 1
@@ -616,7 +609,7 @@ def render_credits_screen():
         pygame.display.update()
 
 def render_game_rules_screen():
-    global pageRules
+    pageRules = 0
     waiting = True
     while waiting:
         for event in pygame.event.get():
@@ -694,42 +687,20 @@ def render_game_over_screen():
         WINDOW.blit(restartButtonScaled, (421, 300))
         pygame.display.update()
 
-
-    # # The 'a' means append (as opposed to 'w' for write which will clear the file before writing.)
-    # highScores = open('high_scores.txt', 'a')
-    
-    # # This is called a priming read
-    # name = input('Player name : ')
-    # score = int(input('Player score : '))
-    
-    # while name != 'end' :
-    #     highScores.write(f'{name},{score}\n')
-    #     name = input('Player name : ')
-    #     score = int(input('Player score : '))
-
-    # print('High Scores saved to file.')
-    # highScores.close()
-    # #Reading from a file
-    # #Next we will access that file and print the results.
-    # scores = open('high_scores.txt')
-	# # line = scores.readline().strip()
-
-	# # while line != '':
-    #     # fields = line.split(',')
-    #     # print (f'Player {fields[0]} got a score of : {fields[1]}')
-    #     # line = scores.readline().strip()
-
 def render_save_score_screen():
     red = ('#FF0000')
-    # alphabet1 = ['A']
-    # alphabet1 = ['A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A']
-    alphabet1 = ['A' ,'B' ,'C' ,'D' ,'E' ,'F' ,'G' ,'H' ,'I' ,'J']
-    alph1X = [172, 220, 268, 316, 364, 412, 460, 508, 556, 604]
-    alphabet2 = ['K' ,'L' ,'M' ,'N' ,'O' ,'P' ,'Q' ,'R' ,'S' ,'T']
-    alphabet3 = ['U' ,'V' ,'W' ,'X' ,'Y' ,'Z' ,'-' , 'DEL']
-    letterX = 172
-    letterY = 160
-    i = 0
+    row1 = ['A' ,'B' ,'C' ,'D' ,'E' ,'F' ,'G' ,'H' ,'I' ,'J']
+    row1X = [172, 220, 268, 316, 364, 412, 460, 508, 556, 604]
+    row1Y = 160
+    row2 = ['K' ,'L' ,'M' ,'N' ,'O' ,'P' ,'Q' ,'R' ,'S' ,'T']
+    row2X = [172, 220, 268, 316, 364, 412, 460, 508, 556, 604]
+    row2Y = 200
+    row3 = ['U' ,'V' ,'W' ,'X' ,'Y' ,'Z']
+    row3X = [172, 220, 268, 316, 364, 412, 460, 508]
+    row3Y = 240
+    initial = []
+    nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    num = [0, 1, 2, 3, 4, 5]
     
     waiting = True
     while waiting:
@@ -743,6 +714,21 @@ def render_save_score_screen():
 
                 if 625 <= x <= 705 and 475 <= y <= 515:
                     render_game_over_screen()
+                for e in nums:
+                    if row1X[e] <= x <= row1X[e]+24 and row1Y <= y <= row1Y+24:
+                        if len(initial) < 3:
+                            initial.append(row1[e])
+                            print(initial)
+                for f in nums:
+                    if row2X[f] <= x <= row2X[f]+24 and row2Y <= y <= row2Y+24:
+                        if len(initial) < 3:
+                            initial.append(row2[f])
+                            print(initial)
+                for g in num:
+                    if row3X[g] <= x <= row3X[g]+24 and row3Y <= y <= row3Y+24:
+                        if len(initial) < 3:
+                            initial.append(row3[g])
+                            print(initial)
         WINDOW.fill(grey)
         WINDOW.blit(blackGradientScreen, (0,0))
         pygame.draw.rect(WINDOW, black, bg)
@@ -754,26 +740,37 @@ def render_save_score_screen():
         WINDOW.blit(titleText, ((WINDOW_WIDTH-titleText.get_width())/2, 55))
         okText = gameFontEnd.render('OK', True, white)
         WINDOW.blit(okText, (625, 475))
-        for i, j in zip(alphabet1, alph1X):
-            row = gameFontSubtitle.render(i, True, white)
-            WINDOW.blit(gameFontSubtitle.render(i, True, white), (j, letterY))
-            
-            letterX = letterX + 48
-            if letterX > 604:
-                letterX = 604
-            else:
-                print(i)
-                print(letterX)
-            if gameFontSubtitle.render(i, True, white).get_rect(topleft=(j, letterY)).collidepoint(pygame.mouse.get_pos()):
-                # print('test \n')
-                pygame.draw.line(WINDOW, red, (j-2, letterY+24), (j+24, letterY+24), 4)
-            # pygame.time.delay(80)
-        row1 = gameFontSubtitle.render('A B C D E F G H I J', True, white)
-        row2 = gameFontSubtitle.render('K L M N O P Q R S T', True, white)
-        row3 = gameFontSubtitle.render('U V W X Y Z  -  DEL', True, white)
+        for i, j in zip(row1, row1X):
+            WINDOW.blit(gameFontSubtitle.render(i, True, white), (j, row1Y))
+            if gameFontSubtitle.render(i, True, white).get_rect(topleft=(j, row1Y)).collidepoint(pygame.mouse.get_pos()):
+                pygame.draw.line(WINDOW, red, (j-2, row1Y+24), (j+24, row1Y+24), 4)
+                # pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+            # else:
+                # pygame.mouse.set_cursor()
+        for a, b in zip(row2, row2X):
+            WINDOW.blit(gameFontSubtitle.render(a, True, white), (b, row2Y))
+            if gameFontSubtitle.render(a, True, white).get_rect(topleft=(b, row2Y)).collidepoint(pygame.mouse.get_pos()):
+                pygame.draw.line(WINDOW, red, (b-2, row2Y+24), (b+24, row2Y+24), 4)
+                # pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        for c, d in zip(row3, row3X):
+            WINDOW.blit(gameFontSubtitle.render(c, True, white), (d, row3Y))
+            if gameFontSubtitle.render(c, True, white).get_rect(topleft=(d, row3Y)).collidepoint(pygame.mouse.get_pos()):
+                pygame.draw.line(WINDOW, red, (d-2, row3Y+24), (d+24, row3Y+24), 4)
+                # pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        hyphen = gameFontSubtitle.render('-', True, white)
+        WINDOW.blit(hyphen, (484, row3Y))
+        delete = gameFontSubtitle.render('DEL', True, white)
+        WINDOW.blit(delete, (556, row3Y))
+        if hyphen.get_rect(topleft=(484, row3Y)).collidepoint(pygame.mouse.get_pos()):
+            pygame.draw.line(WINDOW, red, (486, row3Y+24), (484+24, row3Y+24), 4)
+        if delete.get_rect(topleft=(556, row3Y)).collidepoint(pygame.mouse.get_pos()):
+            pygame.draw.line(WINDOW, red, (554, row3Y+24), (556+delete.get_width(), row3Y+24), 4)
+        pygame.mouse.set_cursor()
+        
+        # row3 = gameFontSubtitle.render('U V W X Y Z  -  DEL', True, white)
         # WINDOW.blit(row1, (172, 160))
-        WINDOW.blit(row2, (172, 200))
-        WINDOW.blit(row3, (172, 240))
+        # WINDOW.blit(row2, (172, 200))
+        # WINDOW.blit(row3, (172, 240))
         # output = gameFontSubtitle.render('A', True, white)
         pygame.draw.line(WINDOW, white, (285, 450), (355, 450), 4)
         pygame.draw.line(WINDOW, white, (365, 450), (435, 450), 4)
@@ -791,6 +788,30 @@ def render_save_score_screen():
         # WINDOW.blit(test3, (456+((WINDOW_WIDTH-subtitleText.get_width())/2)-test3.get_width(), 190))
         
         pygame.display.update()
+
+        # # The 'a' means append (as opposed to 'w' for write which will clear the file before writing.)
+        # highScores = open('high_scores.txt', 'a')
+        
+        # # This is called a priming read
+        # name = input('Player name : ')
+        # score = int(input('Player score : '))
+        
+        # while name != 'end' :
+        #     highScores.write(f'{name},{score}\n')
+        #     name = input('Player name : ')
+        #     score = int(input('Player score : '))
+
+        # print('High Scores saved to file.')
+        # highScores.close()
+        # #Reading from a file
+        # #Next we will access that file and print the results.
+        # scores = open('high_scores.txt')
+        # # line = scores.readline().strip()
+
+        # # while line != '':
+        #     # fields = line.split(',')
+        #     # print (f'Player {fields[0]} got a score of : {fields[1]}')
+        #     # line = scores.readline().strip()
 
 def render_leaderboard_screen():
     waiting = True
