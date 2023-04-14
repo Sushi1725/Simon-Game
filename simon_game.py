@@ -162,6 +162,27 @@ def render_game_start_page(): # main screen page
     titleText = gameFontStart.render('SIMON', True, white) # write the words
     bobDirection = True # true = down, false = up
     
+    scores = []
+    lines = open('high_scores.txt', 'r')
+    for i in lines:
+        fields = i.strip().split(',')
+        print(fields[0] + ' got a score of: ' + fields[1])
+        scores.append(int(fields[1]))
+    print(scores)
+    scores.sort(reverse=True)
+    print(scores)
+    # lines.close()
+    # lines = open('high_scores.txt', 'r').readlines()
+    # output = open('new_scores.txt', 'w')
+
+    print(lines.readlines())
+    for line in sorted(lines, key=lambda line: line.split()[0]):
+        print(line)
+    # #     output.write(line)
+
+    # output.close()
+    lines.close()
+    
     while waiting:
         for event in pygame.event.get() : # if the user closes the window, close the game
             if event.type == QUIT :
@@ -464,7 +485,7 @@ def check_pattern(playerPattern):  # only works after first guess/ if first gues
             WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
             WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
             pygame.display.update()
-            render_game_over_screen()
+            render_save_score_screen()
 
 def render_settings_screen():
     waiting = True
@@ -809,17 +830,28 @@ def render_save_score_screen():
 def update_file():
     # # The 'a' means append (as opposed to 'w' for write which will clear the file before writing.)
     highScores = open('high_scores.txt', 'a')
-    highScores.write('' + str(initial[0]) + str(initial[1]) + str(initial[2]) + ',' + str(score) + '\n')
+    highScores.write(str(score) + ',' + str(initial[0]) + str(initial[1]) + str(initial[2]) + '\n')
     print('High Scores saved to file.')
     highScores.close()
 
-def read_file():
+def read_file(rank, suffix, fields):
     #Reading from a file
     #Next we will access that file and print the results.
+    rank = 1
+    suffix = ''
     scores = open('high_scores.txt', 'r')
     for i in scores:
         fields = i.strip().split(',')
-        print(fields[0] + ' got a score of :' + fields[1])
+        if rank == 1:
+            suffix = 'st'
+        elif rank == 2:
+            suffix = 'nd'
+        elif rank == 3:
+            suffix = 'rd'
+        elif rank >= 4:
+            suffix = 'th'
+        print(fields[0] + ' got a score of: ' + fields[1] + ' and is ' + str(rank) + suffix)
+        rank = rank + 1
     scores.close()
 
 def render_leaderboard_screen():
@@ -836,8 +868,7 @@ def render_leaderboard_screen():
                 if 75 <= x <= 126 and 299.5 <= y <= 350.5:
                     pageRules = pageRules + 1
                 if 675 <= x <= 726 and 299.5 <= y <= 350.5:
-                    read_file()
-                    # pageRules = pageRules - 1
+                    pageRules = pageRules - 1
                 if 650 <= x <= 750 and 450 <= y <= 550:
                     render_game_start_page()
         WINDOW.fill(grey)
@@ -855,12 +886,40 @@ def render_leaderboard_screen():
         WINDOW.blit(nextPageScaled, (75, 299.5))
         WINDOW.blit(backPageScaled, (675, 299.5))
         
-        test1 = gameFont.render('1ST', True, white)
-        WINDOW.blit(test1, (96+((WINDOW_WIDTH-subtitleText.get_width())/2)-test1.get_width(), 190))
-        test2 = gameFont.render('SYL', True, white)
-        WINDOW.blit(test2, (264+((WINDOW_WIDTH-subtitleText.get_width())/2)-test2.get_width(), 190))
-        test3 = gameFont.render('17', True, white)
-        WINDOW.blit(test3, (456+((WINDOW_WIDTH-subtitleText.get_width())/2)-test3.get_width(), 190))
+        #Reading from a file
+        #Next we will access that file and print the results.
+        rank = 1
+        suffix = ''
+        rankX = 190
+        scores = open('high_scores.txt', 'r')
+        for i in scores:
+            fields = i.strip().split(',')
+            print(fields)
+            if rank == 1:
+                suffix = 'st'
+            elif rank == 2:
+                suffix = 'nd'
+            elif rank == 3:
+                suffix = 'rd'
+            elif rank >= 4:
+                suffix = 'th'
+            # print(fields[0] + ' got a score of: ' + fields[1] + ' and is ' + str(rank) + suffix)
+            showRank = gameFont.render(str(rank) + suffix, True, white)
+            WINDOW.blit(showRank, (96+((WINDOW_WIDTH-subtitleText.get_width())/2)-showRank.get_width(), rankX))
+            showName = gameFont.render(fields[0], True, white)
+            WINDOW.blit(showName, (264+((WINDOW_WIDTH-subtitleText.get_width())/2)-showName.get_width(), rankX))
+            showScore = gameFont.render(fields[1], True, white)
+            WINDOW.blit(showScore, (456+((WINDOW_WIDTH-subtitleText.get_width())/2)-showScore.get_width(), rankX))
+            rank = rank + 1
+            rankX = rankX + 30
+        scores.close()
+        
+        # test1 = gameFont.render('1ST', True, white)
+        # WINDOW.blit(line1, (96+((WINDOW_WIDTH-subtitleText.get_width())/2)-test1.get_width(), 190))
+        # test2 = gameFont.render('SYL', True, white)
+        # WINDOW.blit(test2, (264+((WINDOW_WIDTH-subtitleText.get_width())/2)-test2.get_width(), 190))
+        # test3 = gameFont.render('17', True, white)
+        # WINDOW.blit(test3, (456+((WINDOW_WIDTH-subtitleText.get_width())/2)-test3.get_width(), 190))
         
         pygame.display.update()
 
