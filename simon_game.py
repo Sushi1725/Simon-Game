@@ -97,6 +97,7 @@ playerPattern = [] # store array of player guesses (used to compare)
 heart1 = heartImageFullScaled
 heart2 = heartImageFullScaled
 heart3 = heartImageFullScaled
+initial = []
 
 ################
 # Game Classes #
@@ -174,8 +175,8 @@ def render_game_start_page(): # main screen page
                     # if the click is within a certain range
                     render_settings_screen()
                 elif 712 <= x <= 780 and 510 <= y <= 578:
-                    # render_leaderboard_screen()
-                    render_save_score_screen()
+                    render_leaderboard_screen()
+                    # render_save_score_screen()
     
         # set background colour
         WINDOW.fill(grey)
@@ -698,9 +699,11 @@ def render_save_score_screen():
     row3 = ['U' ,'V' ,'W' ,'X' ,'Y' ,'Z']
     row3X = [172, 220, 268, 316, 364, 412, 460, 508]
     row3Y = 240
+    global initial
     initial = []
     nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     num = [0, 1, 2, 3, 4, 5]
+    colour = black
     
     waiting = True
     while waiting:
@@ -713,26 +716,36 @@ def render_save_score_screen():
                 y = pos[1]
 
                 if 625 <= x <= 705 and 475 <= y <= 515:
-                    render_game_over_screen()
+                    if len(initial) == 3:
+                        update_file()
+                        render_game_over_screen()
+                    else:
+                        print('Please Choose 3 Letters')
+                        colour = white
                 for e in nums:
                     if row1X[e] <= x <= row1X[e]+24 and row1Y <= y <= row1Y+24:
                         if len(initial) < 3:
                             initial.append(row1[e])
                             print(initial)
+                            colour = black
                 for f in nums:
                     if row2X[f] <= x <= row2X[f]+24 and row2Y <= y <= row2Y+24:
                         if len(initial) < 3:
                             initial.append(row2[f])
                             print(initial)
+                            colour = black
                 for g in num:
                     if row3X[g] <= x <= row3X[g]+24 and row3Y <= y <= row3Y+24:
                         if len(initial) < 3:
                             initial.append(row3[g])
                             print(initial)
+                            colour = black
                 if 556 <= x <= 556+24*3 and row3Y <= y <= row3Y+24:
                     try:
                         initial.pop(-1)
+                        colour = black
                     except IndexError:
+                        colour = black
                         pass
         WINDOW.fill(grey)
         WINDOW.blit(blackGradientScreen, (0,0))
@@ -788,31 +801,26 @@ def render_save_score_screen():
             WINDOW.blit(letter3, ((((70-letter3.get_width())/2)+448), 400))
         except IndexError:
             pass
+        errorText = gameFont.render('Please Choose 3 Letters', True, colour)
+        WINDOW.blit(errorText, ((WINDOW_WIDTH-errorText.get_width())/2, 525))
+
         pygame.display.update()
 
-        # # The 'a' means append (as opposed to 'w' for write which will clear the file before writing.)
-        # highScores = open('high_scores.txt', 'a')
-        
-        # # This is called a priming read
-        # name = input('Player name : ')
-        # score = int(input('Player score : '))
-        
-        # while name != 'end' :
-        #     highScores.write(f'{name},{score}\n')
-        #     name = input('Player name : ')
-        #     score = int(input('Player score : '))
+def update_file():
+    # # The 'a' means append (as opposed to 'w' for write which will clear the file before writing.)
+    highScores = open('high_scores.txt', 'a')
+    highScores.write('' + str(initial[0]) + str(initial[1]) + str(initial[2]) + ',' + str(score) + '\n')
+    print('High Scores saved to file.')
+    highScores.close()
 
-        # print('High Scores saved to file.')
-        # highScores.close()
-        # #Reading from a file
-        # #Next we will access that file and print the results.
-        # scores = open('high_scores.txt')
-        # # line = scores.readline().strip()
-
-        # # while line != '':
-        #     # fields = line.split(',')
-        #     # print (f'Player {fields[0]} got a score of : {fields[1]}')
-        #     # line = scores.readline().strip()
+def read_file():
+    #Reading from a file
+    #Next we will access that file and print the results.
+    scores = open('high_scores.txt', 'r')
+    for i in scores:
+        fields = i.strip().split(',')
+        print(fields[0] + ' got a score of :' + fields[1])
+    scores.close()
 
 def render_leaderboard_screen():
     waiting = True
@@ -828,7 +836,8 @@ def render_leaderboard_screen():
                 if 75 <= x <= 126 and 299.5 <= y <= 350.5:
                     pageRules = pageRules + 1
                 if 675 <= x <= 726 and 299.5 <= y <= 350.5:
-                    pageRules = pageRules - 1
+                    read_file()
+                    # pageRules = pageRules - 1
                 if 650 <= x <= 750 and 450 <= y <= 550:
                     render_game_start_page()
         WINDOW.fill(grey)
