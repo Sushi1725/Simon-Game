@@ -166,25 +166,21 @@ def render_game_start_page(): # main screen page
     sortedFile = []
     scoreFile = open("fasd.csv")
     fileReader = csv.reader(scoreFile, delimiter=",")
-    try:
-        for Score, Name in fileReader:
-            sortedFile = sorted(fileReader, key=lambda row: int(row[0]), reverse=True)
-            print(sortedFile)
-        scoreFile.close()
+    for Score, Name in fileReader:
+        sortedFile = sorted(fileReader, key=lambda row: int(row[0]), reverse=True)
+        print(sortedFile)
+    scoreFile.close()
 
-        scoreFile2 = open("fasd.csv", "w", newline='')
-        fileWriter = csv.writer(scoreFile2, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
-        txtFile = open("high_scores.txt", "w", newline='')
-        txtFileWriter = csv.writer(txtFile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
-        fileWriter.writerow(['Score', 'Name'])
-        for i, j in enumerate(sortedFile):
-            fileWriter.writerow(sortedFile[i])
-            txtFileWriter.writerow(sortedFile[i])
-    except IndexError:
-        pass
+    scoreFile2 = open("fasd.csv", "w", newline='')
+    fileWriter = csv.writer(scoreFile2, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
+    txtFile = open("high_scores.txt", "w", newline='')
+    txtFileWriter = csv.writer(txtFile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
+    fileWriter.writerow(['Score', 'Name'])
+    for i, j in enumerate(sortedFile):
+        fileWriter.writerow(sortedFile[i])
+        txtFileWriter.writerow(sortedFile[i])
     scoreFile2.close()
     txtFile.close()
-    
     
     while waiting:
         for event in pygame.event.get() : # if the user closes the window, close the game
@@ -200,11 +196,9 @@ def render_game_start_page(): # main screen page
                     render_settings_screen()
                 elif 712 <= x <= 780 and 510 <= y <= 578:
                     render_leaderboard_screen()
-                    # render_save_score_screen()
     
         # set background colour
         WINDOW.fill(grey)
-    
         button = Start_Button(startButtonNormal, (100, 100), None) # get the button from the Start_Button class
         left, middle, right = pygame.mouse.get_pressed()
     
@@ -241,9 +235,9 @@ def render_game_start_page(): # main screen page
             bobDirection = False
     
         if bobDirection == True:
-            logoBob += 0.5 # move it down
+            logoBob = logoBob + 0.5 # move it down
         else:
-            logoBob -= 0.5 # move it up
+            logoBob = logoBob - 0.5 # move it up
     
         pygame.time.Clock().tick(FPS)
     
@@ -849,10 +843,6 @@ def render_leaderboard_screen():
                 x = pos[0]
                 y = pos[1]
 
-                if 75 <= x <= 126 and 299.5 <= y <= 350.5:
-                    pageRules = pageRules + 1
-                if 675 <= x <= 726 and 299.5 <= y <= 350.5:
-                    pageRules = pageRules - 1
                 if 650 <= x <= 750 and 450 <= y <= 550:
                     render_game_start_page()
         WINDOW.fill(grey)
@@ -867,8 +857,6 @@ def render_leaderboard_screen():
         subtitleText = gameFontSubtitle.render('Rank   Name   Score', True, white)
         WINDOW.blit(subtitleText, ((WINDOW_WIDTH-subtitleText.get_width())/2, 150))
         WINDOW.blit(homeButtonScaled, (650, 450))
-        WINDOW.blit(nextPageScaled, (75, 299.5))
-        WINDOW.blit(backPageScaled, (675, 299.5))
         
         #Reading from a file
         #Next we will access that file and print the results.
@@ -876,34 +864,28 @@ def render_leaderboard_screen():
         suffix = ''
         rankX = 190
         scores = open('high_scores.txt', 'r')
-        for i in scores:
-            fields = i.strip().split(',')
-            print(fields)
-            if rank == 1:
-                suffix = 'st'
-            elif rank == 2:
-                suffix = 'nd'
-            elif rank == 3:
-                suffix = 'rd'
-            elif rank >= 4:
-                suffix = 'th'
-            # print(fields[0] + ' got a score of: ' + fields[1] + ' and is ' + str(rank) + suffix)
-            showRank = gameFont.render(str(rank) + suffix, True, white)
-            WINDOW.blit(showRank, (96+((WINDOW_WIDTH-subtitleText.get_width())/2)-showRank.get_width(), rankX))
-            showName = gameFont.render(fields[1], True, white)
-            WINDOW.blit(showName, (264+((WINDOW_WIDTH-subtitleText.get_width())/2)-showName.get_width(), rankX))
-            showScore = gameFont.render(fields[0], True, white)
-            WINDOW.blit(showScore, (456+((WINDOW_WIDTH-subtitleText.get_width())/2)-showScore.get_width(), rankX))
-            rank = rank + 1
-            rankX = rankX + 30
+        for j, i in enumerate(scores):
+            if j < 10: # limit to the top ten
+                fields = i.strip().split(',')
+                # print(fields)
+                if rank == 1:
+                    suffix = 'st'
+                elif rank == 2:
+                    suffix = 'nd'
+                elif rank == 3:
+                    suffix = 'rd'
+                elif rank >= 4:
+                    suffix = 'th'
+                # print(fields[0] + ' got a score of: ' + fields[1] + ' and is ' + str(rank) + suffix)
+                showRank = gameFont.render(str(rank) + suffix, True, white)
+                WINDOW.blit(showRank, (96+((WINDOW_WIDTH-subtitleText.get_width())/2)-showRank.get_width(), rankX))
+                showName = gameFont.render(fields[1], True, white)
+                WINDOW.blit(showName, (264+((WINDOW_WIDTH-subtitleText.get_width())/2)-showName.get_width(), rankX))
+                showScore = gameFont.render(fields[0], True, white)
+                WINDOW.blit(showScore, (456+((WINDOW_WIDTH-subtitleText.get_width())/2)-showScore.get_width(), rankX))
+                rank = rank + 1
+                rankX = rankX + 30
         scores.close()
-        
-        # test1 = gameFont.render('1ST', True, white)
-        # WINDOW.blit(line1, (96+((WINDOW_WIDTH-subtitleText.get_width())/2)-test1.get_width(), 190))
-        # test2 = gameFont.render('SYL', True, white)
-        # WINDOW.blit(test2, (264+((WINDOW_WIDTH-subtitleText.get_width())/2)-test2.get_width(), 190))
-        # test3 = gameFont.render('17', True, white)
-        # WINDOW.blit(test3, (456+((WINDOW_WIDTH-subtitleText.get_width())/2)-test3.get_width(), 190))
         
         pygame.display.update()
 

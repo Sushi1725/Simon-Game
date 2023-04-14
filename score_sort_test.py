@@ -130,17 +130,17 @@ score = 9
 initial = ['A', 'B', 'C']
 
 try:
-    # for Score, Name in fileReader:
-    #     sortedFile = sorted(fileReader, key=lambda row: int(row[0]), reverse=True)
-    #     print(sortedFile)
-    # scoreFile.close()
+    for Score, Name in fileReader:
+        sortedFile = sorted(fileReader, key=lambda row: int(row[0]), reverse=True)
+        print(sortedFile)
+    scoreFile.close()
 
     scoreFile2 = open("fasd.csv", "w", newline='')
     fileWriter = csv.writer(scoreFile2, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
     fileWriter.writerow(['Score', 'Name'])
     fileWriter.writerow([score, initial[0] + initial[1] + initial[2]])
 
-    # for i, j in enumerate(sortedFile):
-    #     fileWriter.writerow(sortedFile[i])
+    for i, j in enumerate(sortedFile):
+        fileWriter.writerow(sortedFile[i])
 except IndexError:
     pass
