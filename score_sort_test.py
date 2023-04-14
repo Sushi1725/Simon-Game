@@ -111,11 +111,36 @@
 # print(csvData)
 
 
+# import sys
+# import csv
+
+# reader = csv.reader(open("fasd.csv"), delimiter=",")
+
+# for Score, Name in reader:
+#     sortedList = sorted(reader, key=lambda row: int(row[0]), reverse=True)
+#     print(sortedList)
+    
+    
 import sys
 import csv
 
-reader = csv.reader(open("fasd.csv"), delimiter=",")
+scoreFile = open("fasd.csv")
+fileReader = csv.reader(scoreFile, delimiter=",")
+score = 9
+initial = ['A', 'B', 'C']
 
-for Score, Name in reader:
-    sortedList = sorted(reader, key=lambda row: int(row[0]), reverse=True)
-    print(sortedList)
+try:
+    # for Score, Name in fileReader:
+    #     sortedFile = sorted(fileReader, key=lambda row: int(row[0]), reverse=True)
+    #     print(sortedFile)
+    # scoreFile.close()
+
+    scoreFile2 = open("fasd.csv", "w", newline='')
+    fileWriter = csv.writer(scoreFile2, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
+    fileWriter.writerow(['Score', 'Name'])
+    fileWriter.writerow([score, initial[0] + initial[1] + initial[2]])
+
+    # for i, j in enumerate(sortedFile):
+    #     fileWriter.writerow(sortedFile[i])
+except IndexError:
+    pass

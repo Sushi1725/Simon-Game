@@ -3,6 +3,7 @@ import sys
 import random
 import time
 from pygame.locals import *
+import csv
 
 # Game Setup
 FPS = 60
@@ -162,26 +163,28 @@ def render_game_start_page(): # main screen page
     titleText = gameFontStart.render('SIMON', True, white) # write the words
     bobDirection = True # true = down, false = up
     
-    scores = []
-    lines = open('high_scores.txt', 'r')
-    for i in lines:
-        fields = i.strip().split(',')
-        print(fields[0] + ' got a score of: ' + fields[1])
-        scores.append(int(fields[1]))
-    print(scores)
-    scores.sort(reverse=True)
-    print(scores)
-    # lines.close()
-    # lines = open('high_scores.txt', 'r').readlines()
-    # output = open('new_scores.txt', 'w')
+    sortedFile = []
+    scoreFile = open("fasd.csv")
+    fileReader = csv.reader(scoreFile, delimiter=",")
+    try:
+        for Score, Name in fileReader:
+            sortedFile = sorted(fileReader, key=lambda row: int(row[0]), reverse=True)
+            print(sortedFile)
+        scoreFile.close()
 
-    print(lines.readlines())
-    for line in sorted(lines, key=lambda line: line.split()[0]):
-        print(line)
-    # #     output.write(line)
-
-    # output.close()
-    lines.close()
+        scoreFile2 = open("fasd.csv", "w", newline='')
+        fileWriter = csv.writer(scoreFile2, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
+        txtFile = open("high_scores.txt", "w", newline='')
+        txtFileWriter = csv.writer(txtFile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
+        fileWriter.writerow(['Score', 'Name'])
+        for i, j in enumerate(sortedFile):
+            fileWriter.writerow(sortedFile[i])
+            txtFileWriter.writerow(sortedFile[i])
+    except IndexError:
+        pass
+    scoreFile2.close()
+    txtFile.close()
+    
     
     while waiting:
         for event in pygame.event.get() : # if the user closes the window, close the game
@@ -829,30 +832,11 @@ def render_save_score_screen():
 
 def update_file():
     # # The 'a' means append (as opposed to 'w' for write which will clear the file before writing.)
-    highScores = open('high_scores.txt', 'a')
-    highScores.write(str(score) + ',' + str(initial[0]) + str(initial[1]) + str(initial[2]) + '\n')
+    highScores = open('fasd.csv', 'a', newline='')
+    fileWriter = csv.writer(highScores, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
+    fileWriter.writerow([score, initial[0] + initial[1] + initial[2]])
     print('High Scores saved to file.')
     highScores.close()
-
-def read_file(rank, suffix, fields):
-    #Reading from a file
-    #Next we will access that file and print the results.
-    rank = 1
-    suffix = ''
-    scores = open('high_scores.txt', 'r')
-    for i in scores:
-        fields = i.strip().split(',')
-        if rank == 1:
-            suffix = 'st'
-        elif rank == 2:
-            suffix = 'nd'
-        elif rank == 3:
-            suffix = 'rd'
-        elif rank >= 4:
-            suffix = 'th'
-        print(fields[0] + ' got a score of: ' + fields[1] + ' and is ' + str(rank) + suffix)
-        rank = rank + 1
-    scores.close()
 
 def render_leaderboard_screen():
     waiting = True
@@ -906,9 +890,9 @@ def render_leaderboard_screen():
             # print(fields[0] + ' got a score of: ' + fields[1] + ' and is ' + str(rank) + suffix)
             showRank = gameFont.render(str(rank) + suffix, True, white)
             WINDOW.blit(showRank, (96+((WINDOW_WIDTH-subtitleText.get_width())/2)-showRank.get_width(), rankX))
-            showName = gameFont.render(fields[0], True, white)
+            showName = gameFont.render(fields[1], True, white)
             WINDOW.blit(showName, (264+((WINDOW_WIDTH-subtitleText.get_width())/2)-showName.get_width(), rankX))
-            showScore = gameFont.render(fields[1], True, white)
+            showScore = gameFont.render(fields[0], True, white)
             WINDOW.blit(showScore, (456+((WINDOW_WIDTH-subtitleText.get_width())/2)-showScore.get_width(), rankX))
             rank = rank + 1
             rankX = rankX + 30
