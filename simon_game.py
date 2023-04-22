@@ -1,7 +1,6 @@
 import pygame
 import sys
 import random
-import time
 from pygame.locals import *
 import csv
 
@@ -99,6 +98,7 @@ heart1 = heartImageFullScaled
 heart2 = heartImageFullScaled
 heart3 = heartImageFullScaled
 initial = []
+volume = 1.0
 
 ################
 # Game Classes #
@@ -434,6 +434,9 @@ def store_player_guess():
             break
     if len(playerPattern) == len(pattern) and life == lifeStore:
         score = score + 1
+        pygame.mixer.music.load('./Assets/sounds/ding.wav')
+        pygame.mixer.music.play()
+        pygame.time.delay(1500) # wait
     lifeStore = life
 
 def life_loss():
@@ -486,6 +489,7 @@ def check_pattern(playerPattern):  # only works after first guess/ if first gues
 
 def render_settings_screen():
     waiting = True
+    global volume
     volume = 1.0
     sliderX = 692
     sound = soundOnScaled
@@ -520,11 +524,11 @@ def render_settings_screen():
                         pygame.mixer.music.set_volume(volume)
                         switching = 1
                         break
-                elif 180 <= x <= 420 and 450 <= y <= 540:
+                elif 360 <= x <= 440 and 475 <= y <= 515:
                     waiting = False
-                elif 580 <= x <= 620 and 450 <= y <= 540:
+                elif 299 <= x <= 499 and 365 <= y <= 425:
                     render_credits_screen()
-                elif 720 <= x <= 800 and 450 <= y <= 540:
+                elif 349 <= x <= 449 and 275 <= y <= 335:
                     render_game_rules_screen()
             if event.type == pygame.MOUSEMOTION and event.buttons == (1, 0, 0): # slider
                 pos = pygame.mouse.get_pos() # if the cursor is moving and left click is being pressed
@@ -558,14 +562,20 @@ def render_settings_screen():
 
         WINDOW.fill(grey)
         WINDOW.blit(blackGradientScreen, (0,0))
-        thig = pygame.Rect(180, 450, 100, 100)
-        temp = pygame.Rect(580, 450, 40, 90)
-        temp1 = pygame.Rect(720, 450, 80, 90)
+        credBox = pygame.Rect(299, 365, 200, 60)
+        infoBox = pygame.Rect(349, 275, 100, 60)
         pygame.draw.rect(WINDOW, black, bg)
         pygame.draw.rect(WINDOW, white, bg, 2)
-        pygame.draw.rect(WINDOW, white, thig)
-        pygame.draw.rect(WINDOW, white, temp)
-        pygame.draw.rect(WINDOW, white, temp1)
+        pygame.draw.rect(WINDOW, black, credBox)
+        pygame.draw.rect(WINDOW, white, credBox, 2)
+        pygame.draw.rect(WINDOW, black, infoBox)
+        pygame.draw.rect(WINDOW, white, infoBox, 2)
+        okText = gameFontEnd.render("OK", True, white)
+        WINDOW.blit(okText, ((WINDOW_WIDTH-okText.get_width())/2, 475))
+        infoText = gameFontSubtitle.render("i", True, white)
+        WINDOW.blit(infoText, ((WINDOW_WIDTH-infoText.get_width())/2, 295))
+        credText = gameFontSubtitle.render("Credits", True, white)
+        WINDOW.blit(credText, ((WINDOW_WIDTH-credText.get_width())/2, 385))
         WINDOW.blit(settingsScaled2, (345.3, 50))
         WINDOW.blit(sound, soundLocation)
         pygame.draw.line(WINDOW, white, (180, 227), (705, 227), 2) # volume goes up to 525
@@ -574,27 +584,6 @@ def render_settings_screen():
         pygame.mixer.music.set_volume(volume) # sliderScaled = (26, 26)
         print(volume)
         pygame.display.update() #^^^ 177 cause 1 empty *2 + 1
-
-def render_game_info_screen():
-    waiting = True
-    while waiting:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                quit()
-            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                pos = pygame.mouse.get_pos()
-                x = pos[0]
-                y = pos[1]
-
-                if 180 <= x <= 234 and 300 <= y <= 354:
-                    render_game_start_page()
-                elif 180 <= x <= 420 and 450 <= y <= 540:
-                    quit()
-        WINDOW.fill(grey)
-        WINDOW.blit(blackGradientScreen, (0,0))
-        pygame.draw.rect(WINDOW, black, bg)
-        pygame.draw.rect(WINDOW, white, bg, 2)
-        pygame.display.update()
 
 def render_credits_screen():
     waiting = True
@@ -628,8 +617,8 @@ def render_credits_screen():
         pygame.display.update()
 
 def render_game_rules_screen():
-    pageRules = 0
     waiting = True
+    textToShowNum = 1
     while waiting:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -640,21 +629,94 @@ def render_game_rules_screen():
                 y = pos[1]
 
                 if 75 <= x <= 126 and 299.5 <= y <= 350.5:
-                    pageRules = pageRules + 1
+                    textToShowNum = textToShowNum - 1
+                    if textToShowNum < 1:
+                        textToShowNum = 1
                 if 675 <= x <= 726 and 299.5 <= y <= 350.5:
-                    pageRules = pageRules - 1
-                if 225 <= x <= 581 and 475 <= y <= 501:
+                    textToShowNum = textToShowNum + 1
+                    if textToShowNum > 3:
+                        textToShowNum = 3
+                if 225 <= x <= 581 and 475 <= y <= 501 and textToShowNum == 3:
                     render_game_start_page()
+        
         WINDOW.fill(grey)
         WINDOW.blit(blackGradientScreen, (0,0))
         pygame.draw.rect(WINDOW, black, bg)
         pygame.draw.rect(WINDOW, white, bg, 2)
         titleText = gameFontEnd.render('Game Rules', True, white)
         WINDOW.blit(titleText, (205, 35))
-        goHomeText = gameFontCred.render('Back to Game', True, white)
-        WINDOW.blit(goHomeText, (225, 475))
         WINDOW.blit(nextPageScaled, (75, 299.5))
         WINDOW.blit(backPageScaled, (675, 299.5))
+        pageNum = gameFont.render(str(textToShowNum) + "/3", True, white)
+        WINDOW.blit(pageNum, (WINDOW_WIDTH-pageNum.get_width()-70, 515))
+        if textToShowNum == 1:
+            cover = pygame.Rect(75, 299.5, 51, 51)
+            pygame.draw.rect(WINDOW, black, cover)
+            page1line1 = gameFont.render("The following game is a", True, white)
+            WINDOW.blit(page1line1, (int(((WINDOW_WIDTH-page1line1.get_width())/2)), 250))
+            page1line2 = gameFont.render("python recreation of the", True, white)
+            WINDOW.blit(page1line2, (int(((WINDOW_WIDTH-page1line2.get_width())/2)), 275))
+            page1line3 = gameFont.render("1978 children's toy 'Simon'", True, white)
+            WINDOW.blit(page1line3, (int(((WINDOW_WIDTH-page1line3.get_width())/2)), 300))
+            page1line4 = gameFont.render("by Ralph H. Baer and", True, white)
+            WINDOW.blit(page1line4, (int(((WINDOW_WIDTH-page1line4.get_width())/2)), 325))
+            page1line5 = gameFont.render("Howard J. Morrison", True, white)
+            WINDOW.blit(page1line5, (int(((WINDOW_WIDTH-page1line5.get_width())/2)), 350))
+            
+        elif textToShowNum == 2:
+            page2line1 = gameFont.render("The game has four coloured", True, white)
+            WINDOW.blit(page2line1, (140, 175))
+            page2line2 = gameFont.render("buttons where each button", True, white)
+            WINDOW.blit(page2line2, (140, 200))
+            page2line3 = gameFont.render("produces a unique tone when", True, white)
+            WINDOW.blit(page2line3, (140, 225))
+            page2line4 = gameFont.render("it is pressed or activated.", True, white)
+            WINDOW.blit(page2line4, (140, 250))
+            page2line5 = gameFont.render("One round in the game", True, white)
+            WINDOW.blit(page2line5, (140, 275))
+            page2line6 = gameFont.render("consists of one or more", True, white)
+            WINDOW.blit(page2line6, (140, 300))
+            page2line7 = gameFont.render("colours lighting up and", True, white)
+            WINDOW.blit(page2line7, (140, 325))
+            page2line8 = gameFont.render("sounding in a random order.", True, white)
+            WINDOW.blit(page2line8, (140, 350))
+            page2line9 = gameFont.render("After, the player must", True, white)
+            WINDOW.blit(page2line9, (140, 375))
+            page2line10 = gameFont.render("reproduce that pattern by", True, white)
+            WINDOW.blit(page2line10, (140, 400))
+            page2line11 = gameFont.render("pressing the buttons.", True, white)
+            WINDOW.blit(page2line11, (140, 425))
+            page2line12 = gameFont.render("As the game progresses,", True, white)
+            WINDOW.blit(page2line12, (140, 450))
+        elif textToShowNum == 3:
+            cover = pygame.Rect(675, 299.5, 51, 51)
+            pygame.draw.rect(WINDOW, black, cover)
+            page3line1 = gameFont.render("the number of buttons", True, white)
+            WINDOW.blit(page3line1, (140, 150))
+            page3line2 = gameFont.render("that needs to be pressed", True, white)
+            WINDOW.blit(page3line2, (140, 175))
+            page3line3 = gameFont.render("increases. The speed which", True, white)
+            WINDOW.blit(page3line3, (140, 200))
+            page3line4 = gameFont.render("the colour pattern is", True, white)
+            WINDOW.blit(page3line4, (140, 225))
+            page3line5 = gameFont.render("played at also gets faster", True, white)
+            WINDOW.blit(page3line5, (140, 250))
+            page3line6 = gameFont.render("every 5 turns. You are", True, white)
+            WINDOW.blit(page3line6, (140, 275))
+            page3line7 = gameFont.render("given 3 lives. Your goal", True, white)
+            WINDOW.blit(page3line7, (140, 300))
+            page3line8 = gameFont.render("is to get the highest", True, white)
+            WINDOW.blit(page3line8, (140, 325))
+            page3line9 = gameFont.render("score in those 3 lives to", True, white)
+            WINDOW.blit(page3line9, (140, 350))
+            page3line10 = gameFont.render("get onto the leaderboard.", True, white)
+            WINDOW.blit(page3line10, (140, 375))
+            page3line11 = gameFont.render("", True, white)
+            WINDOW.blit(page3line11, (140, 400))
+            page3line12 = gameFont.render("Good Luck :)", True, white)
+            WINDOW.blit(page3line12, (int((WINDOW_WIDTH-page3line12.get_width())/2), 425))
+            goHomeText = gameFontCred.render('Back to Game', True, white)
+            WINDOW.blit(goHomeText, (225, 475))
         pygame.display.update()
 
 def render_game_over_screen():
@@ -765,6 +827,11 @@ def render_save_score_screen():
                     except IndexError:
                         colour = black
                         pass
+                if 484 <= x <= 484+24 and row3Y <= y <= row3Y+24:
+                    if len(initial) < 3:
+                        initial.append('-')
+                        print(initial)
+                        colour = black
         WINDOW.fill(grey)
         WINDOW.blit(blackGradientScreen, (0,0))
         pygame.draw.rect(WINDOW, black, bg)
