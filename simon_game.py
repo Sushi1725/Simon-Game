@@ -164,14 +164,14 @@ def render_game_start_page(): # main screen page
     bobDirection = True # true = down, false = up
     
     sortedFile = []
-    scoreFile = open("fasd.csv")
+    scoreFile = open("high_scores.csv")
     fileReader = csv.reader(scoreFile, delimiter=",")
     for Score, Name in fileReader:
         sortedFile = sorted(fileReader, key=lambda row: int(row[0]), reverse=True)
         print(sortedFile)
     scoreFile.close()
 
-    scoreFile2 = open("fasd.csv", "w", newline='')
+    scoreFile2 = open("high_scores.csv", "w", newline='')
     fileWriter = csv.writer(scoreFile2, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
     txtFile = open("high_scores.txt", "w", newline='')
     txtFileWriter = csv.writer(txtFile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
@@ -893,7 +893,7 @@ def render_save_score_screen():
 
 def update_file():
     # # The 'a' means append (as opposed to 'w' for write which will clear the file before writing.)
-    highScores = open('fasd.csv', 'a', newline='')
+    highScores = open('high_scores.csv', 'a', newline='')
     fileWriter = csv.writer(highScores, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
     fileWriter.writerow([score, initial[0] + initial[1] + initial[2]])
     print('High Scores saved to file.')
