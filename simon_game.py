@@ -537,6 +537,7 @@ def render_settings_screen():
                 
                 if x < 180 or x > 705 or y < yMin and 180 <= x <= 705 or y > yMax and 180 <= x <= 705:
                     print('ok')
+                    break #### TESTING ###### NOT SURE IF WORKING
                 else:
                     if event.rel[0] != 0:
                         yMin = 0
