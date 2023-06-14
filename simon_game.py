@@ -100,6 +100,7 @@ heart2 = heartImageFullScaled
 heart3 = heartImageFullScaled
 initial = []
 volume = 1.0
+gameMode = "Normal"
 
 ################
 # Game Classes #
@@ -156,14 +157,7 @@ class Heart_Animation: # the heart animation class
 # Game Functions #
 ##################
 
-def render_game_start_page(): # main screen page
-    waiting = True
-    global score
-    score = 0
-    logoBob = 50 # where the logo starts at (y-axis)
-    titleText = gameFontStart.render('SIMON', True, white) # write the words
-    bobDirection = True # true = down, false = up
-    
+def sort_scores():
     sortedFile = []
     scoreFile = open("high_scores.csv")
     fileReader = csv.reader(scoreFile, delimiter=",")
@@ -182,6 +176,16 @@ def render_game_start_page(): # main screen page
         txtFileWriter.writerow(sortedFile[i])
     scoreFile2.close()
     txtFile.close()
+
+def render_game_start_page(): # main screen page
+    waiting = True
+    global score
+    score = 0
+    logoBob = 50 # where the logo starts at (y-axis)
+    titleText = gameFontStart.render('SIMON', True, white) # write the words
+    bobDirection = True # true = down, false = up
+    
+    sort_scores()
     
     while waiting:
         for event in pygame.event.get(): # if the user closes the window, close the game
@@ -209,7 +213,11 @@ def render_game_start_page(): # main screen page
             # if button pressed, change the state to 'pressed' otherwise 'hover'
             if left and button.rect.collidepoint(pygame.mouse.get_pos()):
                 button.pressed()
-                choose_mode() # player choose the mode then start playin
+                # WINDOW.blit(blackGradientScreen, (0,0))
+                # pygame.display.update()
+                # choose_mode() # player choose the mode then start playin
+                # WINDOW.blit(blackGradientScreen, (0,0))
+                # pygame.display.update()
                 waiting = False
                 print('playin')
                 # render_game_simon_play_page()
@@ -245,9 +253,7 @@ def render_game_start_page(): # main screen page
         pygame.time.Clock().tick(FPS)
     
     while running:
-        random_pattern()
-        show_pattern()
-        store_player_guess()
+        choose_mode()
     while not running:
         render_game_over_screen()
 
@@ -273,6 +279,21 @@ def choose_mode():
         pygame.draw.rect(WINDOW, white, credBg, 2)
         WINDOW.blit(homeButtonScaled, (600, 400))
         pygame.display.update()
+    while running:
+        if gameMode == "Easy":
+            random_pattern()
+            show_pattern()
+            store_player_guess()
+        if gameMode == "Normal":
+            random_pattern()
+            show_pattern()
+            store_player_guess()
+        if gameMode == "Hard":
+            random_pattern()
+            show_pattern()
+            store_player_guess()
+        if gameMode == "Penguin":
+            peng_flying_game_mode()
 
 def render_game_simon_play_page(yellowColour = yellowScaled, blueColour = blueScaled, greenColour = greenScaled, redColour = redScaled):
     for event in pygame.event.get():
@@ -659,55 +680,19 @@ def render_game_rules_screen():
             WINDOW.blit(page1line5, (int(((WINDOW_WIDTH-page1line5.get_width())/2)), 350))
             
         elif textToShowNum == 2:
-            page2line1 = gameFont.render("The game has four coloured", True, white)
-            WINDOW.blit(page2line1, (140, 175))
-            page2line2 = gameFont.render("buttons where each button", True, white)
-            WINDOW.blit(page2line2, (140, 200))
-            page2line3 = gameFont.render("produces a unique tone when", True, white)
-            WINDOW.blit(page2line3, (140, 225))
-            page2line4 = gameFont.render("it is pressed or activated.", True, white)
-            WINDOW.blit(page2line4, (140, 250))
-            page2line5 = gameFont.render("One round in the game", True, white)
-            WINDOW.blit(page2line5, (140, 275))
-            page2line6 = gameFont.render("consists of one or more", True, white)
-            WINDOW.blit(page2line6, (140, 300))
-            page2line7 = gameFont.render("colours lighting up and", True, white)
-            WINDOW.blit(page2line7, (140, 325))
-            page2line8 = gameFont.render("sounding in a random order.", True, white)
-            WINDOW.blit(page2line8, (140, 350))
-            page2line9 = gameFont.render("After, the player must", True, white)
-            WINDOW.blit(page2line9, (140, 375))
-            page2line10 = gameFont.render("reproduce that pattern by", True, white)
-            WINDOW.blit(page2line10, (140, 400))
-            page2line11 = gameFont.render("pressing the buttons.", True, white)
-            WINDOW.blit(page2line11, (140, 425))
-            page2line12 = gameFont.render("As the game progresses,", True, white)
-            WINDOW.blit(page2line12, (140, 450))
+            linesP2 = ["The game has four coloured", "buttons where each button", "produces a unique tone when", "it is pressed or activated.", "One round in the game", "consists of one or more", "colours lighting up and", "sounding in a random order.", "After, the player must", "reproduce that pattern by", "pressing the buttons.", "As the game progresses,"]
+            y = 175
+            for o in linesP2:
+                WINDOW.blit(gameFont.render(o, True, white), (140, y))
+                y = y + 25
         elif textToShowNum == 3:
             cover = pygame.Rect(675, 299.5, 51, 51)
             pygame.draw.rect(WINDOW, black, cover)
-            page3line1 = gameFont.render("the number of buttons", True, white)
-            WINDOW.blit(page3line1, (140, 150))
-            page3line2 = gameFont.render("that needs to be pressed", True, white)
-            WINDOW.blit(page3line2, (140, 175))
-            page3line3 = gameFont.render("increases. The speed which", True, white)
-            WINDOW.blit(page3line3, (140, 200))
-            page3line4 = gameFont.render("the colour pattern is", True, white)
-            WINDOW.blit(page3line4, (140, 225))
-            page3line5 = gameFont.render("played at also gets faster", True, white)
-            WINDOW.blit(page3line5, (140, 250))
-            page3line6 = gameFont.render("every 5 turns. You are", True, white)
-            WINDOW.blit(page3line6, (140, 275))
-            page3line7 = gameFont.render("given 3 lives. Your goal", True, white)
-            WINDOW.blit(page3line7, (140, 300))
-            page3line8 = gameFont.render("is to get the highest", True, white)
-            WINDOW.blit(page3line8, (140, 325))
-            page3line9 = gameFont.render("score in those 3 lives to", True, white)
-            WINDOW.blit(page3line9, (140, 350))
-            page3line10 = gameFont.render("get onto the leaderboard.", True, white)
-            WINDOW.blit(page3line10, (140, 375))
-            page3line11 = gameFont.render("", True, white)
-            WINDOW.blit(page3line11, (140, 400))
+            linesP3 = ["the number of buttons", "that needs to be pressed", "increases. The speed which", "the colour pattern is", "played at also gets faster", "every 5 turns. You are", "given 3 lives. Your goal", "is to get the highest", "score in those 3 lives to", "get onto the leaderboard.", ""]
+            y = 150
+            for p in linesP3:
+                WINDOW.blit(gameFont.render(p, True, white), (140, y))
+                y = y + 25
             page3line12 = gameFont.render("Good Luck :)", True, white)
             WINDOW.blit(page3line12, (int((WINDOW_WIDTH-page3line12.get_width())/2), 425))
             goHomeText = gameFontCred.render('Back to Game', True, white)
