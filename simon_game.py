@@ -15,6 +15,7 @@ pygame.mixer.init()
 white = ('#FFFFFF')
 grey = ('#131313')
 black = ('#000000')
+red = ('#FF0000')
 
 # load all the images
 logo = pygame.image.load('./Assets/simon_logo.png')
@@ -183,8 +184,8 @@ def render_game_start_page(): # main screen page
     txtFile.close()
     
     while waiting:
-        for event in pygame.event.get() : # if the user closes the window, close the game
-            if event.type == QUIT :
+        for event in pygame.event.get(): # if the user closes the window, close the game
+            if event.type == QUIT:
                 quit()
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 pos = pygame.mouse.get_pos()
@@ -208,7 +209,9 @@ def render_game_start_page(): # main screen page
             # if button pressed, change the state to 'pressed' otherwise 'hover'
             if left and button.rect.collidepoint(pygame.mouse.get_pos()):
                 button.pressed()
+                choose_mode() # player choose the mode then start playin
                 waiting = False
+                print('playin')
                 # render_game_simon_play_page()
             else:
                 button.hover()
@@ -248,9 +251,32 @@ def render_game_start_page(): # main screen page
     while not running:
         render_game_over_screen()
 
+def choose_mode():
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                pos = pygame.mouse.get_pos()
+                x = pos[0]
+                y = pos[1]
+
+                if 600 <= x <= 700 and 400 <= y <= 500:
+                    waiting = False
+        WINDOW.fill(grey)
+        WINDOW.blit(blackGradientScreen, (0,0))
+        pygame.draw.rect(WINDOW, black, bg)
+        pygame.draw.rect(WINDOW, white, bg, 2)
+        credBg = pygame.Rect(200, 50, 400, 100)
+        pygame.draw.rect(WINDOW, black, credBg)
+        pygame.draw.rect(WINDOW, white, credBg, 2)
+        WINDOW.blit(homeButtonScaled, (600, 400))
+        pygame.display.update()
+
 def render_game_simon_play_page(yellowColour = yellowScaled, blueColour = blueScaled, greenColour = greenScaled, redColour = redScaled):
-    for event in pygame.event.get() :
-        if event.type == QUIT :
+    for event in pygame.event.get():
+        if event.type == QUIT:
             quit()
     
     # refresh display
@@ -281,6 +307,14 @@ def quit():
     pygame.quit()
     sys.exit()
 
+def colour_light(name):
+    pygame.mixer.music.load(f'./Assets/sounds/{name}.wav')
+    pygame.mixer.music.play()
+    pygame.time.delay(timeDelay) # current set time delay (faster as the game progresses)
+    render_game_simon_play_page() # move it back into the "all dark" state
+    pygame.mixer.music.stop()
+    pygame.mixer.music.unload()
+
 def show_pattern():
     # 1 = red
     # 2 = green
@@ -302,36 +336,16 @@ def show_pattern():
     
         if x == 1: # 1 = red
             render_game_simon_play_page(redColour = redLightScaled) # change it into light mode
-            pygame.mixer.music.load('./Assets/sounds/red_a.wav')
-            pygame.mixer.music.play()
-            pygame.time.delay(timeDelay) # current set time delay (faster as the game progresses)
-            render_game_simon_play_page() # move it back into the "all dark" state
-            pygame.mixer.music.stop()
-            pygame.mixer.music.unload()
+            colour_light('red_a')
         elif x == 2: # 2 = green
             render_game_simon_play_page(greenColour = greenLightScaled) # change it into light mode
-            pygame.mixer.music.load('./Assets/sounds/green_e-lower.wav')
-            pygame.mixer.music.play()
-            pygame.time.delay(timeDelay) # current set time delay (faster as the game progresses)
-            render_game_simon_play_page() # move it back into the "all dark" state
-            pygame.mixer.music.stop()
-            pygame.mixer.music.unload()
+            colour_light('green_e-lower')
         elif x == 3: # 3 = yellow
             render_game_simon_play_page(yellowColour = yellowLightScaled) # change it into light mode
-            pygame.mixer.music.load('./Assets/sounds/yellow_c-sharp.wav')
-            pygame.mixer.music.play()
-            pygame.time.delay(timeDelay) # current set time delay (faster as the game progresses)
-            render_game_simon_play_page() # move it back into the "all dark" state
-            pygame.mixer.music.stop()
-            pygame.mixer.music.unload()
+            colour_light('yellow_c-sharp')
         elif x == 4: # 4 = blue
             render_game_simon_play_page(blueColour = blueLightScaled) # change it into light mode
-            pygame.mixer.music.load('./Assets/sounds/blue_e-upper.wav')
-            pygame.mixer.music.play()
-            pygame.time.delay(timeDelay) # current set time delay (faster as the game progresses)
-            render_game_simon_play_page() # move it back into the "all dark" state
-            pygame.mixer.music.stop()
-            pygame.mixer.music.unload()
+            colour_light('blue_e-upper')
         print(pattern)
         pygame.time.delay(timeDelay)
 
@@ -367,12 +381,7 @@ def store_player_guess():
                     mask = pygame.mask.from_surface(clickRedScaled)
                     if mask.get_at((event.pos[0]-redScaledPos[0], event.pos[1]-redScaledPos[1])):
                         render_game_simon_play_page(redColour = redLightScaled) # change it into light mode
-                        pygame.mixer.music.load('./Assets/sounds/red_a.wav') # load the sound
-                        pygame.mixer.music.play() # play the sound
-                        pygame.time.delay(timeDelay) # wait
-                        render_game_simon_play_page() # turn off the light colour
-                        pygame.mixer.music.stop() # stop the sound
-                        pygame.mixer.music.unload() # unload the sound
+                        colour_light('red_a')
                         playerPattern.append(1) # add the guess to the end of the array
                         check_pattern(playerPattern) # compare it
                         if life != lifeStore:
@@ -384,12 +393,7 @@ def store_player_guess():
                     mask = pygame.mask.from_surface(clickGreenScaled)
                     if mask.get_at((event.pos[0]-greenScaledPos[0], event.pos[1]-greenScaledPos[1])):
                         render_game_simon_play_page(greenColour = greenLightScaled) # change it into light mode
-                        pygame.mixer.music.load('./Assets/sounds/green_e-lower.wav')
-                        pygame.mixer.music.play()
-                        pygame.time.delay(timeDelay) # wait
-                        render_game_simon_play_page() # turn off the light colour
-                        pygame.mixer.music.stop()
-                        pygame.mixer.music.unload()
+                        colour_light('green_e-lower')
                         playerPattern.append(2) # add it to the end of the array
                         check_pattern(playerPattern)
                         if life != lifeStore:
@@ -401,12 +405,7 @@ def store_player_guess():
                     mask = pygame.mask.from_surface(clickYellowScaled)
                     if mask.get_at((event.pos[0]-yellowScaledPos[0], event.pos[1]-yellowScaledPos[1])):
                         render_game_simon_play_page(yellowColour = yellowLightScaled) # change it into light mode
-                        pygame.mixer.music.load('./Assets/sounds/yellow_c-sharp.wav')
-                        pygame.mixer.music.play()
-                        pygame.time.delay(timeDelay) # wait
-                        render_game_simon_play_page() # turn off the light colour
-                        pygame.mixer.music.stop()
-                        pygame.mixer.music.unload()
+                        colour_light('yellow_c-sharp')
                         playerPattern.append(3) # add it to the end of the array
                         check_pattern(playerPattern)
                         if life != lifeStore:
@@ -418,12 +417,7 @@ def store_player_guess():
                     mask = pygame.mask.from_surface(clickBlueScaled) # mask makes it so that the translucent part of the image cannot be clicked
                     if mask.get_at((event.pos[0]-blueScaledPos[0], event.pos[1]-blueScaledPos[1])):
                         render_game_simon_play_page(blueColour = blueLightScaled) # change it into light mode
-                        pygame.mixer.music.load('./Assets/sounds/blue_e-upper.wav')
-                        pygame.mixer.music.play()
-                        pygame.time.delay(timeDelay) # wait
-                        render_game_simon_play_page() # turn off the light colour
-                        pygame.mixer.music.stop()
-                        pygame.mixer.music.unload()
+                        colour_light('blue_e-upper')
                         playerPattern.append(4) # add it to the end of the array
                         check_pattern(playerPattern)
                         if life != lifeStore:
@@ -955,6 +949,51 @@ def render_leaderboard_screen():
                 rankX = rankX + 30
         scores.close()
         
+        pygame.display.update()
+
+def peng_flying_game_mode(yellowColour = yellowScaled, blueColour = blueScaled, greenColour = greenScaled, redColour = redScaled):
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                quit()
+        global red
+        # refresh display
+        WINDOW.fill(grey)
+
+        # draw elements
+        # WINDOW.blit((gameFont.render('Score: 0', True, white)), (50, 50))
+        
+        colourWidth = 15
+        colourHeight = 175
+        offset = 50
+        redBox1 = pygame.Rect(offset, offset, colourHeight, colourWidth)
+        pygame.draw.rect(WINDOW, white, redBox1)
+        redBox2 = pygame.Rect(offset, offset, colourWidth, colourHeight)
+        pygame.draw.rect(WINDOW, white, redBox2)
+        
+        blueBox1 = pygame.Rect(offset, WINDOW_HEIGHT - offset - colourHeight, colourWidth, colourHeight)
+        pygame.draw.rect(WINDOW, white, blueBox1)
+        blueBox2 = pygame.Rect(offset, WINDOW_HEIGHT - offset - colourWidth, colourHeight, colourWidth)
+        pygame.draw.rect(WINDOW, white, blueBox2)
+        
+        yellowBox1 = pygame.Rect(WINDOW_WIDTH - offset - colourHeight, offset, colourHeight, colourWidth)
+        pygame.draw.rect(WINDOW, white, yellowBox1)
+        yellowBox2 = pygame.Rect(WINDOW_WIDTH - offset - colourWidth, offset, colourWidth, colourHeight)
+        pygame.draw.rect(WINDOW, white, yellowBox2)
+        
+        greenBox1 = pygame.Rect(WINDOW_WIDTH - offset - colourHeight, WINDOW_HEIGHT - offset - colourWidth, colourHeight, colourWidth)
+        pygame.draw.rect(WINDOW, white, greenBox1)
+        greenBox2 = pygame.Rect(WINDOW_WIDTH - offset - colourWidth, WINDOW_HEIGHT - offset - colourHeight, colourWidth, colourHeight)
+        pygame.draw.rect(WINDOW, white, greenBox2)
+        
+        # WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
+        # WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
+        # WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
+        # WINDOW.blit(yellowColour, (175, 300))
+        # WINDOW.blit(blueColour, (400, 300))
+        # WINDOW.blit(greenColour, (400, 75))
+        # WINDOW.blit(redColour, (175, 75))
         pygame.display.update()
 
 render_game_start_page()
