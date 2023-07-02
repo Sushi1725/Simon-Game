@@ -15,7 +15,14 @@ pygame.mixer.init()
 white = ('#FFFFFF')
 grey = ('#131313')
 black = ('#000000')
-red = ('#FF0000')
+redLightColour = ('#FF0000')
+blueLightColour = ('#003DFF')
+yellowLightColour = ('#F0FF00')
+greenLightColour = ('#25FF00')
+redColour = ('#800000')
+blueColour = ('#001E80')
+yellowColour = ('#778000')
+greenColour = ('#008000')
 
 # load all the images
 logo = pygame.image.load('./Assets/simon_logo.png')
@@ -74,6 +81,62 @@ nextPageScaled = pygame.transform.scale(nextPage, (51, 51))
 backPage = pygame.image.load('./Assets/info_images/page_right.png')
 backPageScaled = pygame.transform.scale(backPage, (51, 51))
 
+# penguin mode images
+bobbingBottom = pygame.image.load('./Assets/penguin_mode/bobbing_bottom.png')
+bobbingBottomScaled = pygame.transform.scale(bobbingBottom, (bobbingBottom.get_width()*3, bobbingBottom.get_height()*3))
+bobbingTop = pygame.image.load('./Assets/penguin_mode/bobbing_top.png')
+bobbingTopScaled = pygame.transform.scale(bobbingTop, (bobbingTop.get_width()*3, bobbingTop.get_height()*3))
+lookingUp = pygame.image.load('./Assets/penguin_mode/looking_up.png')
+lookingUpScaled = pygame.transform.scale(lookingUp, (lookingUp.get_width()*3, lookingUp.get_height()*3))
+platform = pygame.image.load('./Assets/penguin_mode/platform.png')
+platformScaled = pygame.transform.scale(platform, (platform.get_width()*3, platform.get_height()*3))
+
+# penguin mode border rectangles
+colourWidth = 15
+colourLength = 175
+offset = 50
+redBox1 = pygame.Rect(offset, offset, colourLength, colourWidth)
+redBox2 = pygame.Rect(offset, offset, colourWidth, colourLength)
+yellowBox1 = pygame.Rect(offset, WINDOW_HEIGHT - offset - colourLength, colourWidth, colourLength)
+yellowBox2 = pygame.Rect(offset, WINDOW_HEIGHT - offset - colourWidth, colourLength, colourWidth)
+greenBox1 = pygame.Rect(WINDOW_WIDTH - offset - colourLength, offset, colourLength, colourWidth)
+greenBox2 = pygame.Rect(WINDOW_WIDTH - offset - colourWidth, offset, colourWidth, colourLength)
+blueBox1 = pygame.Rect(WINDOW_WIDTH - offset - colourLength, WINDOW_HEIGHT - offset - colourWidth, colourLength, colourWidth)
+blueBox2 = pygame.Rect(WINDOW_WIDTH - offset - colourWidth, WINDOW_HEIGHT - offset - colourLength, colourWidth, colourLength)
+
+# rocket fire images
+redFire0 = pygame.image.load('./Assets/penguin_mode/red_fire/red_fire_0.png')
+redFire0Scaled = pygame.transform.scale(redFire0, (redFire0.get_width()*3, redFire0.get_height()*3))
+redFire1 = pygame.image.load('./Assets/penguin_mode/red_fire/red_fire_1.png')
+redFire1Scaled = pygame.transform.scale(redFire1, (redFire1.get_width()*3, redFire1.get_height()*3))
+redFire2 = pygame.image.load('./Assets/penguin_mode/red_fire/red_fire_2.png')
+redFire2Scaled = pygame.transform.scale(redFire2, (redFire2.get_width()*3, redFire2.get_height()*3))
+redFire3 = pygame.image.load('./Assets/penguin_mode/red_fire/red_fire_3.png')
+redFire3Scaled = pygame.transform.scale(redFire3, (redFire3.get_width()*3, redFire3.get_height()*3))
+redFire4 = pygame.image.load('./Assets/penguin_mode/red_fire/red_fire_4.png')
+redFire4Scaled = pygame.transform.scale(redFire4, (redFire4.get_width()*3, redFire4.get_height()*3))
+redFire5 = pygame.image.load('./Assets/penguin_mode/red_fire/red_fire_5.png')
+redFire5Scaled = pygame.transform.scale(redFire5, (redFire5.get_width()*3, redFire5.get_height()*3))
+redFire6 = pygame.image.load('./Assets/penguin_mode/red_fire/red_fire_6.png')
+redFire6Scaled = pygame.transform.scale(redFire6, (redFire6.get_width()*3, redFire6.get_height()*3))
+
+blueFire0 = pygame.image.load('./Assets/penguin_mode/blue_fire/blue_fire_0.png')
+blueFire0Scaled = pygame.transform.scale(blueFire0, (blueFire0.get_width()*3, blueFire0.get_height()*3))
+blueFire1 = pygame.image.load('./Assets/penguin_mode/blue_fire/blue_fire_1.png')
+blueFire1Scaled = pygame.transform.scale(blueFire1, (blueFire1.get_width()*3, blueFire1.get_height()*3))
+blueFire2 = pygame.image.load('./Assets/penguin_mode/blue_fire/blue_fire_2.png')
+blueFire2Scaled = pygame.transform.scale(blueFire2, (blueFire2.get_width()*3, blueFire2.get_height()*3))
+blueFire3 = pygame.image.load('./Assets/penguin_mode/blue_fire/blue_fire_3.png')
+blueFire3Scaled = pygame.transform.scale(blueFire3, (blueFire3.get_width()*3, blueFire3.get_height()*3))
+blueFire4 = pygame.image.load('./Assets/penguin_mode/blue_fire/blue_fire_4.png')
+blueFire4Scaled = pygame.transform.scale(blueFire4, (blueFire4.get_width()*3, blueFire4.get_height()*3))
+blueFire5 = pygame.image.load('./Assets/penguin_mode/blue_fire/blue_fire_5.png')
+blueFire5Scaled = pygame.transform.scale(blueFire5, (blueFire5.get_width()*3, blueFire5.get_height()*3))
+blueFire6 = pygame.image.load('./Assets/penguin_mode/blue_fire/blue_fire_6.png')
+blueFire6Scaled = pygame.transform.scale(blueFire6, (blueFire6.get_width()*3, blueFire6.get_height()*3))
+
+nothing = pygame.image.load('./Assets/nothing.png')
+
 # load all the fonts
 GAMEPLAY_FONT = './Assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf'
 gameFontStart = pygame.font.Font(GAMEPLAY_FONT, 50) # size 50 font
@@ -100,7 +163,28 @@ heart2 = heartImageFullScaled
 heart3 = heartImageFullScaled
 initial = []
 volume = 1.0
-gameMode = "Normal"
+gameMode = "Penguin"#"Normal"#
+FRICTION = 0
+GRAVITY = 0.001
+boost = False
+up = 0.0011
+imageCounter = 0
+boostCounter = 5
+
+# Set up the penguin
+pengSpeed = [0, 0]
+pengImage = bobbingBottomScaled
+pengPos = [WINDOW_WIDTH//2 - pengImage.get_width()/2, WINDOW_HEIGHT//2]
+pengImageLast = bobbingTopScaled
+rocketFireAnimation = nothing
+fireSlideRed = [redFire0Scaled, redFire1Scaled, redFire2Scaled, redFire3Scaled, redFire4Scaled, redFire5Scaled, redFire6Scaled]
+fireSlideBlue = [blueFire0Scaled, blueFire1Scaled, blueFire2Scaled, blueFire3Scaled, blueFire4Scaled, blueFire5Scaled, blueFire6Scaled]
+slideNum = 0
+showLives = False
+# pengRect = pygame.Rect(pengPos[0], pengPos[1], pengImage.get_width(), pengImage.get_height())
+
+pengModeCanShowPattern = True
+canShowPattern = False
 
 ################
 # Game Classes #
@@ -200,7 +284,8 @@ def render_game_start_page(): # main screen page
                     # if the click is within a certain range
                     render_settings_screen()
                 elif 712 <= x <= 780 and 510 <= y <= 578:
-                    render_leaderboard_screen()
+                    # render_leaderboard_screen()
+                    peng_flying_game_mode()
     
         # set background colour
         WINDOW.fill(grey)
@@ -319,7 +404,9 @@ def render_game_simon_play_page(yellowColour = yellowScaled, blueColour = blueSc
     pygame.display.update()
 
 def random_pattern():
+    global pengModeCanShowPattern
     pattern.append(random.randint(1, 4))
+    # pengModeCanShowPattern = False
 
 def quit():
     global running
@@ -329,10 +416,12 @@ def quit():
     sys.exit()
 
 def colour_light(name):
+    global gameMode
     pygame.mixer.music.load(f'./Assets/sounds/{name}.wav')
     pygame.mixer.music.play()
     pygame.time.delay(timeDelay) # current set time delay (faster as the game progresses)
-    render_game_simon_play_page() # move it back into the "all dark" state
+    if gameMode == "Easy" or gameMode == "Normal" or gameMode == "Hard":
+        render_game_simon_play_page() # move it back into the "all dark" state
     pygame.mixer.music.stop()
     pygame.mixer.music.unload()
 
@@ -341,14 +430,23 @@ def show_pattern():
     # 2 = green
     # 3 = yellow
     # 4 = blue
+    global redColour
+    global greenColour
+    global yellowColour
+    global blueColour
+    global redLightColour
+    global greenLightColour
+    global yellowLightColour
+    global blueLightColour
     
     timeDelay = 500 - 100 * int(len(pattern) / 5) # changing it to an integer makes it round down if is float
     if timeDelay <= 100:
         print('now 100')
         timeDelay = 100
     
-    render_game_simon_play_page()
-    pygame.time.delay(300)
+    if gameMode == "Easy" or gameMode == "Normal" or gameMode == "Hard":
+        render_game_simon_play_page()
+        pygame.time.delay(300)
     
     for x in pattern:
         for event in pygame.event.get():
@@ -356,19 +454,32 @@ def show_pattern():
                 quit()
     
         if x == 1: # 1 = red
-            render_game_simon_play_page(redColour = redLightScaled) # change it into light mode
+            if gameMode == "Easy" or gameMode == "Normal" or gameMode == "Hard":
+                render_game_simon_play_page(redColour = redLightScaled) # change it into light mode
+            if gameMode == "Penguin":
+                redColour, redLightColour = redLightColour, redColour
             colour_light('red_a')
         elif x == 2: # 2 = green
-            render_game_simon_play_page(greenColour = greenLightScaled) # change it into light mode
+            if gameMode == "Easy" or gameMode == "Normal" or gameMode == "Hard":
+                render_game_simon_play_page(greenColour = greenLightScaled) # change it into light mode
+            if gameMode == "Penguin":
+                greenColour, greenLightColour = greenLightColour, greenColour
             colour_light('green_e-lower')
         elif x == 3: # 3 = yellow
-            render_game_simon_play_page(yellowColour = yellowLightScaled) # change it into light mode
+            if gameMode == "Easy" or gameMode == "Normal" or gameMode == "Hard":
+                render_game_simon_play_page(yellowColour = yellowLightScaled) # change it into light mode
+            if gameMode == "Penguin":
+                yellowColour, yellowLightColour = yellowLightColour, yellowColour
             colour_light('yellow_c-sharp')
         elif x == 4: # 4 = blue
-            render_game_simon_play_page(blueColour = blueLightScaled) # change it into light mode
+            if gameMode == "Easy" or gameMode == "Normal" or gameMode == "Hard":
+                render_game_simon_play_page(blueColour = blueLightScaled) # change it into light mode
+            if gameMode == "Penguin":
+                blueColour, blueLightColour = blueLightColour, blueColour
             colour_light('blue_e-upper')
         print(pattern)
-        pygame.time.delay(timeDelay)
+        if gameMode == "Easy" or gameMode == "Normal" or gameMode == "Hard":
+            pygame.time.delay(timeDelay)
 
 def store_player_guess():
     print("now in store player guess")
@@ -384,7 +495,7 @@ def store_player_guess():
     global life
     global score
     
-    clickBlueScaled = pygame.transform.scale(blue, (225, 225)).convert_alpha() # optimises the checking the button
+    clickBlueScaled = pygame.transform.scale(blue, (225, 225)).convert_alpha() # changes the image pixels so that the transparent ones wont count
     clickGreenScaled = pygame.transform.scale(green, (225, 225)).convert_alpha()
     clickRedScaled = pygame.transform.scale(red, (225, 225)).convert_alpha()
     clickYellowScaled = pygame.transform.scale(yellow, (225, 225)).convert_alpha()
@@ -409,7 +520,6 @@ def store_player_guess():
                             break
                 except IndexError:  # if the click is in a transparent area, dont worry about it
                     pass
-            if event.type == pygame.MOUSEBUTTONDOWN:
                 try: # only work if the click isnt in a transparent area
                     mask = pygame.mask.from_surface(clickGreenScaled)
                     if mask.get_at((event.pos[0]-greenScaledPos[0], event.pos[1]-greenScaledPos[1])):
@@ -421,7 +531,6 @@ def store_player_guess():
                             break
                 except IndexError:  # if the click is in a transparent area, dont worry about it
                     pass
-            if event.type == pygame.MOUSEBUTTONDOWN:
                 try: # only work if the click isnt in a transparent area
                     mask = pygame.mask.from_surface(clickYellowScaled)
                     if mask.get_at((event.pos[0]-yellowScaledPos[0], event.pos[1]-yellowScaledPos[1])):
@@ -433,7 +542,6 @@ def store_player_guess():
                             break
                 except IndexError:  # if the click is in a transparent area, dont worry about it
                     pass
-            if event.type == pygame.MOUSEBUTTONDOWN:
                 try: # only work if the click isnt in a transparent area
                     mask = pygame.mask.from_surface(clickBlueScaled) # mask makes it so that the translucent part of the image cannot be clicked
                     if mask.get_at((event.pos[0]-blueScaledPos[0], event.pos[1]-blueScaledPos[1])):
@@ -444,7 +552,8 @@ def store_player_guess():
                         if life != lifeStore:
                             break
                 except IndexError:  # if the click is in a transparent area, dont worry about it
-                    pass
+                        pass
+                    
         if life != lifeStore:
             break
     if len(playerPattern) == len(pattern) and life == lifeStore:
@@ -936,49 +1045,375 @@ def render_leaderboard_screen():
         
         pygame.display.update()
 
-def peng_flying_game_mode(yellowColour = yellowScaled, blueColour = blueScaled, greenColour = greenScaled, redColour = redScaled):
+def peng_flying_game_mode():
+    global imageCounter
+    global boostCounter
+
     waiting = True
     while waiting:
         for event in pygame.event.get():
             if event.type == QUIT:
                 quit()
-        global red
+            if event.type == pygame.USEREVENT: 
+                boostCounter -= 1
         # refresh display
         WINDOW.fill(grey)
+        
+        displayBoxColour = grey
+        displayBox = pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
+        pygame.draw.rect(WINDOW, displayBoxColour, displayBox) # to display the current colour pattern
+        coverPrev = pygame.Rect(10, 10, WINDOW_WIDTH-20, WINDOW_HEIGHT-20)
+        pygame.draw.rect(WINDOW, grey, coverPrev)
 
         # draw elements
         # WINDOW.blit((gameFont.render('Score: 0', True, white)), (50, 50))
         
-        colourWidth = 15
-        colourHeight = 175
-        offset = 50
-        redBox1 = pygame.Rect(offset, offset, colourHeight, colourWidth)
-        pygame.draw.rect(WINDOW, white, redBox1)
-        redBox2 = pygame.Rect(offset, offset, colourWidth, colourHeight)
-        pygame.draw.rect(WINDOW, white, redBox2)
+        ########## Draw Borders of Game Area ##########   
+        pygame.draw.rect(WINDOW, redColour, redBox1)
+        pygame.draw.rect(WINDOW, redColour, redBox2)
+        pygame.draw.rect(WINDOW, yellowColour, yellowBox1)
+        pygame.draw.rect(WINDOW, yellowColour, yellowBox2)
+        pygame.draw.rect(WINDOW, greenColour, greenBox1)
+        pygame.draw.rect(WINDOW, greenColour, greenBox2)
+        pygame.draw.rect(WINDOW, blueColour, blueBox1)
+        pygame.draw.rect(WINDOW, blueColour, blueBox2)
         
-        blueBox1 = pygame.Rect(offset, WINDOW_HEIGHT - offset - colourHeight, colourWidth, colourHeight)
-        pygame.draw.rect(WINDOW, white, blueBox1)
-        blueBox2 = pygame.Rect(offset, WINDOW_HEIGHT - offset - colourWidth, colourHeight, colourWidth)
-        pygame.draw.rect(WINDOW, white, blueBox2)
+        WINDOW.blit(platformScaled, (WINDOW_WIDTH/2 - platformScaled.get_width()/2, WINDOW_HEIGHT/2))
+        ###############################################
         
-        yellowBox1 = pygame.Rect(WINDOW_WIDTH - offset - colourHeight, offset, colourHeight, colourWidth)
-        pygame.draw.rect(WINDOW, white, yellowBox1)
-        yellowBox2 = pygame.Rect(WINDOW_WIDTH - offset - colourWidth, offset, colourWidth, colourHeight)
-        pygame.draw.rect(WINDOW, white, yellowBox2)
+        # make this in the middle and flash up when the player dies x times
+        if showLives:
+            WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
+            WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
+            WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
         
-        greenBox1 = pygame.Rect(WINDOW_WIDTH - offset - colourHeight, WINDOW_HEIGHT - offset - colourWidth, colourHeight, colourWidth)
-        pygame.draw.rect(WINDOW, white, greenBox1)
-        greenBox2 = pygame.Rect(WINDOW_WIDTH - offset - colourWidth, WINDOW_HEIGHT - offset - colourHeight, colourWidth, colourHeight)
-        pygame.draw.rect(WINDOW, white, greenBox2)
+        game_loop()
+        # pygame.display.update()
+        imageCounter = imageCounter + 1
+        # print(imageCounter)
+
+# Define a function to apply friction to the penguin's speed
+def apply_friction():
+    pengSpeed[0] *= 1 - FRICTION
+    pengSpeed[1] *= 1 - FRICTION
+
+# Define a function to apply gravitational force to the penguin's speed
+def apply_gravity():
+    pengSpeed[1] += GRAVITY
+
+# Define a function to update the penguin's position
+def update_penguin_position():
+    global pengImage
+    global imageCounter
+    global pengImageLast
+    global rocketFireAnimation
+    global slideNum
+    global fireSlideRed
+    global boost
+    global pengRect
+    pengPos[0] += pengSpeed[0]
+    pengPos[1] += pengSpeed[1]
+    # Update the position of the penguin on the screen
+    WINDOW.blit(pengImage, pengPos)
+    pengRect = pygame.Rect(pengPos[0], pengPos[1], pengImage.get_width(), pengImage.get_height())
+    # pygame.draw.rect(WINDOW, white, pengRect)
+    
+    ############ ANIMATION ############
+    if imageCounter % 120 == 0 and pengPos[1] + pengImage.get_height() >= WINDOW_HEIGHT: # every 2 seconds if on the floor
+        if pengImageLast == bobbingTopScaled:
+            pengImage = bobbingTopScaled
+            pengImageLast = bobbingBottomScaled
+            return # dont go to the next if
+        if pengImageLast == bobbingBottomScaled:
+            pengImage = bobbingBottomScaled
+            pengImageLast = bobbingTopScaled
+            return
+    ###################################
+    
+    fireSlide = fireSlideRed    
+    if boost:
+        fireSlide = fireSlideBlue
+    else:
+        fireSlide = fireSlideRed
+    
+    WINDOW.blit(rocketFireAnimation, (pengPos[0] + (pengImage.get_width()/2) - (rocketFireAnimation.get_width()/2), pengPos[1] + pengImage.get_height()))
+    pressed = pygame.key.get_pressed()
+    if (pressed[K_UP]) and imageCounter % 20 == 0: # 12 fps if currently flying
+        slideNum = slideNum + 1
+        if slideNum > 6:
+            slideNum = 0
+        rocketFireAnimation = fireSlide[slideNum]
+    elif (not pressed[K_UP]): # when not up button being pressed
+        rocketFireAnimation = nothing
+
+def check_pos():
+    global pengImage
+    # Limit the penguin's position to within the walls of the screen
+    if pengPos[0] < 0: # if touching the left wall
+        pengPos[0] = 0
+        pengSpeed[0] = 0
+    elif pengPos[0] + pengImage.get_width() > WINDOW_WIDTH: # if touching the right wall
+        pengPos[0] = WINDOW_WIDTH - pengImage.get_width()
+        pengSpeed[0] = 0
+    if pengPos[1] < 0: # if touching the top wall
+        pengPos[1] = 0
+        pengSpeed[1] = 0
+    elif pengPos[1] + pengImage.get_height() > WINDOW_HEIGHT: # if touching the bottom wall
+        pengPos[1] = WINDOW_HEIGHT - pengImage.get_height()
+        pengSpeed[1] = 0
+        pengSpeed[0] = 0
+
+def apply_key():
+    global pengImage
+    global boostCounter
+    global boost
+    if boost:
+        up = 0.0025
+    else:
+        up = 0.0015
+    pressed = pygame.key.get_pressed()
+    if (pressed[K_UP]):
+        pengSpeed[1] -= up
+        pengImage = lookingUpScaled
+    if (pressed[K_RIGHT]):
+        pengSpeed[0] += 0.0005
+    if (pressed[K_LEFT]):
+        pengSpeed[0] -= 0.0005
+    if (pressed[K_DOWN]):
+        pengSpeed[1] += 0.0
+    if boost != True: # make sure you cant start the boost while the boost is on
+        if (pressed[K_SPACE]):
+            boostCounter = 5
+            boost = True
+            pygame.time.set_timer(pygame.USEREVENT, 1000) # start the timer every sec
+    if boostCounter == 0:
+        boost = False
+        pygame.time.set_timer(pygame.USEREVENT, 0) # turn off the timer
+
+def check_wall_pos(wallArea):
+    global pengPos
+    # print(pengPos)
+
+    ''' make it somehow move slowly up to 100 pixles away from the box
+        # thinking of getting the current possition at the moment + 100 and move towards that value
+        # but if i get the current pos, it will do it each time the function is called
+    '''
+    if wallArea == "topLeft":
+        # print("(" + str(offset+colourLength-pengImage.get_width()) + ", " + str(offset+colourLength-pengImage.get_height()) + ")")
+        pengSpeed[1] = 0
+        pengSpeed[0] = 0
+        print(pengPos)
+        '''
+        disable movement
+        and if not at the ^^print values, move it there 1 pixle a time then allow movement :)
+        '''
+        gradient = (180 - pengPos[1])/(189 - pengPos[0])
+        if abs(189 - pengPos[0]) < 1:
+            gradient = 5
+        while pengPos[0] < 189 and pengPos[1] < 180:
+            print(gradient)
+            pengPos[0] = pengPos[0] + 1
+            pengPos[1] = pengPos[1] + gradient
+            print("why nto doing it?")
+            WINDOW.blit(pengImage, pengPos)
+            pygame.display.update()
+        while 189 < pengPos[0] < 225 and pengPos[1] < 180:
+            print(gradient)
+            pengPos[0] = pengPos[0] - 1
+            pengPos[1] = pengPos[1] - gradient
+            WINDOW.blit(pengImage, pengPos)
+            pygame.display.update()
+        while pengPos[0] < 189 and 180 < pengPos[1] < 225:
+            print(gradient)
+            pengPos[0] = pengPos[0] + 1
+            pengPos[1] = pengPos[1] + gradient
+            WINDOW.blit(pengImage, pengPos)
+            pygame.display.update()
+        # # special case
+        # while pengPos[0] == 
+        print(pengPos)
+    
+    if wallArea == "topRight":
+        print("(" + str(WINDOW_WIDTH-offset-colourLength+pengImage.get_width()) + ", " + str(offset+colourLength-pengImage.get_height()) + ")")
+        pengSpeed[1] = 0
+        pengSpeed[0] = 0
+        gradient = (611 - pengPos[1])/(180 - pengPos[0])
+        gradient = gradient * -1
+        while pengPos[0] < 180 and pengPos[1] < 611:
+            pengPos[0] = pengPos[0] + 1
+            pengPos[1] = pengPos[1] - gradient
+            WINDOW.blit(pengImage, pengPos)
+            pygame.display.update()
+        while 180 < pengPos[0] < 225 and pengPos[1] < 611:
+            pengPos[0] = pengPos[0] - 1
+            pengPos[1] = pengPos[1] + gradient
+            WINDOW.blit(pengImage, pengPos)
+            pygame.display.update()
+        while pengPos[0] < 180 and 611 < pengPos[1] < 225:
+            pengPos[0] = pengPos[0] + 1
+            pengPos[1] = pengPos[1] - gradient
+            WINDOW.blit(pengImage, pengPos)
+            pygame.display.update()
+    if wallArea == "bottomLeft":
+        print("(" + str(offset+colourLength-pengImage.get_width()) + ", " + str(WINDOW_HEIGHT-offset-colourLength+pengImage.get_height()) + ")")
+        for i in range(100):
+            pengPos[0] = pengPos[0] + 1
+            pengPos[1] = pengPos[1] - 1
+            pengSpeed[1] = 0
+            pengSpeed[0] = 0
+            WINDOW.blit(pengImage, pengPos)
+            pygame.display.update()
+    if wallArea == "bottomRight":
+        print("(" + str(WINDOW_WIDTH-offset-colourLength+pengImage.get_width()) + ", " + str(WINDOW_HEIGHT-offset-colourLength+pengImage.get_height()) + ")")
+        for i in range(100):
+            pengPos[0] = pengPos[0] - 1
+            pengPos[1] = pengPos[1] - 1
+            pengSpeed[1] = 0
+            pengSpeed[0] = 0
+            WINDOW.blit(pengImage, pengPos)
+            pygame.display.update()
+    
+    pygame.display.update()
+
+    # if pengPos[0] < 0: # if touching the left wall
+    #     pengPos[0] = 0
+    #     pengSpeed[0] = 0
+    # elif pengPos[0] + pengImage.get_width() > WINDOW_WIDTH: # if touching the right wall
+    #     pengPos[0] = WINDOW_WIDTH - pengImage.get_width()
+    #     pengSpeed[0] = 0
+    # if pengPos[1] < 0: # if touching the top wall
+    #     pengPos[1] = 0
+    #     pengSpeed[1] = 0
+    # elif pengPos[1] + pengImage.get_height() > WINDOW_HEIGHT: # if touching the bottom wall
+    #     pengPos[1] = WINDOW_HEIGHT - pengImage.get_height()
+    #     pengSpeed[1] = 0
+    #     pengSpeed[0] = 0
+
+def penguin_mode_store_player_guess():
+    # 1 = red
+    # 2 = green
+    # 3 = yellow
+    # 4 = blue
+    global playerPattern
+    playerPattern = []
+    global pattern
+    global lifeStore
+    global life
+    global score
+    global pengImage
+    global pengPos
+    global pengRect
+    global redColour
+    global greenColour
+    global yellowColour
+    global blueColour
+    global redLightColour
+    global greenLightColour
+    global yellowLightColour
+    global blueLightColour
+    
+    pattern = [2, 3, 4, 1, 2, 3, 3]
+    pengRect = pygame.Rect(pengPos[0], pengPos[1], pengImage.get_width(), pengImage.get_height())
+    
+    if len(playerPattern) < len(pattern): # so that we check each item of the pattern
         
-        # WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
-        # WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
-        # WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
-        # WINDOW.blit(yellowColour, (175, 300))
-        # WINDOW.blit(blueColour, (400, 300))
-        # WINDOW.blit(greenColour, (400, 75))
-        # WINDOW.blit(redColour, (175, 75))
-        pygame.display.update()
+        if pygame.Rect.colliderect(pengRect, redBox1): #if the player touches a box
+            redColour, redLightColour = redLightColour, redColour # change it into light mode
+            colour_light('red_a')
+            playerPattern.append(1) # add the guess to the end of the array
+            check_wall_pos("topLeft")
+            # check_pattern(playerPattern) # compare it
+            # if life != lifeStore:
+            #     return # break out of the if (return doenst do it)
+        elif pygame.Rect.colliderect(pengRect, redBox2):
+            redColour, redLightColour = redLightColour, redColour # change it into light mode
+            colour_light('red_a')
+            playerPattern.append(1) # add the guess to the end of the array
+            check_wall_pos("topLeft")
+            # check_pattern(playerPattern) # compare it
+            # if life != lifeStore:
+            #     return # break out of the if (return doenst do it)
+        elif pygame.Rect.colliderect(pengRect, greenBox1):
+            greenColour, greenLightColour = greenLightColour, greenColour # change it into light mode
+            colour_light('green_e-lower')
+            playerPattern.append(2) # add the guess to the end of the array
+            check_wall_pos("topRight")
+            # check_pattern(playerPattern) # compare it
+            # if life != lifeStore:
+            #     return # break out of the if (return doenst do it)
+        elif pygame.Rect.colliderect(pengRect, greenBox2):
+            greenColour, greenLightColour = greenLightColour, greenColour # change it into light mode
+            colour_light('green_e-lower')
+            playerPattern.append(2) # add the guess to the end of the array
+            check_wall_pos("topRight")
+            # check_pattern(playerPattern) # compare it
+            # if life != lifeStore:
+            #     return # break out of the if (return doenst do it)
+        elif pygame.Rect.colliderect(pengRect, yellowBox1):
+            yellowColour, yellowLightColour = yellowLightColour, yellowColour # change it into light mode
+            colour_light('yellow_c-sharp')
+            playerPattern.append(3) # add the guess to the end of the array
+            check_wall_pos("bottomLeft")
+            # check_pattern(playerPattern) # compare it
+            # if life != lifeStore:
+            #     return # break out of the if (return doenst do it)
+        elif pygame.Rect.colliderect(pengRect, yellowBox2):
+            yellowColour, yellowLightColour = yellowLightColour, yellowColour # change it into light mode
+            colour_light('yellow_c-sharp')
+            playerPattern.append(3) # add the guess to the end of the array
+            check_wall_pos("bottomLeft")
+            # check_pattern(playerPattern) # compare it
+            # if life != lifeStore:
+            #     return # break out of the if (return doenst do it)
+        elif pygame.Rect.colliderect(pengRect, blueBox1):
+            blueColour, blueLightColour = blueLightColour, blueColour # change it into light mode
+            colour_light('blue_e-upper')
+            playerPattern.append(4) # add the guess to the end of the array
+            check_wall_pos("bottomRight")
+            # check_pattern(playerPattern) # compare it
+            # if life != lifeStore:
+            #     return # break out of the if (return doenst do it)
+        elif pygame.Rect.colliderect(pengRect, blueBox2):
+            blueColour, blueLightColour = blueLightColour, blueColour # change it into light mode
+            colour_light('blue_e-upper')
+            playerPattern.append(4) # add the guess to the end of the array
+            check_wall_pos("bottomRight")
+            # check_pattern(playerPattern) # compare it
+            # if life != lifeStore:
+            #     return # break out of the if (return doenst do it)
+    
+    pygame.display.update()
+    
+    #     if life != lifeStore:
+    #             break
+    # if len(playerPattern) == len(pattern) and life == lifeStore:
+    #     score = score + 1
+    #     pygame.mixer.music.load('./Assets/sounds/ding.wav')
+    #     pygame.mixer.music.play()
+    #     pygame.time.delay(1500) # wait
+    # lifeStore = life
+    
+
+# Define the game loop
+def game_loop():
+    global imageCounter
+    apply_friction() # Apply friction to the penguin's speed
+    apply_gravity() # Apply gravitational force to the penguin's speed
+    apply_key() # check if the player presses any movement keys
+    update_penguin_position() # Update the penguin's position
+    check_pos() # check the penguin's position and bound it inside the viewable area
+    if pengModeCanShowPattern == True:
+        random_pattern() # NOTICE this is called every second - change
+        # print(pattern)
+        if canShowPattern == True:
+            show_pattern()
+        penguin_mode_store_player_guess() # problem solved - because its not being called
+        ###### ALL SOLVED  ##### THE PLAYE IS NOW ONLY FROZEN CAUSE ^^^ IS BEING CALLED TOO FAST
+    
+    ########## NOTE WHEN THE PATTERN IS BEING SHOWN, THE PLAYER SHOULDNT BE ABLE TO TOUCH ANY OF THE BLOCK TO CHOOSE THEIR PATTERN
+    
+    
+    pygame.display.update() # Update the Pygame display
+
 
 render_game_start_page()
