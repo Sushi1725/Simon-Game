@@ -189,6 +189,8 @@ COLOUR_LIGHT_EVENT = pygame.event.custom_type()
 FINISH_SHOWING_PATTERN_EVENT = pygame.event.custom_type()
 RETURN_NORMAL_EVENT = pygame.event.custom_type()
 CONTINUE_SHOWING_PATTERN_EVENT = pygame.event.custom_type()
+LIFE_LOSS_LIGHT_EVENT = pygame.event.custom_type()
+LIFE_LOSS_CONTINUE_EVENT = pygame.event.custom_type()
 
 # Set up the penguin
 pengSpeed = [0, 0]
@@ -209,60 +211,13 @@ forcefieldOpening = True
 forcefieldClosing = False
 canRandomPattern = True
 pengPatternCounter = 0
+patternStarted = False
+timerHasBeenSet = False
+pengModeLifeStore = life
+displayBoxColour = grey
 
 pengModeCanShowPattern = True
 canShowPattern = False
-
-################
-# Game Classes #
-################
-
-class Start_Button: # the button class
-    def __init__(button, buttonImage, pos, callback):  # intialise the class
-        '''
-            Create a animated button from images
-            self.callback is for a funtion for the button to do - set to None
-        '''
-        button.image = buttonImage
-        button.rect = button.image.get_rect(topright=(495, 480))
-        button.callback = callback
-
-    def normal(button): # the normal state of the button
-        button.image = startButtonNormal
-        pygame.mouse.set_cursor()
-    
-    def hover(button): # the hovered state of the button
-        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-    
-    def pressed(button): # the pressed state of the button
-        button.image = startButtonPressed
-        pygame.mouse.set_cursor()
-
-class Heart_Animation: # the heart animation class
-    def __init__(heartAnimation, heartImages, pos, callback):
-        '''
-        '''
-        heartAnimation.image = heartImages
-        heartAnimation.rect = heartAnimation.image.get_rect(topright=(0, 0))
-        heartAnimation.callback = callback
-        
-    def paused(heartAnimation):
-        heartAnimation.image = heartImageFull
-    
-    def playing(heartAnimation):
-        heartAnimation.image = heartImageEmpty
-        pygame.time.delay(80)
-        heartAnimation.image = heartImageFull
-        pygame.time.delay(80)
-        heartAnimation.image = heartImageEmpty
-        pygame.time.delay(80)
-        heartAnimation.image = heartImageFull
-        pygame.time.delay(80)
-        heartAnimation.image = heartImageEmpty
-        pygame.time.delay(80)
-        heartAnimation.image = heartImageFull
-        pygame.time.delay(80)
-        heartAnimation.image = heartImageEmpty
 
 ##################
 # Game Functions #
@@ -288,6 +243,18 @@ def sort_scores():
     scoreFile2.close()
     txtFile.close()
 
+def try_function(image, blitLocation): # makes it so that if the player is hovering over a transparent part of an image, the cursor wont change to a hand image
+    pos = pygame.mouse.get_pos()
+    clickImage = image.convert_alpha()
+    try: # only work if the click isnt in a transparent area
+        mask = pygame.mask.from_surface(clickImage)
+        if mask.get_at((pos[0]-blitLocation[0], pos[1]-blitLocation[1])):
+            if image.get_rect(topleft=blitLocation).collidepoint(pygame.mouse.get_pos()):
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+                return True
+    except IndexError:  # if the click is in a transparent area, dont worry about it
+        pass
+
 def render_game_start_page(): # main screen page
     waiting = True
     global score
@@ -295,6 +262,7 @@ def render_game_start_page(): # main screen page
     logoBob = 50 # where the logo starts at (y-axis)
     titleText = gameFontStart.render('SIMON', True, white) # write the words
     bobDirection = True # true = down, false = up
+    buttonImage = startButtonNormal
     
     sort_scores()
     
@@ -302,50 +270,37 @@ def render_game_start_page(): # main screen page
         for event in pygame.event.get(): # if the user closes the window, close the game
             if event.type == QUIT:
                 quit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if try_function(buttonImage, (WINDOW_WIDTH/2 - buttonImage.get_width()/2, WINDOW_HEIGHT-120)):
+                    buttonImage = startButtonPressed
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                pos = pygame.mouse.get_pos()
-                x = pos[0]  # gets the location of where the mouse clicks
-                y = pos[1]
-                
-                if 710 <= x <= 774 and 30 <= y <= 100: # for the settings button
-                    # if the click is within a certain range
+                if try_function(settingsScaled, (WINDOW_WIDTH-90, 30)):
                     render_settings_screen()
-                elif 712 <= x <= 780 and 510 <= y <= 578:
-                    # render_leaderboard_screen()
-                    peng_flying_game_mode()
+                if try_function(leaderboardScaled, (WINDOW_WIDTH-88, WINDOW_HEIGHT-90)):
+                    render_leaderboard_screen()
+                if try_function(buttonImage, (WINDOW_WIDTH/2 - buttonImage.get_width()/2, WINDOW_HEIGHT-120)):
+                    buttonImage = startButtonNormal
+                    pygame.mouse.set_cursor()
+                    waiting = False
     
         # set background colour
-        WINDOW.fill(grey)
-        button = Start_Button(startButtonNormal, (100, 100), None) # get the button from the Start_Button class
-        left, middle, right = pygame.mouse.get_pressed()
-    
-        # if cursor is over button change state to 'hover'
-        if button.rect.collidepoint(pygame.mouse.get_pos()):
-            button.hover()
-            # if button pressed, change the state to 'pressed' otherwise 'hover'
-            if left and button.rect.collidepoint(pygame.mouse.get_pos()):
-                button.pressed()
-                # WINDOW.blit(blackGradientScreen, (0,0))
-                # pygame.display.update()
-                # choose_mode() # player choose the mode then start playin
-                # WINDOW.blit(blackGradientScreen, (0,0))
-                # pygame.display.update()
-                waiting = False
-                print('playin')
-                # render_game_simon_play_page()
-            else:
-                button.hover()
-        else:
-            button.normal()
-    
+        WINDOW.fill(grey)        
+        try_function(buttonImage, (WINDOW_WIDTH/2 - buttonImage.get_width()/2, WINDOW_HEIGHT-120))
+        try_function(settingsScaled, (WINDOW_WIDTH-90, 30))
+        try_function(leaderboardScaled, (WINDOW_WIDTH-88, WINDOW_HEIGHT-90))
+        
+        if not try_function(buttonImage, (WINDOW_WIDTH/2 - buttonImage.get_width()/2, WINDOW_HEIGHT-120)) and not try_function(settingsScaled, (WINDOW_WIDTH-90, 30)) and not try_function(leaderboardScaled, (WINDOW_WIDTH-88, 510)):
+            pygame.mouse.set_cursor()
+            buttonImage = startButtonNormal
+
         # display text and images
-        WINDOW.blit(bgBlue, (0,302))
-        WINDOW.blit(bgGreen, (402,302))
         WINDOW.blit(bgYellow, (0,0))
+        WINDOW.blit(bgBlue, (0,302))
         WINDOW.blit(bgRed, (402, 0))
+        WINDOW.blit(bgGreen, (402,302))
         WINDOW.blit(titleText, (279, 50))
         WINDOW.blit(mainPageImageScaled, (175, logoBob))
-        WINDOW.blit(button.image, button.rect)
+        WINDOW.blit(buttonImage, (WINDOW_WIDTH/2 - buttonImage.get_width()/2, 480))
         WINDOW.blit(settingsScaled, (WINDOW_WIDTH-90, 30))
         WINDOW.blit(leaderboardScaled, (WINDOW_WIDTH-88, 510))
         pygame.display.update()
@@ -370,6 +325,9 @@ def render_game_start_page(): # main screen page
         render_game_over_screen()
 
 def choose_mode():
+    red = ('#FF0000')
+    chooseModeScreen = 1
+    global gameMode
     waiting = True
     while waiting:
         for event in pygame.event.get():
@@ -379,17 +337,116 @@ def choose_mode():
                 pos = pygame.mouse.get_pos()
                 x = pos[0]
                 y = pos[1]
-
+                
+                if 75 <= x <= 126 and 299.5 <= y <= 350.5:
+                    chooseModeScreen = chooseModeScreen - 1
+                    if chooseModeScreen < 1:
+                        chooseModeScreen = 1
+                if 675 <= x <= 726 and 299.5 <= y <= 350.5:
+                    chooseModeScreen = chooseModeScreen + 1
+                    if chooseModeScreen > 2:
+                        chooseModeScreen = 2
                 if 600 <= x <= 700 and 400 <= y <= 500:
-                    waiting = False
+                    render_game_start_page()
+                if chooseModeScreen == 1:
+                    if 225 <= x <= 575 and 200 <= y <= 275:
+                        gameMode = "Easy"
+                        waiting = False
+                    if 225 <= x <= 575 and 300 <= y <= 375:
+                        gameMode = "Normal"
+                        waiting = False
+                    if 225 <= x <= 575 and 400 <= y <= 475:
+                        gameMode = "Hard"
+                        waiting = False
+                if chooseModeScreen == 2:
+                    if 225 <= x <= 575 and 200 <= y <= 275:
+                        gameMode = "Penguin"
+                        waiting = False
+                    
         WINDOW.fill(grey)
         WINDOW.blit(blackGradientScreen, (0,0))
         pygame.draw.rect(WINDOW, black, bg)
         pygame.draw.rect(WINDOW, white, bg, 2)
-        credBg = pygame.Rect(200, 50, 400, 100)
+        credBg = pygame.Rect(150, 50, 500, 100)
         pygame.draw.rect(WINDOW, black, credBg)
         pygame.draw.rect(WINDOW, white, credBg, 2)
         WINDOW.blit(homeButtonScaled, (600, 400))
+        WINDOW.blit(nextPageScaled, (75, 299.5))
+        WINDOW.blit(backPageScaled, (675, 299.5))
+        chooseModeText = gameFontEnd.render('Choose Mode', True, white)
+        WINDOW.blit(chooseModeText, (WINDOW_WIDTH/2-(chooseModeText.get_width()/2)+5, 85))
+        if homeButtonScaled.get_rect(topleft=(600, 400)).collidepoint(pygame.mouse.get_pos()):
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        if chooseModeScreen == 1:
+            cover = pygame.Rect(75, 299.5, 51, 51)
+            pygame.draw.rect(WINDOW, black, cover)
+            modeBox1 = pygame.Rect(225, 200, 350, 75)
+            pygame.draw.rect(WINDOW, black, modeBox1)
+            if modeBox1.collidepoint(pygame.mouse.get_pos()):
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+                modeBox1Colour = red
+            else:
+                modeBox1Colour = white
+            pygame.draw.rect(WINDOW, modeBox1Colour, modeBox1, 2)
+            easyMode = gameFontCred.render('Easy', True, white)
+            WINDOW.blit(easyMode, (WINDOW_WIDTH/2-(easyMode.get_width()/2), 225))
+            modeBox2 = pygame.Rect(225, 300, 350, 75)
+            pygame.draw.rect(WINDOW, black, modeBox2)
+            if modeBox2.collidepoint(pygame.mouse.get_pos()):
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+                modeBox2Colour = red
+            else:
+                modeBox2Colour = white
+            pygame.draw.rect(WINDOW, modeBox2Colour, modeBox2, 2)
+            normalMode = gameFontCred.render('Normal', True, white)
+            WINDOW.blit(normalMode, (WINDOW_WIDTH/2-(normalMode.get_width()/2)+5, 325))
+            modeBox3 = pygame.Rect(225, 400, 350, 75)
+            pygame.draw.rect(WINDOW, black, modeBox3)
+            if modeBox3.collidepoint(pygame.mouse.get_pos()):
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+                modeBox3Colour = red
+            else:
+                modeBox3Colour = white
+            pygame.draw.rect(WINDOW, modeBox3Colour, modeBox3, 2)
+            hardMode = gameFontCred.render('Hard', True, white)
+            WINDOW.blit(hardMode, (WINDOW_WIDTH/2-(hardMode.get_width()/2)+5, 425))
+            if nextPageScaled.get_rect(topleft=(675, 299.5)).collidepoint(pygame.mouse.get_pos()):
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+            if not homeButtonScaled.get_rect(topleft=(600, 400)).collidepoint(pygame.mouse.get_pos()) and not nextPageScaled.get_rect(topleft=(675, 299.5)).collidepoint(pygame.mouse.get_pos()) and not modeBox1.collidepoint(pygame.mouse.get_pos()) and not modeBox2.collidepoint(pygame.mouse.get_pos()) and not modeBox3.collidepoint(pygame.mouse.get_pos()):
+                pygame.mouse.set_cursor()
+        if chooseModeScreen == 2:
+            cover = pygame.Rect(675, 299.5, 51, 51)
+            pygame.draw.rect(WINDOW, black, cover)
+            modeBox1 = pygame.Rect(225, 200, 350, 75)
+            pygame.draw.rect(WINDOW, black, modeBox1)
+            if modeBox1.collidepoint(pygame.mouse.get_pos()):
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+                modeBox1Colour = red
+            else:
+                modeBox1Colour = white
+            pygame.draw.rect(WINDOW, modeBox1Colour, modeBox1, 2)
+            penguinMode = gameFontCred.render('Penguin', True, white)
+            WINDOW.blit(penguinMode, (WINDOW_WIDTH/2-(penguinMode.get_width()/2)+5, 225))
+            modeBox2 = pygame.Rect(225, 300, 350, 75)
+            pygame.draw.rect(WINDOW, black, modeBox2)
+            if modeBox2.collidepoint(pygame.mouse.get_pos()):
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+                modeBox2Colour = red
+            else:
+                modeBox2Colour = white
+            pygame.draw.rect(WINDOW, modeBox2Colour, modeBox2, 2)
+            modeBox3 = pygame.Rect(225, 400, 350, 75)
+            pygame.draw.rect(WINDOW, black, modeBox3)
+            if modeBox3.collidepoint(pygame.mouse.get_pos()):
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+                modeBox3Colour = red
+            else:
+                modeBox3Colour = white
+            pygame.draw.rect(WINDOW, modeBox3Colour, modeBox3, 2)
+            if backPageScaled.get_rect(topleft=(75, 299.5)).collidepoint(pygame.mouse.get_pos()):
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+            if not homeButtonScaled.get_rect(topleft=(600, 400)).collidepoint(pygame.mouse.get_pos()) and not backPageScaled.get_rect(topleft=(75, 299.5)).collidepoint(pygame.mouse.get_pos()) and not modeBox1.collidepoint(pygame.mouse.get_pos()) and not modeBox2.collidepoint(pygame.mouse.get_pos()) and not modeBox3.collidepoint(pygame.mouse.get_pos()):
+                pygame.mouse.set_cursor()
         pygame.display.update()
     while running:
         if gameMode == "Easy":
@@ -448,6 +505,7 @@ def quit():
 def colour_light(name):
     global gameMode
     global timeDelay
+    global patternStarted
     pygame.mixer.music.load(f'./Assets/sounds/{name}.wav')
     pygame.mixer.music.play()
     if gameMode == "Easy" or gameMode == "Normal" or gameMode == "Hard":
@@ -456,8 +514,9 @@ def colour_light(name):
         pygame.mixer.music.stop()
         pygame.mixer.music.unload()
     if gameMode == "Penguin":
+        patternStarted = True
         pygame.time.set_timer(COLOUR_LIGHT_EVENT, timeDelay, 1)
-        print('it beign caleld')
+        print('colour got turned off')
 
 def show_pattern():
     # 1 = red
@@ -476,6 +535,9 @@ def show_pattern():
     global forcefieldClosing
     global pengPatternCounter
     global pattern
+    global pengModeLifeStore
+    global life
+    global displayBoxColour
     
     timeDelay = 500 - 100 * int(len(pattern) / 5) # changing it to an integer makes it round down if is float
     if timeDelay <= 100:
@@ -509,26 +571,40 @@ def show_pattern():
     for event in pygame.event.get():
         if event.type == QUIT:
             quit()
-        # if event.type == CONTINUE_SHOWING_PATTERN_EVENT:
     if gameMode == 'Penguin' and pengPatternCounter < len(pattern):
+        print(f"pengModeCanShowPattern:{pengModeCanShowPattern}, forcefieldActive:{forcefieldActive}, canRandomPattern:{canRandomPattern}, canShowPattern:{canShowPattern}")
         if pattern[pengPatternCounter] == 1: # 1 = red
+            displayBoxColour = redLightColour
             redColour, redLightColour = redLightColour, redColour # change it into light mode
             colour_light('red_a')
         elif pattern[pengPatternCounter] == 2: # 2 = green
+            displayBoxColour = greenLightColour
             greenColour, greenLightColour = greenLightColour, greenColour # change it into light mode
             colour_light('green_e-lower')
         elif pattern[pengPatternCounter] == 3: # 3 = yellow
+            displayBoxColour = yellowLightColour
             yellowColour, yellowLightColour = yellowLightColour, yellowColour # change it into light mode
             colour_light('yellow_c-sharp')
         elif pattern[pengPatternCounter] == 4: # 4 = blue
+            displayBoxColour = blueLightColour
             blueColour, blueLightColour = blueLightColour, blueColour # change it into light mode
             colour_light('blue_e-upper')
         pengPatternCounter = pengPatternCounter + 1
-        # pygame.time.set_timer(CONTINUE_SHOWING_PATTERN_EVENT, 100, 1)
-    elif gameMode == 'Penguin' and pengPatternCounter > len(pattern):
-        pygame.time.set_timer(FINISH_SHOWING_PATTERN_EVENT, 100, 1)
         canShowPattern = False
-        pengPatternCounter = 0
+        # if pengPatternCounter < len(pattern):
+        #     print('continueing')
+        #     pygame.time.set_timer(CONTINUE_SHOWING_PATTERN_EVENT, 1, 1) ### WHOLE GAME WORKS IF THE SECOND NUMBER IS SMALL ENOUGH
+    if gameMode == 'Penguin' and pengPatternCounter >= len(pattern):
+        if pengModeLifeStore == life:
+            print()
+            pygame.time.set_timer(FINISH_SHOWING_PATTERN_EVENT, timeDelay-50, 1)
+            canShowPattern = False
+            pengPatternCounter = 0
+        if pengModeLifeStore != life:
+            pengModeLifeStore = life
+            pygame.time.set_timer(FINISH_SHOWING_PATTERN_EVENT, 2000+timeDelay-50, 1)
+            canShowPattern = False
+            pengPatternCounter = 0
 
 def store_player_guess():
     print("now in store player guess")
@@ -544,13 +620,13 @@ def store_player_guess():
     global life
     global score
     
-    clickBlueScaled = pygame.transform.scale(blue, (225, 225)).convert_alpha() # changes the image pixels so that the transparent ones wont count
-    clickGreenScaled = pygame.transform.scale(green, (225, 225)).convert_alpha()
-    clickRedScaled = pygame.transform.scale(red, (225, 225)).convert_alpha()
-    clickYellowScaled = pygame.transform.scale(yellow, (225, 225)).convert_alpha()
+    clickBlueScaled = blueScaled.convert_alpha() # changes the image pixels so that the transparent ones wont count
+    clickGreenScaled = greenScaled.convert_alpha()
+    clickRedScaled = redScaled.convert_alpha()
+    clickYellowScaled = yellowScaled.convert_alpha()
     blueScaledPos = (400, 300)
     greenScaledPos = (400, 75)
-    redScaledPos = (175, 75)
+    redScaledPos = (175, 75) # location theyre blitted at
     yellowScaledPos = (175, 300)
     
     while len(playerPattern) < len(pattern): # so that we check each item of the pattern
@@ -631,34 +707,98 @@ def life_loss():
 
 def check_pattern(playerPattern):  # only works after first guess/ if first guess is wrong, doesnt check
     if playerPattern != pattern[:len(playerPattern)]: # if the player's guess is not the same as the [corresponding index] of the pattern
+        print('now we checking the user\'s choice')
         global life
+        global pengModeLifeStore
+        pengModeLifeStore = life
         life = life - 1
         
         global heart1
         global heart2
         global heart3
+        global gameMode
+        
+        global forcefieldActive
+        global forcefieldOpening
+        global forcefieldClosing
+        global canRandomPattern
+        global pengPatternCounter
+        global patternStarted
+        global timerHasBeenSet
+        global pengModeCanShowPattern
+        global canShowPattern
+        
+        print(f"forcefieldActive:{forcefieldActive}, forcefieldOpening:{forcefieldOpening}, forcefieldClosing:{forcefieldClosing}, canRandomPattern:{canRandomPattern}, pengPatternCounter:{pengPatternCounter}, patternStarted:{patternStarted}, timerHasBeenSet:{timerHasBeenSet}, pengModeCanShowPattern:{pengModeCanShowPattern}, canShowPattern:{canShowPattern}")
         
         if life == 2:
+            pygame.time.set_timer(RETURN_NORMAL_EVENT, 3000, 1)
             heart1 = heartImageEmptyScaled
-            WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
-            pygame.display.update()
-            life_loss()
+            if gameMode == "Easy" or gameMode == "Normal" or gameMode == "Hard":
+                WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
+                pygame.display.update()
+                life_loss()
+            if gameMode == "Penguin":
+                peng_life_loss()
         if life == 1:
+            pygame.time.set_timer(RETURN_NORMAL_EVENT, 3000, 1)
+            print('one life left')
             heart1 = heartImageEmptyScaled
             heart2 = heartImageEmptyScaled
-            WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
-            WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
-            pygame.display.update()
-            life_loss()
+            if gameMode == "Easy" or gameMode == "Normal" or gameMode == "Hard":
+                WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
+                WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
+                pygame.display.update()
+                life_loss()
+            if gameMode == "Penguin":
+                peng_life_loss()
         if life == 0:
             heart1 = heartImageEmptyScaled
             heart2 = heartImageEmptyScaled
             heart3 = heartImageEmptyScaled
-            WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
-            WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
-            WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
-            pygame.display.update()
-            render_save_score_screen()
+            if gameMode == "Easy" or gameMode == "Normal" or gameMode == "Hard":
+                WINDOW.blit(heart1, (WINDOW_WIDTH-36-36-36-5-5-50, 50))
+                WINDOW.blit(heart2, (WINDOW_WIDTH-36-36-5-50, 50))
+                WINDOW.blit(heart3, (WINDOW_WIDTH-36-50, 50))
+                pygame.display.update()
+                render_save_score_screen()
+            if gameMode == "Penguin":
+                render_save_score_screen()
+
+def peng_life_loss():
+    global redColour
+    global redLightColour
+    global greenColour
+    global greenLightColour
+    global yellowColour
+    global yellowLightColour
+    global blueColour
+    global blueLightColour
+    global timeDelay
+    pygame.time.delay(timeDelay + 150) # NEED A WAY TO FIX THIS, 
+    # THE COLOUR_LIGHT FUNCTION IS CALLED WHEN THE PLAYER HITS THE BLOCK AND THEREFORE WILL DISABLE THE beepbeepbeep sound BEFORE IT FINISHES
+    
+    pygame.mixer.music.load('./Assets/sounds/beep_beep_beep.wav')
+    pygame.mixer.music.play()
+    print('player got it wrong so sound played and life lost')
+    redColour, redLightColour = ('#FF0000'), ('#800000')
+    blueColour, blueLightColour = ('#003DFF'), ('#001E80')
+    yellowColour, yellowLightColour = ('#F0FF00'), ('#778000')
+    greenColour, greenLightColour = ('#25FF00'), ('#008000')
+    pygame.time.set_timer(LIFE_LOSS_LIGHT_EVENT, 500, 1)
+    pygame.time.set_timer(LIFE_LOSS_CONTINUE_EVENT, 750, 2)
+    ## some sort of 750ms break here
+    # redColour, redLightColour = redLightColour, redColour # change it into light mode
+    # greenColour, greenLightColour = greenLightColour, greenColour # change it into light mode
+    # yellowColour, yellowLightColour = yellowLightColour, yellowColour # change it into light mode
+    # blueColour, blueLightColour = blueLightColour, blueColour # change it into light mode
+    # pygame.time.set_timer(LIFE_LOSS_LIGHT_EVENT, 500, 1)
+    # pygame.time.set_timer(LIFE_LOSS_CONTINUE_EVENT, 750, 1)
+    # ## some sort of 750ms break here
+    # redColour, redLightColour = redLightColour, redColour # change it into light mode
+    # greenColour, greenLightColour = greenLightColour, greenColour # change it into light mode
+    # yellowColour, yellowLightColour = yellowLightColour, yellowColour # change it into light mode
+    # blueColour, blueLightColour = blueLightColour, blueColour # change it into light mode
+    # pygame.time.set_timer(COLOUR_LIGHT_EVENT, 500, 1)
 
 def render_settings_screen():
     waiting = True
@@ -756,7 +896,6 @@ def render_settings_screen():
         WINDOW.blit(soundSliderScaled, (sliderX, 215)) # make it so that the x location is proportional to the volume
         volume = 2*((sliderX-180) / (10**len(str(sliderX)))) # the location of the slider - 180 divede by 10 to the power of the length (to get between 0.0-1.0)
         pygame.mixer.music.set_volume(volume) # sliderScaled = (26, 26)
-        print(volume)
         pygame.display.update() #^^^ 177 cause 1 empty *2 + 1
 
 def render_credits_screen():
@@ -1105,13 +1244,34 @@ def peng_flying_game_mode():
     global blueColour
     global yellowColour
     global greenColour
+    global forcefieldOpening
+    global forcefieldActive
+    global forcefieldClosing
+    global canShowPattern
+    global pengModeCanShowPattern
+    global patternStarted
+    
+    global playerPattern
+    global redColour
+    global greenColour
+    global yellowColour
+    global blueColour
+    global redLightColour
+    global greenLightColour
+    global yellowLightColour
+    global blueLightColour
     global forcefieldClosing
     global canRandomPattern
     global canShowPattern
-    global pengModeCanShowPattern
     global forcefieldOpening
     global forcefieldActive
     global timeDelay
+    global pengPatternCounter
+    global pattern
+    global boost
+    global patternStarted
+    global timerHasBeenSet
+    global displayBoxColour
 
     waiting = True
     while waiting:
@@ -1121,33 +1281,47 @@ def peng_flying_game_mode():
             if event.type == BOOST_EVENT: 
                 boost = False
                 print(imageCounter)
-            if event.type == COLOUR_LIGHT_EVENT:
-                print('gone in')
-                pygame.mixer.music.stop()
-                pygame.mixer.music.unload()
-                redLightColour = ('#FF0000')
-                blueLightColour = ('#003DFF')
-                yellowLightColour = ('#F0FF00')
-                greenLightColour = ('#25FF00')
-                redColour = ('#800000')
-                blueColour = ('#001E80')
-                yellowColour = ('#778000')
-                greenColour = ('#008000')
-                pygame.time.set_timer(CONTINUE_SHOWING_PATTERN_EVENT, timeDelay + 500, 1)
-            if event.type == FINISH_SHOWING_PATTERN_EVENT:
-                forcefieldClosing = True
+            if event.type == LIFE_LOSS_LIGHT_EVENT:
+                redColour, redLightColour = ('#800000'), ('#FF0000')
+                blueColour, blueLightColour = ('#001E80'), ('#003DFF')
+                yellowColour, yellowLightColour = ('#778000'), ('#F0FF00')
+                greenColour, greenLightColour = ('#008000'), ('#25FF00')
             if event.type == RETURN_NORMAL_EVENT:
+                print('now returning to normal - repeating the process')
                 forcefieldActive = True
                 forcefieldOpening = True
                 forcefieldClosing = False
                 canRandomPattern = True
                 pengModeCanShowPattern = True
                 canShowPattern = False
+                patternStarted = False
+            if event.type == CONTINUE_SHOWING_PATTERN_EVENT:
+                print('in')
+                print(pengPatternCounter)
+                if pengPatternCounter < len(pattern):
+                    print('first time')
+                    canRandomPattern = False
+                    pengModeCanShowPattern = True
+                    canShowPattern = True
+                    timerHasBeenSet = False
+            if event.type == FINISH_SHOWING_PATTERN_EVENT:
+                print('ending the showing, now for user input')
+                forcefieldClosing = True
+                forcefieldActive = False
+                forcefieldOpening = False
+            if event.type == BOOST_EVENT: 
+                boost = False
+                print(imageCounter)
+            if event.type == LIFE_LOSS_CONTINUE_EVENT:
+                redColour, redLightColour = ('#FF0000'), ('#800000')
+                blueColour, blueLightColour = ('#003DFF'), ('#001E80')
+                yellowColour, yellowLightColour = ('#F0FF00'), ('#778000')
+                greenColour, greenLightColour = ('#25FF00'), ('#008000')
+                pygame.time.set_timer(LIFE_LOSS_LIGHT_EVENT, 500, 1)
         
         # refresh display
         WINDOW.fill(grey)
         
-        displayBoxColour = grey
         displayBox = pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
         pygame.draw.rect(WINDOW, displayBoxColour, displayBox) # to display the current colour pattern
         coverPrev = pygame.Rect(10, 10, WINDOW_WIDTH-20, WINDOW_HEIGHT-20)
@@ -1197,10 +1371,10 @@ def peng_flying_game_mode():
             if imageCounter % 9 == 0: # 75ms per frame
                 forcefieldNum = forcefieldNum + 1
                 if forcefieldNum > 11:
-                    canShowPattern = True
                     forcefieldNum = 8
         ### to be put into show player pattern
-        
+        if forcefieldNum == 11 and canRandomPattern == False and canShowPattern == False and patternStarted == False:
+            canShowPattern = True
         WINDOW.blit(forcefieldSlide[forcefieldNum], (WINDOW_WIDTH/2 - forcefieldSlide[forcefieldNum].get_width()/2, WINDOW_HEIGHT/2 - forcefieldSlide[forcefieldNum].get_height()/2 - 35))
         
         # make this in the middle and flash up when the player dies x times
@@ -1287,6 +1461,16 @@ def check_pos():
         pengPos[1] = WINDOW_HEIGHT - pengImage.get_height()
         pengSpeed[1] = 0
         pengSpeed[0] = 0
+    if pengPos[0] < platformScaled.get_width() + WINDOW_WIDTH/2 - platformScaled.get_width()/2 and pengPos[0] > WINDOW_WIDTH/2 - platformScaled.get_width()/2 - pengImage.get_width():
+        if pengPos[1] > WINDOW_HEIGHT/2 - pengImage.get_height() + 1:
+            pengPos[1] = WINDOW_HEIGHT/2 - pengImage.get_height()
+            pengSpeed[1] = 0
+            pengSpeed[0] = 0
+            gravity = 0
+        if pengPos[1] < WINDOW_HEIGHT/2 - pengImage.get_height():
+            gravity = 0.1
+    else:
+        gravity = 0.1
     # if pygame.Rect.colliderect(pengRect, platformRect):
     #     if pengPos[0] < WINDOW_WIDTH/2 - platformScaled.get_width()/2: # to the left
     #         pengPos[0] = pengPos[0]
@@ -1381,7 +1565,6 @@ def penguin_mode_store_player_guess():
     # 3 = yellow
     # 4 = blue
     global playerPattern
-    
     global pattern
     global lifeStore
     global life
@@ -1400,12 +1583,7 @@ def penguin_mode_store_player_guess():
     global canShowPattern
     global canRandomPattern
     global pengModeCanShowPattern
-    
-    # for event in pygame.event.get():
-    #     if event.type == USEREVENT:
-    #         pygame.mixer.music.stop()
-    #         pygame.mixer.music.unload()
-    #         pygame.time.set_timer(pygame.USEREVENT, 0)
+    global pengModeLifeStore
     
     pengRect = pygame.Rect(pengPos[0], pengPos[1], pengImage.get_width(), pengImage.get_height())
     
@@ -1415,7 +1593,7 @@ def penguin_mode_store_player_guess():
             colour_light('red_a')
             playerPattern.append(1) # add the guess to the end of the array
             check_wall_pos("topLeft")
-            # check_pattern(playerPattern) # compare it
+            check_pattern(playerPattern) # compare it
             # if life != lifeStore:
             #     return # break out of the if (return doenst do it)
         elif pygame.Rect.colliderect(pengRect, redBox2):
@@ -1423,7 +1601,7 @@ def penguin_mode_store_player_guess():
             colour_light('red_a')
             playerPattern.append(1) # add the guess to the end of the array
             check_wall_pos("topLeft")
-            # check_pattern(playerPattern) # compare it
+            check_pattern(playerPattern) # compare it
             # if life != lifeStore:
             #     return # break out of the if (return doenst do it)
         elif pygame.Rect.colliderect(pengRect, greenBox1):
@@ -1431,7 +1609,7 @@ def penguin_mode_store_player_guess():
             colour_light('green_e-lower')
             playerPattern.append(2) # add the guess to the end of the array
             check_wall_pos("topRight")
-            # check_pattern(playerPattern) # compare it
+            check_pattern(playerPattern) # compare it
             # if life != lifeStore:
             #     return # break out of the if (return doenst do it)
         elif pygame.Rect.colliderect(pengRect, greenBox2):
@@ -1439,7 +1617,7 @@ def penguin_mode_store_player_guess():
             colour_light('green_e-lower')
             playerPattern.append(2) # add the guess to the end of the array
             check_wall_pos("topRight")
-            # check_pattern(playerPattern) # compare it
+            check_pattern(playerPattern) # compare it
             # if life != lifeStore:
             #     return # break out of the if (return doenst do it)
         elif pygame.Rect.colliderect(pengRect, yellowBox1):
@@ -1447,7 +1625,7 @@ def penguin_mode_store_player_guess():
             colour_light('yellow_c-sharp')
             playerPattern.append(3) # add the guess to the end of the array
             check_wall_pos("bottomLeft")
-            # check_pattern(playerPattern) # compare it
+            check_pattern(playerPattern) # compare it
             # if life != lifeStore:
             #     return # break out of the if (return doenst do it)
         elif pygame.Rect.colliderect(pengRect, yellowBox2):
@@ -1455,7 +1633,7 @@ def penguin_mode_store_player_guess():
             colour_light('yellow_c-sharp')
             playerPattern.append(3) # add the guess to the end of the array
             check_wall_pos("bottomLeft")
-            # check_pattern(playerPattern) # compare it
+            check_pattern(playerPattern) # compare it
             # if life != lifeStore:
             #     return # break out of the if (return doenst do it)
         elif pygame.Rect.colliderect(pengRect, blueBox1):
@@ -1463,7 +1641,7 @@ def penguin_mode_store_player_guess():
             colour_light('blue_e-upper')
             playerPattern.append(4) # add the guess to the end of the array
             check_wall_pos("bottomRight")
-            # check_pattern(playerPattern) # compare it
+            check_pattern(playerPattern) # compare it
             # if life != lifeStore:
             #     return # break out of the if (return doenst do it)
         elif pygame.Rect.colliderect(pengRect, blueBox2):
@@ -1471,15 +1649,19 @@ def penguin_mode_store_player_guess():
             colour_light('blue_e-upper')
             playerPattern.append(4) # add the guess to the end of the array
             check_wall_pos("bottomRight")
-            # check_pattern(playerPattern) # compare it
+            check_pattern(playerPattern) # compare it
             # if life != lifeStore:
             #     return # break out of the if (return doenst do it)
     
     pygame.display.update()
     if len(playerPattern) >= len(pattern): ########## ADD IN TO THE GAME
-        pygame.time.set_timer(RETURN_NORMAL_EVENT, 1000, 1)
-        print('doin')
-        playerPattern = []
+        if pengModeLifeStore == life:
+            pygame.time.set_timer(RETURN_NORMAL_EVENT, 1000, 1)
+            playerPattern = []
+        if pengModeLifeStore != life:
+            pengModeLifeStore = life
+            pygame.time.set_timer(RETURN_NORMAL_EVENT, 3000, 1)
+            playerPattern = []
     
     #     if life != lifeStore:
     #             break
@@ -1498,6 +1680,76 @@ def game_loop():
     global forcefieldOpening
     global forcefieldActive
     global pengModeCanShowPattern
+    global redColour
+    global greenColour
+    global yellowColour
+    global blueColour
+    global redLightColour
+    global greenLightColour
+    global yellowLightColour
+    global blueLightColour
+    global forcefieldClosing
+    global canRandomPattern
+    global canShowPattern
+    global pengModeCanShowPattern
+    global forcefieldOpening
+    global forcefieldActive
+    global timeDelay
+    global pengPatternCounter
+    global pattern
+    global boost
+    global patternStarted
+    global timerHasBeenSet
+    global displayBoxColour
+    
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            quit()
+        if event.type == COLOUR_LIGHT_EVENT:
+            pygame.mixer.music.stop()
+            pygame.mixer.music.unload()
+            redColour, redLightColour = ('#800000'), ('#FF0000')
+            blueColour, blueLightColour = ('#001E80'), ('#003DFF')
+            yellowColour, yellowLightColour = ('#778000'), ('#F0FF00')
+            greenColour, greenLightColour = ('#008000'), ('#25FF00')
+            displayBoxColour = grey
+        if event.type == LIFE_LOSS_LIGHT_EVENT:
+            redColour, redLightColour = ('#800000'), ('#FF0000')
+            blueColour, blueLightColour = ('#001E80'), ('#003DFF')
+            yellowColour, yellowLightColour = ('#778000'), ('#F0FF00')
+            greenColour, greenLightColour = ('#008000'), ('#25FF00')
+        if event.type == RETURN_NORMAL_EVENT:
+            print('now returning to normal - repeating the process')
+            forcefieldActive = True
+            forcefieldOpening = True
+            forcefieldClosing = False
+            canRandomPattern = True
+            pengModeCanShowPattern = True
+            canShowPattern = False
+            patternStarted = False
+        if event.type == CONTINUE_SHOWING_PATTERN_EVENT:
+            print('in')
+            print(pengPatternCounter)
+            if pengPatternCounter < len(pattern):
+                print('first time')
+                canRandomPattern = False
+                pengModeCanShowPattern = True
+                canShowPattern = True
+                timerHasBeenSet = False
+        if event.type == FINISH_SHOWING_PATTERN_EVENT:
+            print('ending the showing, now for user input')
+            forcefieldClosing = True
+            forcefieldActive = False
+            forcefieldOpening = False
+        if event.type == BOOST_EVENT: 
+            boost = False
+            print(imageCounter)
+        if event.type == LIFE_LOSS_CONTINUE_EVENT:
+            redColour, redLightColour = ('#FF0000'), ('#800000')
+            blueColour, blueLightColour = ('#003DFF'), ('#001E80')
+            yellowColour, yellowLightColour = ('#F0FF00'), ('#778000')
+            greenColour, greenLightColour = ('#25FF00'), ('#008000')
+            pygame.time.set_timer(LIFE_LOSS_LIGHT_EVENT, 500, 1)
     
     apply_friction() # Apply friction to the penguin's speed
     apply_gravity() # Apply gravitational force to the penguin's speed
@@ -1507,8 +1759,9 @@ def game_loop():
     if pengModeCanShowPattern == True:
         # forcefieldOpening = True # NNED TO MAKE IT TRUE SONEWHERE ELSE
         forcefieldActive = True
-
+    
         if canRandomPattern == True:
+            print('got a random pattern')
             random_pattern() # NOTICE this is called every second - change
             # print('called')
         # print(pattern)
@@ -1516,6 +1769,12 @@ def game_loop():
         if canShowPattern == True:
             show_pattern()
             playerPattern = []
+        if canShowPattern == False and pengPatternCounter < len(pattern) and pengPatternCounter > 0 and timerHasBeenSet == False:
+            print('conitinuer')
+            # print(pengPatternCounter)
+            # canShowPattern = True############ GET SOME WAY TO TURN  THIS IF OFF ONCE IT IS CALLED AND SOME WAY TO TURN IT BACK ON
+            pygame.time.set_timer(CONTINUE_SHOWING_PATTERN_EVENT, timeDelay+250, 1) ### WHOLE GAME WORKS IF THE SECOND NUMBER IS SMALL ENOUGH
+            timerHasBeenSet = True
         
     penguin_mode_store_player_guess() # problem solved - because its not being called
         ###### ALL SOLVED  ##### THE PLAYE IS NOW ONLY FROZEN CAUSE ^^^ IS BEING CALLED TOO FAST
@@ -1525,5 +1784,10 @@ def game_loop():
     
     pygame.display.update() # Update the Pygame display
 
+
+########## BIG PROBLEM #########
+# AS OF RIGHT NOW, THE CHECK CHOICE FOR THE LOSE LIFE THIS BREAKS WHEN THE PLAYER GUESSES WRONG ON THE LAST GUESS
+# E.G. 1 GUESS, THEY GET IT WRONG, BROKEY
+# 2 GUESS, THEY GET THE SECOND ONE WRONG, BROKEY...
 
 render_game_start_page()
