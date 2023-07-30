@@ -40,7 +40,7 @@ settingsScaled = pygame.transform.scale(settings, (64, 70)) # (8.546875 times sm
 settingsScaled2 = pygame.transform.scale(settings, (109.4, 120))
 leaderboard = pygame.image.load('./Assets/main_menu_page_images/victory_cup.png') # 17 x 17
 leaderboardScaled = pygame.transform.scale(leaderboard, (68, 68))
-exit = pygame.image.load('./Assets/main_menu_page_images/close_game_2.png') # 26 x 26
+exit = pygame.image.load('./Assets/main_menu_page_images/close_game.png') # 26 x 26
 exitScaled = pygame.transform.scale(exit, (68, 68))
 bgGreen = pygame.image.load('./Assets/main_menu_page_images/bg_green.png') # 400 x 300
 bgGreenScaled = pygame.transform.scale(bgGreen, (400, 300))
@@ -317,6 +317,7 @@ timerHasBeenSet = False
 pengModeLifeStore = life
 displayBoxColour = GREY
 all_items = []
+flying = False
 
 pengModeCanShowPattern = True
 canShowPattern = False
@@ -1012,6 +1013,9 @@ def render_settings_screen():
                             pygame.mixer.Channel(1).set_volume(0)
                             pygame.mixer.Channel(2).set_volume(0)
                             pygame.mixer.Channel(3).set_volume(0)
+                            pygame.mixer.Channel(4).set_volume(0)
+                            pygame.mixer.Channel(5).set_volume(0)
+                            pygame.mixer.Channel(6).set_volume(0)
                             switching = 1
                         else:
                             soundImage = soundOnScaled
@@ -1019,6 +1023,9 @@ def render_settings_screen():
                             pygame.mixer.Channel(1).set_volume(volume)
                             pygame.mixer.Channel(2).set_volume(volume)
                             pygame.mixer.Channel(3).set_volume(volume)
+                            pygame.mixer.Channel(4).set_volume(volume)
+                            pygame.mixer.Channel(5).set_volume(volume)
+                            pygame.mixer.Channel(6).set_volume(volume)
                             sliderXOrigPos = sliderX
                             switching = 2
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -1038,6 +1045,9 @@ def render_settings_screen():
                             pygame.mixer.Channel(1).set_volume(0)
                             pygame.mixer.Channel(2).set_volume(0)
                             pygame.mixer.Channel(3).set_volume(0)
+                            pygame.mixer.Channel(4).set_volume(0)
+                            pygame.mixer.Channel(5).set_volume(0)
+                            pygame.mixer.Channel(6).set_volume(0)
                         else:
                             soundImage = soundOnScaled
                             soundLocation = (int(resizeScale * 100), int(resizeScale * 200))
@@ -1061,6 +1071,9 @@ def render_settings_screen():
                             pygame.mixer.Channel(1).set_volume(0)
                             pygame.mixer.Channel(2).set_volume(0)
                             pygame.mixer.Channel(3).set_volume(0)
+                            pygame.mixer.Channel(4).set_volume(0)
+                            pygame.mixer.Channel(5).set_volume(0)
+                            pygame.mixer.Channel(6).set_volume(0)
                             sliderX = int(resizeScale * 178)
                             switching = 2
                             break
@@ -1071,6 +1084,9 @@ def render_settings_screen():
                             pygame.mixer.Channel(1).set_volume(volume)
                             pygame.mixer.Channel(2).set_volume(volume)
                             pygame.mixer.Channel(3).set_volume(volume)
+                            pygame.mixer.Channel(4).set_volume(volume)
+                            pygame.mixer.Channel(5).set_volume(volume)
+                            pygame.mixer.Channel(6).set_volume(volume)
                             switching = 1
                             break
                 if settingsPage == 2:
@@ -1238,8 +1254,11 @@ def render_settings_screen():
             volume = (sliderX - int(resizeScale * 180)) / int(resizeScale * 525)
             sliderX = (volume * int(resizeScale * 525)) + int(resizeScale * 180)
             pygame.mixer.Channel(1).set_volume(volume)
-            pygame.mixer.Channel(2).set_volume(volume) # sliderScaled = (26, 26)
+            pygame.mixer.Channel(2).set_volume(volume)
             pygame.mixer.Channel(3).set_volume(volume)
+            pygame.mixer.Channel(4).set_volume(volume)
+            pygame.mixer.Channel(5).set_volume(volume)
+            pygame.mixer.Channel(6).set_volume(volume)
         if settingsPage == 2:
             remove_transparent_pixels(nextPageScaled, (int(75 * resizeScale), int(299.5 * resizeScale)))
             window.blit(nextPageScaled, (int(75 * resizeScale), int(299.5 * resizeScale)))
@@ -2179,6 +2198,13 @@ def render_save_score_screen():
     hyphen = gameFontSubtitle.render('-', True, WHITE)
     delete = gameFontSubtitle.render('DEL', True, WHITE)
     
+    pygame.mixer.Channel(1).stop()
+    pygame.mixer.Channel(2).stop()
+    pygame.mixer.Channel(3).stop()
+    pygame.mixer.Channel(4).stop()
+    pygame.mixer.Channel(5).stop()
+    pygame.mixer.Channel(6).stop()
+    
     waiting = True
     while waiting:
         for event in pygame.event.get():
@@ -2688,6 +2714,29 @@ def update_penguin_position():
         window.blit(petrolLifeScaled, (int(resizeScale * 35), int(resizeScale * (35 + i * 85))))
 
 
+def constrict_player_inside_spawn():
+    # Limit the penguin's position to within the walls of the spawn area (If currently showing pattern)
+    forcefieldLeft = int(resizeScale * window_width)/2 - forcefieldSlide[forcefieldNum].get_width()/2
+    forcefieldTop = int(resizeScale * window_height)/2 - forcefieldSlide[forcefieldNum].get_height()/2 - int(resizeScale * 35)
+    forcefieldWidth = forcefieldSlide[forcefieldNum].get_width()
+    forcefieldHeight = forcefieldSlide[forcefieldNum].get_height()
+    offset = int(resizeScale * 30)
+    
+    if pengPos[0] < forcefieldLeft + offset: # if past the left side of the spawn area
+        pengPos[0] = forcefieldLeft + offset
+        pengSpeed[0] = 0
+    elif pengPos[0] + pengImage.get_width() > forcefieldLeft + forcefieldWidth - offset: # if past the right side of the spawn area
+        pengPos[0] = forcefieldLeft + forcefieldWidth - pengImage.get_width() - offset
+        pengSpeed[0] = 0
+    if pengPos[1] < forcefieldTop + offset: # if past the top of the spawn area
+        pengPos[1] = forcefieldTop + offset
+        pengSpeed[1] = 0
+    elif pengPos[1] + pengImage.get_height() > forcefieldTop + forcefieldHeight - offset: # if past the bottom of the spawn area
+        pengPos[1] = forcefieldTop + forcefieldHeight - pengImage.get_height() - offset
+        pengSpeed[1] = 0
+        pengSpeed[0] = 0
+
+
 def peng_mode_check_pos():
     global gravity
     # Limit the penguin's position to within the walls of the screen
@@ -2729,6 +2778,8 @@ def peng_mode_check_pos():
 def peng_mode_apply_key():
     global pengImage
     global boost
+    global flying
+    rocketSound = pygame.mixer.Sound('./Assets/sounds/rocket sound.wav')
     if boost:
         up = 0.25
     else:
@@ -2736,13 +2787,23 @@ def peng_mode_apply_key():
     pressed = pygame.key.get_pressed()
     if (pressed[settingsDict["up"]]):
         pengSpeed[1] = pengSpeed[1] - (resizeScale * up)
-        pengImage = lookingUpScaled # A way to not interfere with the colour_light() lighting up the player
+        pengImage = lookingUpScaled
+    if (pressed[settingsDict["up"]]) and not flying:
+        flying = True
+        pygame.mixer.Channel(6).play(rocketSound)
+    elif not (pressed[settingsDict["up"]]) and flying:
+        flying = False
+        pygame.mixer.Channel(6).stop()
+    
     if (pressed[settingsDict["right"]]):
         pengSpeed[0] = pengSpeed[0] + (resizeScale * 0.05)
+        pengImage = lookingRightScaled
     if (pressed[settingsDict["left"]]):
         pengSpeed[0] = pengSpeed[0] - (resizeScale * 0.05)
+        pengImage = lookingLeftScaled
     if (pressed[settingsDict["down"]]):
         pengSpeed[1] = pengSpeed[1] + (resizeScale * 0.0)
+        pengImage = lookingDownScaled
     if boost != True: # Make sure you cant start the boost while the boost is on
         if (pressed[settingsDict["boost"]]):
             boost = True
@@ -2956,6 +3017,7 @@ def peng_mode_game_loop():
     check_item_collision(all_items, pengRect) # check if the player touches any items
     check_item_lifetime(all_items) # remove any items that are onscreen for too long
     if pengModeCanShowPattern == True:
+        constrict_player_inside_spawn()
         forcefieldActive = True
         if canRandomPattern == True:
             random_pattern()
@@ -3001,19 +3063,23 @@ def spawn_peng_mode_items(items, images, item_lifetime):
 
 
 def check_item_collision(items, character_rect):
+    explosion = pygame.mixer.Sound('./Assets/sounds/explosion.wav')
+    collected = pygame.mixer.Sound('./Assets/sounds/boost collected.wav')
     global score
     global life
     for item in items[:]:
         if item[0].colliderect(character_rect):
             if item[1] == images[0]:
-                # play boom sound
+                pygame.mixer.Channel(1).play(explosion)
                 score = score - 3
                 life = life - 1
                 if life == 0:
                     render_save_score_screen()
             elif item[1] == images[1]:
+                pygame.mixer.Channel(5).play(collected)
                 score = score + 2
             elif item[1] == images[2]:
+                pygame.mixer.Channel(4).play(collected)
                 life = life + 1
             items.remove(item)
 
